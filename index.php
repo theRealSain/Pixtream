@@ -21,8 +21,8 @@
                 <div class="col-lg-6" id="login-form">
                     <div class="card-body p-md-5 mx-md-4">
                         <div class="text-center">
-                        <img src="assets/LOGO.svg"
-                            style="width: 185px;" alt="logo">
+                        <img src="assets/text.svg"
+                            style="width: 350px;" alt="logo">
                         </div> <br>
 
                         <form action="login_process.php" method="post">
@@ -57,8 +57,8 @@
                 <div class="col-lg-6" id="register-form" style="display: none;">
                     <div class="card-body p-md-5 mx-md-4">
                         <div class="text-center">
-                        <img src="assets/LOGO.svg"
-                            style="width: 185px;" alt="logo">
+                        <img src="assets/text.svg"
+                            style="width: 350px;" alt="logo">
                         </div> <br>
 
                         <form action="register_process.php" method="post">
@@ -110,7 +110,7 @@
 
                     <h4 class="mb-4">Connect, Share, and Engage</h4>
                     <p class="small mb-0">
-                        Join our community to share your moments, connect with friends, and explore the latest trends. 
+                        Join our community, Snap - Pixtream to share your moments, connect with friends, and explore the latest trends. 
                         Whether you're capturing life's milestones or discovering new content, s-pixtream is the place to be. 
                         Dive into a vibrant social experience where your creativity knows no bounds.
                     </p>
