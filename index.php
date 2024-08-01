@@ -1,87 +1,127 @@
-<?php
-#error_reporting(0);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>s-pixtream</title>
+    <link rel="stylesheet" href="bootstrap/css/all.min.css.css">
+    <link rel="stylesheet" href="bootstrap/css/fontawesome.min.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <style>
-        .container {
-            max-width: 400px;
-            margin-top: 50px;
-        }
-        .form-toggle {
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="additional-files/extra.css">
+    <link rel="stylesheet" href="additional-files/me.css">
+    <link rel="icon" type="image/x-icon" href="assets/LOGO_white.png" />
 </head>
 <body>
 
-<?php
-if($_SESSION['username_error'])
-{
-  echo $_SESSION['username_error'];
-}
-unset($_SESSION['username_error']);
+    <section class="h-100 gradient-form" style="background-color: #eee;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-xl-10">
+            <div class="card rounded-3 text-black">
+            <div class="row g-0">
 
-if($_SESSION['reg_true'])
-{
-  echo $_SESSION['reg_true'];
-}
-unset($_SESSION['reg_true']);
+                <div class="col-lg-6" id="login-form">
+                    <div class="card-body p-md-5 mx-md-4">
+                        <div class="text-center">
+                        <img src="assets/LOGO.svg"
+                            style="width: 185px;" alt="logo">
+                        </div> <br>
 
-if($_SESSION['login_eror'])
-{
-  echo $_SESSION['login_eror'];
-}
-unset($_SESSION['login_eror']);
-?>
+                        <form action="login_process.php" method="post">
+                            <h5 align="center">Sign in to your account!</h5> <br>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example11">Username</label>
+                                <input type="email" id="form2Example11" class="form-control"
+                                placeholder="Phone number or email address" />                                
+                            </div>
 
-    <div class="container">
-        <h2 class="text-center">s-pixtream</h2>
-        <div id="login-form">
-            <h4>Login</h4>
-            <form action="login_process.php" method="post">
-                <div class="form-group">
-                    <label for="login-username">Username:</label>
-                    <input type="text" class="form-control" id="login-username" name="username" required>
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example22">Password</label>
+                                <input type="password" id="form2Example22" class="form-control" 
+                                placeholder="Password" />
+                            </div>
+
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-custom" type="button">Sign In</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-center pb-4">
+                                <p class="mb-0 me-2">Don't have an account?
+                                    <span class="form-toggle" onclick="toggleForms()"><a href="#">Sign up</a></span>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="login-password">Password:</label>
-                    <input type="password" class="form-control" id="login-password" name="password" required>
+
+                <div class="col-lg-6" id="register-form" style="display: none;">
+                    <div class="card-body p-md-5 mx-md-4">
+                        <div class="text-center">
+                        <img src="assets/LOGO.svg"
+                            style="width: 185px;" alt="logo">
+                        </div> <br>
+
+                        <form action="register_process.php" method="post">
+                            <h5 align="center">Create an account here!</h5> <br>
+
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example11">Email</label>
+                                <input type="email" id="form2Example11" class="form-control"
+                                placeholder="Email address" />
+                            </div>
+
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example11">Full Name</label>
+                                <input type="text" id="form2Example11" class="form-control"
+                                placeholder="Full Name" />                                
+                            </div>
+
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example11">Username</label>
+                                <input type="text" id="form2Example11" class="form-control"
+                                placeholder="Username" />                                
+                            </div>
+
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <label class="form-label" for="form2Example22">Password</label>
+                                <input type="password" id="form2Example22" class="form-control" 
+                                placeholder="Password" />
+                            </div>
+
+                            <div class="text-center pt-1 mb-5 pb-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-custom" type="button">Sign Up</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-center pb-4">
+                                <p class="mb-0 me-2">Already have an account?
+                                    <span class="form-toggle" onclick="toggleForms()"><a href="#">Sign in</a></span>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Log in</button>
-            </form>
-            <p class="text-center mt-3">Don't have an account? <span class="form-toggle" onclick="toggleForms()">Sign up</span></p>
+
+                <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                
+                    <img class="index-logo" src="assets/LOGO_text.svg" alt="" width="300">
+
+                    <h4 class="mb-4">Connect, Share, and Engage</h4>
+                    <p class="small mb-0">
+                        Join our community to share your moments, connect with friends, and explore the latest trends. 
+                        Whether you're capturing life's milestones or discovering new content, s-pixtream is the place to be. 
+                        Dive into a vibrant social experience where your creativity knows no bounds.
+                    </p>
+                </div>
+                </div>
+            </div>
+            </div>
         </div>
-        <div id="register-form" style="display: none;">
-            <h4>Register</h4>
-            <form action="register_process.php" method="post">
-                <div class="form-group">
-                    <label for="register-username">Username:</label>
-                    <input type="text" class="form-control" id="register-username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email:</label>
-                    <input type="email" class="form-control" id="register-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Password:</label>
-                    <input type="password" class="form-control" id="register-password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Sign up</button>
-            </form>
-            <p class="text-center mt-3">Already have an account? <span class="form-toggle" onclick="toggleForms()">Log in</span></p>
         </div>
     </div>
-
-    
+    </section>
 
     <script>
         function toggleForms() {
@@ -96,6 +136,6 @@ unset($_SESSION['login_eror']);
             }
         }
     </script>
-    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

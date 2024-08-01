@@ -1,0 +1,29 @@
+.btn-custom {
+    background-color: #5451ee;
+    color: #ffffff;
+}
+
+.btn-custom:hover {
+    background-color: #5451ee;
+    color: white;
+}
+
+
+.gradient-custom-2 {
+    background: linear-gradient(to bottom, #5451ee, #6a1b9a);
+}
+
+.index-logo{
+    filter: invert();
+    display: block;
+    margin: auto;
+    margin-top: -60px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .index-logo{
+        width: 300px;
+        margin-top: 0px;
+    }
+}
