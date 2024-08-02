@@ -1,6 +1,7 @@
 <?php
 // Database connection
 include 'dbconfig.php';
+session_start();
 
 // Check connection
 if ($conn->connect_error) {
@@ -18,16 +19,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $conn->query($check_user);
 
     if ($result->num_rows > 0) {
-        echo "Username or Email already exists";
+        $_SESSION['error'] = "Username already exists!";
+        header("Location: auth.php");
+        exit();
     } else {
         $sql = "INSERT INTO users (name, username, email, password) VALUES ('$name', '$username', '$email', '$password')";
 
         if ($conn->query($sql) === TRUE) {
-            echo "Registration successful!";
             // Redirect to login page or dashboard
-            header("Location: index.html");
+            header("Location: auth.php");
+            exit();
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            $_SESSION['error'] = "Error: " . $sql . "<br>" . $conn->error;
+            header("Location: auth.php");
+            exit();
         }
     }
 }

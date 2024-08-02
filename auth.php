@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <title>PIXTREAM</title>
-    <link rel="stylesheet" href="auth-files/css/all.min.css.css">
-    <link rel="stylesheet" href="auth-files/css/fontawesome.min.css">
-    <link rel="stylesheet" href="auth-files/css/bootstrap.min.css">
+    <link rel="stylesheet" href="library-files/css/all.min.css.css">
+    <link rel="stylesheet" href="library-files/css/fontawesome.min.css">
+    <link rel="stylesheet" href="library-files/css/bootstrap.min.css">
     <link rel="stylesheet" href="additional-files/extra.css">
     <link rel="stylesheet" href="additional-files/me.css">
     <link rel="icon" type="image/x-icon" href="assets/LOGO_tab.svg" />
@@ -21,12 +21,20 @@
                 <div class="col-lg-6" id="login-form">
                     <div class="card-body p-md-5 mx-md-4">
                         <div class="text-center">
-                        <img src="assets/text.svg"
-                            style="width: 350px;" alt="logo">
+                            <a href="index.html">
+                                <img src="assets/text.svg" style="width: 350px;" alt="logo">
+                            </a>
                         </div> <br>
 
                         <form action="login_process.php" method="post">
                             <h5 align="center">Sign in to your account!</h5> <br>
+
+                            <?php
+                            session_start();
+                            if(isset($_SESSION['error'])): ?>
+                                <div class="alert alert-danger"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
+                            <?php endif; ?>
+
                             <div data-mdb-input-init class="form-outline mb-4">
                                 <label class="form-label" for="form2Example11">Username</label>
                                 <input type="text" id="form2Example11" class="form-control" name="username"
@@ -57,12 +65,18 @@
                 <div class="col-lg-6" id="register-form" style="display: none;">
                     <div class="card-body p-md-5 mx-md-4">
                         <div class="text-center">
-                        <img src="assets/text.svg"
-                            style="width: 350px;" alt="logo">
+                            <a href="index.html">
+                                <img src="assets/text.svg" style="width: 350px;" alt="logo">
+                            </a>
                         </div> <br>
 
                         <form action="register_process.php" method="post">
                             <h5 align="center">Create an account here!</h5> <br>
+
+                            <?php
+                            if(isset($_SESSION['error'])): ?>
+                                <div class="alert alert-danger"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
+                            <?php endif; ?>
 
                             <div data-mdb-input-init class="form-outline mb-4">
                                 <label class="form-label" for="form2Example11">Email</label>
