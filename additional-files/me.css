@@ -1,3 +1,7 @@
+body{
+    background: linear-gradient(to bottom, #5451ee4f, #691b9a60);
+}
+
 .btn-custom {
     background-color: #5451ee;
     color: #ffffff;
