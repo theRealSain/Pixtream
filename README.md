@@ -1,1 +1,2 @@
-![Screenshot](https://github.com/theRealSain/s-pixtream/raw/master/assets/Screenshot.png)
+# Pixtream, Create, Share & Engage
+![Screenshot](https://github.com/theRealSain/Pixtream/blob/master/assets/Screenshot.png)
