@@ -1,12 +1,6 @@
 <?php
 // Database connection
-$servername = "localhost";
-$username = "root"; // Change if you have a different database username
-$password = "root"; // Change if you have a database password
-$dbname = "s-pixtream";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+include 'dbconfig.php';
 
 // Check connection
 if ($conn->connect_error) {

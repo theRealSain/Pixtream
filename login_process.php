@@ -1,12 +1,6 @@
 <?php
 // Database connection
-$servername = "localhost";
-$username = "root"; // Change if you have a different database username
-$password = "root"; // Change if you have a database password
-$dbname = "s-pixtream";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+include 'dbconfig.php';
 
 // Check connection
 if ($conn->connect_error) {
@@ -29,7 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Start session and set session variables
             session_start();
             $_SESSION['username'] = $user['username'];
-            $_SESSION['name'] = $user['name'];
             // Redirect to dashboard or home page
             header("Location: dashboard.php");
         } else {
