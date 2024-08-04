@@ -3,6 +3,13 @@ include 'dbconfig.php';
 session_start();
 $username = $_SESSION['username'];
 
+$sql = "SELECT * FROM users WHERE username='$username';";
+$result = mysqli_query($conn, $sql);
+$info = mysqli_fetch_assoc($result);
+
+$name = $info['name'];
+$email = $info['email'];
+
 // Fetch all users except the currently logged-in user
 $sql = "SELECT * FROM users WHERE username != '$username';";
 $result = mysqli_query($conn, $sql);
@@ -48,7 +55,7 @@ while ($followRow = mysqli_fetch_assoc($followResult)) {
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <b><?php echo htmlspecialchars($username); ?></b>
+                        <b><?php echo htmlspecialchars($name); ?></b>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="profile.php">Profile</a></li>
