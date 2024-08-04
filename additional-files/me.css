@@ -69,3 +69,26 @@
 .custom-ellipsis{
     font-size: 1.2rem;
 }
+
+.user-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.user-card img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+.user-card .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-following {
+    border: 1px solid #5451ee;
+    color: #5451ee;
+    background-color: transparent;
+}

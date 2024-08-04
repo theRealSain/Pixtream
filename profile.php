@@ -45,11 +45,14 @@ $profilePhoto = $info['profile_photo'] ?? 'default.png';
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="dashboard.php"><b>Home</b><span class="sr-only"></span></a>
+                    <a class="nav-link" href="#"><b>Home</b><span class="sr-only"></span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="people.php"><b>People</b><span class="sr-only"></span></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        User
+                        <b><?php echo $name; ?></b>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="profile.php">Profile</a></li>
