@@ -112,3 +112,23 @@
     font-size: 1.5rem;
     font-weight: 600;
 }
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, border-color 0.3s;
+    font-size: 16px;
+}
+
+.custom-file-upload:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.custom-file-upload i {
+    margin-right: 8px;
+}
