@@ -55,19 +55,97 @@ $email = $info['email'];
     </nav>
     <!-- Navbar -->
 
-    <div class="container mt-5">
+    <div class="container mt-4">
+        <div class="text-right">
+            <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#newPost">
+                New Post
+            </button>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="newPost" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPostLabel">New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="fileInput" class="custom-file-upload">
+                                <i class="bi bi-upload"></i> Choose file
+                            </label>
+                            <input type="file" class="form-control-file" id="fileInput" style="display: none;">
+                        </div>
+                        <div class="mt-3">
+                            <img id="preview" src="#" alt="Image preview" style="display: none; max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="caption">Caption</label>
+                            <textarea class="form-control" id="caption" name="caption" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var img = document.getElementById('preview');
+                img.src = e.target.result;
+                img.style.display = 'block'; // Show the image
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); // Read the file as a data URL
+            } else {
+                var img = document.getElementById('preview');
+                img.style.display = 'none'; // Hide the image if no file is selected
+            }
+        });
+    </script>
+    
+
+    <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <div class="card">
+            <div class="col-md-12">
+                <div class="card card-custom-width mt-5">
                     <div class="card-body">
-                        <h5 class="card-title">Profile Information</h5>
-                        <p class="card-text">Name: <?php echo htmlspecialchars($name); ?></p>
-                        <p class="card-text">Username: <?php echo htmlspecialchars($_SESSION['username']); ?></p>
-                        <p class="card-text">Email: <?php echo htmlspecialchars($email); ?></p>
+                        <h5 class="card-title">News Feed</h5>
+                        <div class="row">
+                            <?php
+                            $sql = "SELECT * FROM photos WHERE username='".$_SESSION['username']."'";
+                            $result = $conn->query($sql);
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo '<div class="col-md-4 mb-3">';
+                                    echo '<img src="uploads/'.htmlspecialchars($row['photo_path']).'" class="img-fluid" alt="User Photo">';
+                                    echo '</div>';
+                                }
+                            } else {
+                                echo "You are all caught up!";
+                            }
+                            $conn->close();
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div class="container mt-5">
+        <div class="row">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
@@ -84,29 +162,7 @@ $email = $info['email'];
                             <button type="submit" class="btn btn-primary mt-3">Upload</button>
                         </form>
                     </div>
-                </div>
-
-                <div class="card mt-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Your Photos</h5>
-                        <div class="row">
-                            <?php
-                            $sql = "SELECT * FROM photos WHERE username='".$_SESSION['username']."'";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    echo '<div class="col-md-4 mb-3">';
-                                    echo '<img src="uploads/'.htmlspecialchars($row['photo_path']).'" class="img-fluid" alt="User Photo">';
-                                    echo '</div>';
-                                }
-                            } else {
-                                echo "No photos found.";
-                            }
-                            $conn->close();
-                            ?>
-                        </div>
-                    </div>
-                </div>
+                </div>                
             </div>
         </div>
     </div>
