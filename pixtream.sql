@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Aug 05, 2024 at 02:31 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Host: 127.0.0.1:3306
+-- Generation Time: Aug 12, 2024 at 12:05 AM
+-- Server version: 8.0.31
+-- PHP Version: 8.0.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,12 +27,29 @@ SET time_zone = "+00:00";
 -- Table structure for table `follows`
 --
 
-CREATE TABLE `follows` (
-  `id` int(11) NOT NULL,
-  `follower` varchar(255) NOT NULL,
-  `following` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `follows`;
+CREATE TABLE IF NOT EXISTS `follows` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `follower` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `following` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `follower` (`follower`),
+  KEY `following` (`following`)
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `follows`
+--
+
+INSERT INTO `follows` (`id`, `follower`, `following`, `created_at`) VALUES
+(34, 'jack', 'fmiller', '2024-08-11 22:55:00'),
+(35, 'jack', 'hmoore', '2024-08-11 22:55:01'),
+(44, 'jack', 'asmith', '2024-08-11 23:29:29'),
+(45, 'jack', 'bjohnson', '2024-08-11 23:29:30'),
+(46, 'jack', 'cdavis', '2024-08-11 23:29:30'),
+(47, 'jack', 'dbrown', '2024-08-11 23:29:30'),
+(48, 'asmith', 'jack', '2024-08-11 23:30:05');
 
 -- --------------------------------------------------------
 
@@ -40,13 +57,16 @@ CREATE TABLE `follows` (
 -- Table structure for table `photos`
 --
 
-CREATE TABLE `photos` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `photo_path` varchar(255) NOT NULL,
-  `caption` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `photos`;
+CREATE TABLE IF NOT EXISTS `photos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `photo_path` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `caption` text COLLATE utf8mb4_general_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_photos_username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -54,55 +74,33 @@ CREATE TABLE `photos` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `name` varchar(100) DEFAULT NULL,
-  `username` varchar(50) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `profile_photo` varchar(255) DEFAULT 'default.png'
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `profile_photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT 'default.png',
+  PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indexes for dumped tables
+-- Dumping data for table `users`
 --
 
---
--- Indexes for table `follows`
---
-ALTER TABLE `follows`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `follower` (`follower`),
-  ADD KEY `following` (`following`);
-
---
--- Indexes for table `photos`
---
-ALTER TABLE `photos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_photos_username` (`username`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`username`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `follows`
---
-ALTER TABLE `follows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
-
---
--- AUTO_INCREMENT for table `photos`
---
-ALTER TABLE `photos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+INSERT INTO `users` (`name`, `username`, `email`, `password`, `created_at`, `profile_photo`) VALUES
+('Alice Smith', 'asmith', 'alice.smith@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Bob Johnson', 'bjohnson', 'bob.johnson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Carol Davis', 'cdavis', 'carol.davis@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('David Brown', 'dbrown', 'david.brown@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Eve Williams', 'ewilliams', 'eve.williams@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Frank Miller', 'fmiller', 'frank.miller@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Grace Wilson', 'gwilson', 'grace.wilson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Hank Moore', 'hmoore', 'hank.moore@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Ivy Taylor', 'itaylor', 'ivy.taylor@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
+('Jack John', 'jack', 'jack@example.com', 'jjjj', '2024-08-11 22:47:34', 'jack.jpg'),
+('Jack Anderson', 'janderson', 'jack.anderson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png');
 
 --
 -- Constraints for dumped tables

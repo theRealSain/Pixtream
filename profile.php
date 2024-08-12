@@ -226,10 +226,13 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
                             $f_user = $in_info['username'];
                         ?>
 
-                            <li class="list-group-item">
-                                <span class="fw-bold"><?php echo $f_name; ?></span>
-                                <br>
-                                <span class="text-muted small"><?php echo $f_user; ?></span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold"><?php echo $f_name; ?></span>
+                                    <br>
+                                    <span class="text-muted small"><?php echo $f_user; ?></span>
+                                </div>
+                                <button type="button" class="btn btn-custom-warning btn-sm">Remove</button>
                             </li>
                             
                         <?php
@@ -251,31 +254,34 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-
                         <?php
                         $follow_sql = "SELECT * FROM follows WHERE follower='$username';";
                         $follow_result = mysqli_query($conn, $follow_sql);
-                        $follow_info = mysqli_fetch_all($follow_result);
+                        $follow_info = mysqli_fetch_all($follow_result);                        
 
-                        foreach($follow_info as $infollow)
+                        foreach ($follow_info as $infollow) 
                         {
                             $in_sql = "SELECT * FROM users WHERE username='$infollow[2]';";
                             $in_result = mysqli_query($conn, $in_sql);
                             $in_info = mysqli_fetch_assoc($in_result);
                             $f_name = $in_info['name'];
                             $f_user = $in_info['username'];
-                        ?>
 
-                            <li class="list-group-item">
-                                <span class="fw-bold"><?php echo $f_name; ?></span>
-                                <br>
-                                <span class="text-muted small"><?php echo $f_user; ?></span>
+                            #$isFollowing = in_array($follow_info['follower'], $following);
+                            #$btnClass = $isFollowing ? 'btn-following' : 'btn-custom';
+                            #$btnText = $isFollowing ? 'Following' : 'Follow';
+                        ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold"><?php echo $f_name; ?></span>
+                                    <br>
+                                    <span class="text-muted small"><?php echo $f_user; ?></span>
+                                </div>
+                                <button type="button" class="btn btn-custom2 btn-sm">Following</button>
                             </li>
-                            
                         <?php
                         }
                         ?>
-                            
                     </ul>
                 </div>
             </div>
@@ -283,6 +289,38 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
     </div>
 
 
+    <script>
+        $(document).ready(function() {
+            $('.follow-btn').on('click', function() {
+                var button = $(this);
+                var username = button.data('username');
+                var action = button.text().trim() === 'Follow' ? 'follow' : 'unfollow';
+
+                $.ajax({
+                    url: 'follow-unfollow.php',
+                    type: 'POST',
+                    data: {
+                        action: action,
+                        username: username
+                    },
+                    success: function(response) {
+                        if (response.trim() === 'success') {
+                            if (action === 'follow') {
+                                button.removeClass('btn-custom').addClass('btn-following').text('Following');
+                            } else {
+                                button.removeClass('btn-following').addClass('btn-custom').text('Follow');
+                            }
+                        } else {
+                            console.error("Error in AJAX response: " + response);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX error: " + textStatus + " - " + errorThrown);
+                    }
+                });
+            });
+        });
+    </script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/main.js"></script>
 </body>
