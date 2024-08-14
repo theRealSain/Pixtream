@@ -41,6 +41,9 @@ $email = $info['email'];
                 <li class="nav-item active">
                     <a class="nav-link" href="people.php"><b>People</b><span class="sr-only"></span></a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="chat.php"><b>Chat</b><span class="sr-only"></span></a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <b><?php echo $name; ?></b>
