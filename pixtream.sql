@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 12, 2024 at 12:05 AM
+-- Generation Time: Aug 13, 2024 at 11:59 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -30,8 +30,8 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `follows`;
 CREATE TABLE IF NOT EXISTS `follows` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `follower` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `following` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `follower` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `following` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `follower` (`follower`),
@@ -54,15 +54,43 @@ INSERT INTO `follows` (`id`, `follower`, `following`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender` varchar(255) NOT NULL,
+  `receiver` varchar(255) NOT NULL,
+  `message` longtext,
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender`, `receiver`, `message`, `timestamp`) VALUES
+(1, 'jack', 'asmith', 'adsasdsad', '2024-08-13 23:05:51'),
+(2, 'jack', 'asmith', 'ASdasd', '2024-08-13 23:05:56'),
+(3, 'asmith', 'jack', 'sdfsddfs', '2024-08-13 23:06:22'),
+(6, 'jack', 'bjohnson', 'Hello', '2024-08-13 23:21:45'),
+(10, 'jack', 'asmith', 'sad', '2024-08-13 23:40:27'),
+(11, 'jack', 'asmith', 'asdasd', '2024-08-13 23:56:53');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `photos`
 --
 
 DROP TABLE IF EXISTS `photos`;
 CREATE TABLE IF NOT EXISTS `photos` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `photo_path` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `caption` text COLLATE utf8mb4_general_ci,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `photo_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `caption` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_photos_username` (`username`)
@@ -76,12 +104,12 @@ CREATE TABLE IF NOT EXISTS `photos` (
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `profile_photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT 'default.png',
+  `profile_photo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'default.png',
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
