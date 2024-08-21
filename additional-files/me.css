@@ -193,3 +193,24 @@
     padding: 10px;
     border-radius: 5px;
 }
+
+.photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.photo-grid img {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+/* Modal styling to ensure the image displays correctly */
+.modal-body img {
+    width: 100%;
+    height: auto;
+}
