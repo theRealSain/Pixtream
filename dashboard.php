@@ -3,13 +3,19 @@ include 'dbconfig.php';
 session_start();
 $username = $_SESSION['username'];
 
+// Display success message if set
+if (isset($_SESSION['upload_message'])) {
+    $upload_message = $_SESSION['upload_message'];
+    unset($_SESSION['upload_message']); // Clear message after displaying
+}
+
+// Fetch user info
 $sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
 
 $name = $info['name'];
 $email = $info['email'];
-
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +23,7 @@ $email = $info['email'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIXTREAM - <?php echo $name; ?></title>
+    <title>PIXTREAM - <?php echo htmlspecialchars($name); ?></title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="additional-files/extra.css">
     <link rel="stylesheet" href="additional-files/me.css">
@@ -46,7 +52,7 @@ $email = $info['email'];
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <b><?php echo $name; ?></b>
+                        <b><?php echo htmlspecialchars($name); ?></b>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="profile.php">Profile</a></li>
@@ -59,6 +65,14 @@ $email = $info['email'];
     <!-- Navbar -->
 
     <div class="container mt-4">
+        <!-- Show success message if available -->
+        <?php if (isset($upload_message)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php echo htmlspecialchars($upload_message); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="text-right">
             <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#newPost">
                 New Post
@@ -66,7 +80,7 @@ $email = $info['email'];
         </div>
     </div>
 
-
+    <!-- New Post Modal -->
     <div class="modal fade" id="newPost" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -75,24 +89,24 @@ $email = $info['email'];
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="upload.php" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="fileInput" class="custom-file-upload">
                                 <i class="bi bi-upload"></i> Choose file
                             </label>
-                            <input type="file" class="form-control-file" id="fileInput" style="display: none;">
+                            <input type="file" class="form-control-file" id="fileInput" name="photo" style="display: none;" required>
                         </div>
                         <div class="mt-3">
                             <img id="preview" src="#" alt="Image preview" style="display: none; max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
                         </div>
                         <div class="form-group mt-3">
                             <label for="caption">Caption</label>
-                            <textarea class="form-control" id="caption" name="caption" rows="3"></textarea>
+                            <textarea class="form-control" id="caption" name="caption" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-custom">Upload</button>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-custom">Upload</button>
                 </div>
             </div>
         </div>
@@ -117,58 +131,6 @@ $email = $info['email'];
             }
         });
     </script>
-    
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-custom-width mt-5">
-                    <div class="card-body">
-                        <h5 class="card-title">News Feed</h5>
-                        <div class="row">
-                            <?php
-                            $sql = "SELECT * FROM photos WHERE username='".$_SESSION['username']."'";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    echo '<div class="col-md-4 mb-3">';
-                                    echo '<img src="uploads/'.htmlspecialchars($row['photo_path']).'" class="img-fluid" alt="User Photo">';
-                                    echo '</div>';
-                                }
-                            } else {
-                                echo "You are all caught up!";
-                            }
-                            $conn->close();
-                            ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Upload Photo</h5>
-                        <form action="upload.php" method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="photo">Choose Photo</label>
-                                <input type="file" class="form-control-file" id="photo" name="photo">
-                            </div>
-                            <div class="form-group mt-3">
-                                <label for="caption">Caption</label>
-                                <textarea class="form-control" id="caption" name="caption" rows="3"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-3">Upload</button>
-                        </form>
-                    </div>
-                </div>                
-            </div>
-        </div>
-    </div>
 
     <!-- JS files -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -42,6 +42,14 @@ $followingList = [];
 while ($row = mysqli_fetch_assoc($followingListResult)) {
     $followingList[] = $row['following'];
 }
+
+// Fetch user's photos
+$photosSql = "SELECT * FROM photos WHERE username='$username' ORDER BY created_at DESC;";
+$photosResult = mysqli_query($conn, $photosSql);
+$photos = [];
+while ($row = mysqli_fetch_assoc($photosResult)) {
+    $photos[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -56,6 +64,8 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
     <link rel="stylesheet" href="additional-files/extra.css">
     <link rel="stylesheet" href="additional-files/me.css">
     <link rel="icon" type="image/x-icon" href="assets/LOGO_tab.svg" />
+    <style>        
+    </style>
 </head>
 <body>
 
@@ -96,7 +106,6 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
             <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
                     <!-- Profile Card -->
-
                     <div class="card h-100 position-relative">
                         <div class="card-body d-flex flex-column">
                             <div class="dropdown position-absolute top-0 end-0 p-2">
@@ -161,38 +170,25 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
                 </div>
 
                 <div class="col-md-8">
-                    <!-- Personal Info Card -->
-                    <div class="card mb-3 h-80">
-                        <div class="card-body">
-                            <div class="row"></div>                            
-                        </div>
-                    </div>
-
-                    <!-- Project Status Cards -->
+                    <!-- Your Posts Section -->
                     <div class="row gutters-sm">
                         <div class="col-sm-12 mb-3">
                             <div class="card h-100">
                                 <div class="card-body">
-                                    <h6 class="d-flex align-items-center mb-3">RecenPosts</h6>
-                                    <small>Web Design</small>
-                                    <div class="progress mb-3" style="height: 5px">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <small>Website Markup</small>
-                                    <div class="progress mb-3" style="height: 5px">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <small>One Page</small>
-                                    <div class="progress mb-3" style="height: 5px">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <small>Mobile Template</small>
-                                    <div class="progress mb-3" style="height: 5px">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <small>Backend API</small>
-                                    <div class="progress mb-3" style="height: 5px">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <h3 class="d-flex align-items-center mb-3">Your Posts - <?php echo $name; ?></h3>
+                                    <!-- Photo Grid -->
+                                    <div class="photo-grid">
+                                        <?php foreach ($photos as $photo): ?>
+                                            <?php
+                                            $photoPath = $photo['photo_path'];
+                                            $caption = $photo['caption'];
+                                            $createdAt = new DateTime($photo['created_at']);
+                                            $formattedDate = $createdAt->format('F j, Y g:i A');
+                                            ?>
+                                            <div class="photo-item">
+                                                <img src="posts/<?php echo htmlspecialchars($photoPath); ?>" alt="Photo" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo-path="posts/<?php echo htmlspecialchars($photoPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                             </div>
@@ -203,7 +199,28 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
         </div>
     </div>
 
-    
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalLabel"><?php echo $name; ?> - <?php echo $username; ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="photo-card">
+                        <p><strong><span id="modal-username">username</span></strong></p>
+                        <p>Posted on <span id="modal-created-at"></span></p>
+                        <img src="posts/default.png" alt="Photo" class="img-fluid">
+                        <div class="mt-3">
+                            <p><strong><span id="modal-username">username</span></strong> <span id="modal-caption"></span></p>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Followers Modal -->
     <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
@@ -215,37 +232,14 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-                    <?php
-                        $follow_sql = "SELECT * FROM follows WHERE following = '$username';";
-                        $follow_result = mysqli_query($conn, $follow_sql);
-                        $follow_info = mysqli_fetch_all($follow_result);
-
-                        foreach($follow_info as $outfollow)
-                        {
-                            $in_sql = "SELECT * FROM users WHERE username='$outfollow[1]';";
-                            $in_result = mysqli_query($conn, $in_sql);
-                            $in_info = mysqli_fetch_assoc($in_result);
-                            $f_name = $in_info['name'];
-                            $f_user = $in_info['username'];
-                        ?>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="fw-bold"><?php echo $f_name; ?></span>
-                                    <br>
-                                    <span class="text-muted small"><?php echo $f_user; ?></span>
-                                </div>
-                                <button type="button" class="btn btn-custom-warning btn-sm">Remove</button>
-                            </li>
-                            
-                        <?php
-                        }
-                        ?>
+                        <?php foreach ($followersList as $follower): ?>
+                            <li class="list-group-item"><?php echo htmlspecialchars($follower); ?></li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
 
     <!-- Following Modal -->
     <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
@@ -257,74 +251,39 @@ while ($row = mysqli_fetch_assoc($followingListResult)) {
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-                        <?php
-                        $follow_sql = "SELECT * FROM follows WHERE follower='$username';";
-                        $follow_result = mysqli_query($conn, $follow_sql);
-                        $follow_info = mysqli_fetch_all($follow_result);                        
-
-                        foreach ($follow_info as $infollow) 
-                        {
-                            $in_sql = "SELECT * FROM users WHERE username='$infollow[2]';";
-                            $in_result = mysqli_query($conn, $in_sql);
-                            $in_info = mysqli_fetch_assoc($in_result);
-                            $f_name = $in_info['name'];
-                            $f_user = $in_info['username'];
-
-                            #$isFollowing = in_array($follow_info['follower'], $following);
-                            #$btnClass = $isFollowing ? 'btn-following' : 'btn-custom';
-                            #$btnText = $isFollowing ? 'Following' : 'Follow';
-                        ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="fw-bold"><?php echo $f_name; ?></span>
-                                    <br>
-                                    <span class="text-muted small"><?php echo $f_user; ?></span>
-                                </div>
-                                <button type="button" class="btn btn-custom2 btn-sm">Following</button>
-                            </li>
-                        <?php
-                        }
-                        ?>
+                        <?php foreach ($followingList as $following): ?>
+                            <li class="list-group-item"><?php echo htmlspecialchars($following); ?></li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="library-files/js/main.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.follow-btn').on('click', function() {
-                var button = $(this);
-                var username = button.data('username');
-                var action = button.text().trim() === 'Follow' ? 'follow' : 'unfollow';
-
-                $.ajax({
-                    url: 'follow-unfollow.php',
-                    type: 'POST',
-                    data: {
-                        action: action,
-                        username: username
-                    },
-                    success: function(response) {
-                        if (response.trim() === 'success') {
-                            if (action === 'follow') {
-                                button.removeClass('btn-custom').addClass('btn-following').text('Following');
-                            } else {
-                                button.removeClass('btn-following').addClass('btn-custom').text('Follow');
-                            }
-                        } else {
-                            console.error("Error in AJAX response: " + response);
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error("AJAX error: " + textStatus + " - " + errorThrown);
-                    }
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            var photoModal = document.getElementById('photoModal');
+            photoModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var photoPath = button.getAttribute('data-photo-path');
+                var caption = button.getAttribute('data-caption');
+                var createdAt = button.getAttribute('data-created-at');
+                var username = button.getAttribute('data-username');
+                
+                var modalImage = photoModal.querySelector('.photo-card img');
+                var modalCaption = photoModal.querySelector('#modal-caption');
+                var modalCreatedAt = photoModal.querySelector('#modal-created-at');
+                var modalUsername = photoModal.querySelector('#modal-username');
+                
+                modalImage.src = photoPath;
+                modalCaption.textContent = caption;
+                modalCreatedAt.textContent = createdAt;
+                modalUsername.textContent = username;
             });
         });
     </script>
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="library-files/js/main.js"></script>
 </body>
 </html>
+

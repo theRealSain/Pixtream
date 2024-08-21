@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 13, 2024 at 11:59 PM
+-- Generation Time: Aug 20, 2024 at 11:48 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `follows` (
   PRIMARY KEY (`id`),
   KEY `follower` (`follower`),
   KEY `following` (`following`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `follows`
@@ -49,7 +49,8 @@ INSERT INTO `follows` (`id`, `follower`, `following`, `created_at`) VALUES
 (45, 'jack', 'bjohnson', '2024-08-11 23:29:30'),
 (46, 'jack', 'cdavis', '2024-08-11 23:29:30'),
 (47, 'jack', 'dbrown', '2024-08-11 23:29:30'),
-(48, 'asmith', 'jack', '2024-08-11 23:30:05');
+(48, 'asmith', 'jack', '2024-08-11 23:30:05'),
+(50, 'jain_panengadan', 'jack', '2024-08-18 22:44:47');
 
 -- --------------------------------------------------------
 
@@ -65,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` longtext,
   `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `messages`
@@ -77,7 +78,8 @@ INSERT INTO `messages` (`id`, `sender`, `receiver`, `message`, `timestamp`) VALU
 (3, 'asmith', 'jack', 'sdfsddfs', '2024-08-13 23:06:22'),
 (6, 'jack', 'bjohnson', 'Hello', '2024-08-13 23:21:45'),
 (10, 'jack', 'asmith', 'sad', '2024-08-13 23:40:27'),
-(11, 'jack', 'asmith', 'asdasd', '2024-08-13 23:56:53');
+(11, 'jack', 'asmith', 'asdasd', '2024-08-13 23:56:53'),
+(12, 'jack', 'asmith', 'sain', '2024-08-18 22:49:10');
 
 -- --------------------------------------------------------
 
@@ -90,11 +92,22 @@ CREATE TABLE IF NOT EXISTS `photos` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `photo_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `caption` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `caption` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_photos_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `photos`
+--
+
+INSERT INTO `photos` (`id`, `username`, `photo_path`, `caption`, `created_at`) VALUES
+(19, 'jack', '4b5abc7e6eaa2e622b5b5ba745b0c464.png', 'New', '2024-08-20 23:20:20'),
+(20, 'jack', 'a4a43e08e8f40bfc8f55841ae41ff035.png', 'logo', '2024-08-20 23:20:29'),
+(21, 'jack', '64c7027746a48aab721d4c70de4982a7.jpg', 'tree', '2024-08-20 23:21:03'),
+(22, 'jack', '84114815124613cfb3dcdb3348ec4a69.webp', 'snake', '2024-08-20 23:21:31'),
+(24, 'jack', '98d14ebb2eeb7e76a5d7533ead07a339.png', 'user', '2024-08-20 23:35:31');
 
 -- --------------------------------------------------------
 
@@ -127,7 +140,8 @@ INSERT INTO `users` (`name`, `username`, `email`, `password`, `created_at`, `pro
 ('Grace Wilson', 'gwilson', 'grace.wilson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
 ('Hank Moore', 'hmoore', 'hank.moore@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
 ('Ivy Taylor', 'itaylor', 'ivy.taylor@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
-('Jack John', 'jack', 'jack@example.com', 'jjjj', '2024-08-11 22:47:34', 'jack.jpg'),
+('Jack John', 'jack', 'jack@example.com', 'jjjj', '2024-08-11 22:47:34', 'default.png'),
+('Jain Roy', 'jain_panengadan', 'jain@example.com', 'jjjj', '2024-08-18 22:43:49', 'jain_panengadan.jpg'),
 ('Jack Anderson', 'janderson', 'jack.anderson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png');
 
 --

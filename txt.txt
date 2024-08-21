@@ -1,0 +1,1 @@
+<img src="assets/<?php echo htmlspecialchars($photoPath); ?>" alt="Photo" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo-path="assets/<?php echo htmlspecialchars($photoPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
