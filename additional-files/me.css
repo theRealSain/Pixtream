@@ -1,12 +1,21 @@
 
+a{
+    color: #6a1b9a;
+}
+
 .btn-custom-warning{
     background-color: #5451ee6b;
 }
 
 .btn-custom {
-    background-color: #5451ee;
+    background-color: #7f3ace;
     color: #ffffff;
 }
+.btn-following{
+    border: 1px solid #7f3ace;
+    color: #7f3ace;
+}
+
 
 .btn-custom:hover {
     background-color: #5451ee;
@@ -214,3 +223,4 @@
     width: 100%;
     height: auto;
 }
+
