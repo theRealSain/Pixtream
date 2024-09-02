@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 20, 2024 at 11:48 PM
+-- Generation Time: Sep 01, 2024 at 11:49 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -36,21 +36,18 @@ CREATE TABLE IF NOT EXISTS `follows` (
   PRIMARY KEY (`id`),
   KEY `follower` (`follower`),
   KEY `following` (`following`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `follows`
 --
 
 INSERT INTO `follows` (`id`, `follower`, `following`, `created_at`) VALUES
-(34, 'jack', 'fmiller', '2024-08-11 22:55:00'),
-(35, 'jack', 'hmoore', '2024-08-11 22:55:01'),
-(44, 'jack', 'asmith', '2024-08-11 23:29:29'),
-(45, 'jack', 'bjohnson', '2024-08-11 23:29:30'),
-(46, 'jack', 'cdavis', '2024-08-11 23:29:30'),
-(47, 'jack', 'dbrown', '2024-08-11 23:29:30'),
 (48, 'asmith', 'jack', '2024-08-11 23:30:05'),
-(50, 'jain_panengadan', 'jack', '2024-08-18 22:44:47');
+(50, 'jain_panengadan', 'jack', '2024-08-18 22:44:47'),
+(56, 'jack', 'asmith', '2024-09-01 23:16:37'),
+(57, 'jack', 'bjohnson', '2024-09-01 23:16:39'),
+(58, 'jack', 'jain_panengadan', '2024-09-01 23:16:43');
 
 -- --------------------------------------------------------
 
@@ -140,7 +137,7 @@ INSERT INTO `users` (`name`, `username`, `email`, `password`, `created_at`, `pro
 ('Grace Wilson', 'gwilson', 'grace.wilson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
 ('Hank Moore', 'hmoore', 'hank.moore@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
 ('Ivy Taylor', 'itaylor', 'ivy.taylor@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png'),
-('Jack John', 'jack', 'jack@example.com', 'jjjj', '2024-08-11 22:47:34', 'default.png'),
+('Jack John', 'jack', 'jack@example.com', 'jjjj', '2024-08-11 22:47:34', 'jack.jpg'),
 ('Jain Roy', 'jain_panengadan', 'jain@example.com', 'jjjj', '2024-08-18 22:43:49', 'jain_panengadan.jpg'),
 ('Jack Anderson', 'janderson', 'jack.anderson@example.com', 'dddd', '2024-08-11 22:54:28', 'default.png');
 

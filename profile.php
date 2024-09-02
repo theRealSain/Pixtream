@@ -50,6 +50,12 @@ $photos = [];
 while ($row = mysqli_fetch_assoc($photosResult)) {
     $photos[] = $row;
 }
+
+//Posts count
+$postSql = "SELECT COUNT(*) FROM photos WHERE username = '$username';";
+$postResult = mysqli_query($conn, $postSql);
+$postInfo = mysqli_fetch_array($postResult);
+$postCount = $postInfo[0];
 ?>
 
 <!DOCTYPE html>
@@ -131,7 +137,7 @@ while ($row = mysqli_fetch_assoc($photosResult)) {
                                 <div class="d-flex justify-content-around stats">
                                     <div class="stat">
                                         <p><b>Posts</b></p>
-                                        <p>0</p>
+                                        <p><?php echo $postCount; ?></p>
                                     </div>
                                     <div class="stat" data-bs-toggle="modal" data-bs-target="#followersModal">
                                         <p><b>Followers</b></p>

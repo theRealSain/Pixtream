@@ -3,6 +3,7 @@ include 'dbconfig.php';
 session_start();
 $username = $_SESSION['username'];
 
+// Fetch logged-in user's information
 $sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
@@ -28,7 +29,7 @@ while ($followRow = mysqli_fetch_assoc($followResult)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>People - PIXTREAM</title>
+    <title>PIXTREAM - People</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="additional-files/extra.css">
     <link rel="stylesheet" href="additional-files/me.css">
@@ -81,12 +82,13 @@ while ($followRow = mysqli_fetch_assoc($followResult)) {
                     $btnClass = $isFollowing ? 'btn-following' : 'btn-custom';
                     $btnText = $isFollowing ? 'Following' : 'Follow';
                     echo "<li class='list-group-item user-card'>";
+                    echo "<a href='user-profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
                     echo "<img src='assets/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
                     echo "<div class='card-body'>";
                     echo "<div>";
-                    echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>";
+                    echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
                     echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
-                    echo "</div>";
+                    echo "</div></a>";
                     echo "<button class='btn $btnClass follow-btn' data-username='" . htmlspecialchars($row['username']) . "'>$btnText</button>";
                     echo "</div>";
                     echo "</li>";
