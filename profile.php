@@ -30,18 +30,12 @@ $followingCount = mysqli_fetch_assoc($followingResult)['following_count'];
 // Fetch followers list
 $followersListSql = "SELECT follower FROM follows WHERE following='$username';";
 $followersListResult = mysqli_query($conn, $followersListSql);
-$followersList = [];
-while ($row = mysqli_fetch_assoc($followersListResult)) {
-    $followersList[] = $row['follower'];
-}
+$followersListInfo = mysqli_fetch_all($followersListResult, MYSQLI_ASSOC);
 
 // Fetch following list
 $followingListSql = "SELECT following FROM follows WHERE follower='$username';";
 $followingListResult = mysqli_query($conn, $followingListSql);
-$followingList = [];
-while ($row = mysqli_fetch_assoc($followingListResult)) {
-    $followingList[] = $row['following'];
-}
+$followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
 
 // Fetch user's photos
 $photosSql = "SELECT * FROM photos WHERE username='$username' ORDER BY created_at DESC;";
@@ -207,25 +201,27 @@ $postCount = $postInfo[0];
 
     <!-- Photo Modal -->
     <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;"> <!-- Fixed width for the modal -->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="photoModalLabel"><?php echo $name; ?> - <?php echo $username; ?></h5>
+                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55"
+                    style="border: none; padding: 0px;">
+                    <h5 class="modal-title" id="photoModalLabel"><?php echo $name; ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="photo-card">
-                        <p><strong><span id="modal-username">username</span></strong></p>
-                        <p>Posted on <span id="modal-created-at"></span></p>
-                        <img src="posts/default.png" alt="Photo" class="img-fluid">
+                    <div class="photo-card">                    
+                        <p><small><span id="modal-created-at"></span></small></p>
+                        <img src="posts/default.png" alt="Photo" class="img-fluid" style="max-width: 100%; height: auto; max-height: 300px; object-fit: contain;"> <!-- Fixed height for image -->
                         <div class="mt-3">
-                            <p><strong><span id="modal-username">username</span></strong> <span id="modal-caption"></span></p>                            
+                            <p><span id="modal-caption"></span></p>                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 
 
     <!-- Followers Modal -->
@@ -238,9 +234,21 @@ $postCount = $postInfo[0];
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-                        <?php foreach ($followersList as $follower): ?>
-                            <li class="list-group-item"><?php echo htmlspecialchars($follower); ?></li>
-                        <?php endforeach; ?>
+                        <?php 
+                        foreach ($followersListInfo as $follower) {
+                            $follower_user = $follower['follower'];
+                            $nameSql = "SELECT name FROM users WHERE username = '$follower_user';";
+                            $nameResult = mysqli_query($conn, $nameSql);
+                            $nameInfo = mysqli_fetch_assoc($nameResult);
+                            $follower_name = $nameInfo['name'];
+                        ?>
+                            <li class="list-group-item">
+                                <strong><?php echo htmlspecialchars($follower_name); ?></strong>
+                                <div class="text-muted"><?php echo htmlspecialchars($follower_user); ?></div>
+                            </li>
+                        <?php
+                        }
+                        ?>
                     </ul>
                 </div>
             </div>
@@ -257,14 +265,27 @@ $postCount = $postInfo[0];
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-                        <?php foreach ($followingList as $following): ?>
-                            <li class="list-group-item"><?php echo htmlspecialchars($following); ?></li>
-                        <?php endforeach; ?>
+                        <?php 
+                        foreach ($followingListInfo as $following) {
+                            $following_user = $following['following'];
+                            $nameSql = "SELECT name FROM users WHERE username = '$following_user';";
+                            $nameResult = mysqli_query($conn, $nameSql);
+                            $nameInfo = mysqli_fetch_assoc($nameResult);
+                            $following_name = $nameInfo['name'];
+                        ?>
+                            <li class="list-group-item">
+                                <strong><?php echo htmlspecialchars($following_name); ?></strong>
+                                <div class="text-muted"><?php echo htmlspecialchars($following_user); ?></div>
+                            </li>
+                        <?php
+                        }
+                        ?>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
+
 
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/main.js"></script>

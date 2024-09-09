@@ -1,1 +1,7 @@
-modify the modal in user-profile post section (refer to latest chatgpt prompt)
+modify photo modal in user-profile section
+add follow button
+
+if(!isset($_SESSION['admin_id']))
+{
+  header('location:admin-login.php');
+}

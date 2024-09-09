@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 01, 2024 at 11:49 PM
+-- Generation Time: Sep 08, 2024 at 11:51 PM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `follows` (
   PRIMARY KEY (`id`),
   KEY `follower` (`follower`),
   KEY `following` (`following`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `follows`
@@ -47,7 +47,14 @@ INSERT INTO `follows` (`id`, `follower`, `following`, `created_at`) VALUES
 (50, 'jain_panengadan', 'jack', '2024-08-18 22:44:47'),
 (56, 'jack', 'asmith', '2024-09-01 23:16:37'),
 (57, 'jack', 'bjohnson', '2024-09-01 23:16:39'),
-(58, 'jack', 'jain_panengadan', '2024-09-01 23:16:43');
+(58, 'jack', 'jain_panengadan', '2024-09-01 23:16:43'),
+(59, 'asmith', 'bjohnson', '2024-09-08 22:54:17'),
+(60, 'asmith', 'cdavis', '2024-09-08 22:54:17'),
+(61, 'asmith', 'dbrown', '2024-09-08 22:54:18'),
+(62, 'asmith', 'ewilliams', '2024-09-08 22:54:18'),
+(63, 'asmith', 'fmiller', '2024-09-08 22:54:19'),
+(64, 'jack', 'itaylor', '2024-09-08 23:17:03'),
+(65, 'jack', 'hmoore', '2024-09-08 23:17:04');
 
 -- --------------------------------------------------------
 
@@ -93,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `photos` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_photos_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `photos`
@@ -104,7 +111,9 @@ INSERT INTO `photos` (`id`, `username`, `photo_path`, `caption`, `created_at`) V
 (20, 'jack', 'a4a43e08e8f40bfc8f55841ae41ff035.png', 'logo', '2024-08-20 23:20:29'),
 (21, 'jack', '64c7027746a48aab721d4c70de4982a7.jpg', 'tree', '2024-08-20 23:21:03'),
 (22, 'jack', '84114815124613cfb3dcdb3348ec4a69.webp', 'snake', '2024-08-20 23:21:31'),
-(24, 'jack', '98d14ebb2eeb7e76a5d7533ead07a339.png', 'user', '2024-08-20 23:35:31');
+(24, 'jack', '98d14ebb2eeb7e76a5d7533ead07a339.png', 'user', '2024-08-20 23:35:31'),
+(25, 'asmith', '3937b9a1e649dd176aa8cf92a945b7fd.jpg', 'tree', '2024-09-08 22:36:47'),
+(26, 'asmith', '7f40b9c1bdd7bc5d3b09763ba5c602e0.webp', 'frog', '2024-09-08 22:37:03');
 
 -- --------------------------------------------------------
 

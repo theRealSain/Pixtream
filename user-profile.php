@@ -32,20 +32,30 @@ $followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower=
 $followingResult = mysqli_query($conn, $followingSql);
 $followingCount = mysqli_fetch_assoc($followingResult)['following_count'];
 
-// Fetch followers list
-$followersListSql = "SELECT follower FROM follows WHERE following='$viewedUsername';";
+// Fetch followers list with names
+$followersListSql = "
+    SELECT u.name, u.username 
+    FROM follows f
+    JOIN users u ON f.follower = u.username
+    WHERE f.following = '$viewedUsername';
+";
 $followersListResult = mysqli_query($conn, $followersListSql);
 $followersList = [];
 while ($row = mysqli_fetch_assoc($followersListResult)) {
-    $followersList[] = $row['follower'];
+    $followersList[] = $row;
 }
 
-// Fetch following list
-$followingListSql = "SELECT following FROM follows WHERE follower='$viewedUsername';";
+// Fetch following list with names
+$followingListSql = "
+    SELECT u.name, u.username 
+    FROM follows f
+    JOIN users u ON f.following = u.username
+    WHERE f.follower = '$viewedUsername';
+";
 $followingListResult = mysqli_query($conn, $followingListSql);
 $followingList = [];
 while ($row = mysqli_fetch_assoc($followingListResult)) {
-    $followingList[] = $row['following'];
+    $followingList[] = $row;
 }
 
 // Fetch user's photos
@@ -117,23 +127,9 @@ $postCount = $postInfo[0];
                     <!-- Profile Card -->
                     <div class="card h-100 position-relative">
                         <div class="card-body d-flex flex-column">
-                            <div class="dropdown position-absolute top-0 end-0 p-2">
-                                <button class="btn btn-light custom-dropdown-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis custom-ellipsis"></i>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
-                                    <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
-                                </ul>
-                            </div>
-
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
                                     <img src="assets/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle">
-                                    <!-- Uncomment if you want to use the profile photo change form -->
-                                    <!-- <form action="profile-photo.php" method="post" enctype="multipart/form-data">
-                                        <input type="file" name="profile_photo" id="profile_photo" style="display: none;" onchange="this.form.submit()">
-                                    </form> -->
                                 </div>
                                 <div class="mt-3">
                                     <h4><?php echo htmlspecialchars($name); ?></h4>
@@ -182,7 +178,7 @@ $postCount = $postInfo[0];
                     <!-- Photos Section -->
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Photos</h5>
+                            <h5 class="card-title">Posts - <?php echo htmlspecialchars($name); ?></h5>
                             <div class="photo-grid">
                                 <?php foreach ($photos as $photo): ?>
                                     <div class="photo-item" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo-src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>">
@@ -208,7 +204,10 @@ $postCount = $postInfo[0];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php foreach ($followersList as $follower): ?>
-                            <li class="list-group-item"><?php echo htmlspecialchars($follower); ?></li>
+                            <li class="list-group-item">
+                                <b><?php echo htmlspecialchars($follower['name']); ?></b><br>
+                                <?php echo htmlspecialchars($follower['username']); ?>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -227,7 +226,10 @@ $postCount = $postInfo[0];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php foreach ($followingList as $following): ?>
-                            <li class="list-group-item"><?php echo htmlspecialchars($following); ?></li>
+                            <li class="list-group-item">
+                                <b><?php echo htmlspecialchars($following['name']); ?></b><br>
+                                <?php echo htmlspecialchars($following['username']); ?>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -235,25 +237,51 @@ $postCount = $postInfo[0];
         </div>
     </div>
 
+
     <!-- Photo Modal -->
-    <div class="modal fade photo-modal" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
+                <div class="modal-header">
+                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55"
+                    style="border: none; padding: 0px;">
+                    <h5 class="modal-title" id="photoModalLabel"><?php echo htmlspecialchars($name); ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
-                    <img src="" alt="Photo" class="w-100">
+                    <div class="photo-card">                    
+                        <p><small><span id="modalCreatedAt"></span></small></p>
+                        <img src="" id="modalPhoto" class="img-fluid" alt="Photo">
+                        <div class="mt-3">
+                            <p><span id="modalCaption"></span></p>                            
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.querySelectorAll('.photo-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const photoSrc = this.getAttribute('data-photo-src');
-                document.querySelector('.photo-modal img').src = photoSrc;
-            });
+    document.addEventListener('DOMContentLoaded', function () {
+        var photoModal = document.getElementById('photoModal');
+        photoModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var photoSrc = button.getAttribute('data-photo-src');
+            var createdAt = button.getAttribute('data-created-at');
+            var caption = button.getAttribute('data-caption');
+            
+            var modalPhoto = document.getElementById('modalPhoto');
+            var modalCreatedAt = document.getElementById('modalCreatedAt');
+            var modalCaption = document.getElementById('modalCaption');
+            
+            modalPhoto.src = photoSrc;
+            modalCreatedAt.textContent = createdAt;
+            modalCaption.textContent = caption;
         });
+    });
     </script>
+
 </body>
 </html>
