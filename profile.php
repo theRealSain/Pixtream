@@ -1,6 +1,13 @@
 <?php
 include 'dbconfig.php';
 session_start();
+
+if(!isset($_SESSION['username']))
+{
+  header('location:auth.php');
+}
+
+
 $username = $_SESSION['username'];
 
 // Fetch user information
@@ -197,30 +204,7 @@ $postCount = $postInfo[0];
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Photo Modal -->
-    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;"> <!-- Fixed width for the modal -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55"
-                    style="border: none; padding: 0px;">
-                    <h5 class="modal-title" id="photoModalLabel"><?php echo $name; ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="photo-card">                    
-                        <p><small><span id="modal-created-at"></span></small></p>
-                        <img src="posts/default.png" alt="Photo" class="img-fluid" style="max-width: 100%; height: auto; max-height: 300px; object-fit: contain;"> <!-- Fixed height for image -->
-                        <div class="mt-3">
-                            <p><span id="modal-caption"></span></p>                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </div>  
 
 
 
@@ -243,8 +227,10 @@ $postCount = $postInfo[0];
                             $follower_name = $nameInfo['name'];
                         ?>
                             <li class="list-group-item">
-                                <strong><?php echo htmlspecialchars($follower_name); ?></strong>
-                                <div class="text-muted"><?php echo htmlspecialchars($follower_user); ?></div>
+                                <a href="user-profile.php?username=<?php echo htmlspecialchars($follower_user); ?>" class="text-decoration-none">
+                                    <strong><?php echo htmlspecialchars($follower_name); ?></strong>
+                                    <div class="text-muted"><?php echo htmlspecialchars($follower_user); ?></div>
+                                </a>
                             </li>
                         <?php
                         }
@@ -274,8 +260,10 @@ $postCount = $postInfo[0];
                             $following_name = $nameInfo['name'];
                         ?>
                             <li class="list-group-item">
-                                <strong><?php echo htmlspecialchars($following_name); ?></strong>
-                                <div class="text-muted"><?php echo htmlspecialchars($following_user); ?></div>
+                                <a href="user-profile.php?username=<?php echo htmlspecialchars($following_user); ?>" class="text-decoration-none">
+                                    <strong><?php echo htmlspecialchars($following_name); ?></strong>
+                                    <div class="text-muted"><?php echo htmlspecialchars($following_user); ?></div>
+                                </a>
                             </li>
                         <?php
                         }
@@ -286,30 +274,61 @@ $postCount = $postInfo[0];
         </div>
     </div>
 
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;"> <!-- Fixed width for the modal -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55" style="border: none; padding: 0px;"> &nbsp;
+                    <h5 class="modal-title" id="photoModalLabel"><?php echo htmlspecialchars($name); ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="photo-card">                    
+                        <p><small><span id="modal-created-at"></span></small></p>
+                        <img src="posts/default.png" id="modalPhoto" class="img-fluid" alt="Photo">
+                        <div class="row like-share-comment">
+                            <div class="col-lg-4">
+                                <i class="far fa-heart"></i>
+                            </div>
+                            <div class="col-lg-4">
+                                <i class="far fa-comment"></i>
+                            </div>
+                            <div class="col-lg-4">
+                                <i class="far fa-share"></i>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <p><strong><span id="modal-caption"></span></strong></p>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var photoModal = document.getElementById('photoModal');
-            photoModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var photoPath = button.getAttribute('data-photo-path');
-                var caption = button.getAttribute('data-caption');
-                var createdAt = button.getAttribute('data-created-at');
-                var username = button.getAttribute('data-username');
-                
-                var modalImage = photoModal.querySelector('.photo-card img');
-                var modalCaption = photoModal.querySelector('#modal-caption');
-                var modalCreatedAt = photoModal.querySelector('#modal-created-at');
-                var modalUsername = photoModal.querySelector('#modal-username');
-                
-                modalImage.src = photoPath;
-                modalCaption.textContent = caption;
-                modalCreatedAt.textContent = createdAt;
-                modalUsername.textContent = username;
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        var photoModal = document.getElementById('photoModal');
+        photoModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var photoPath = button.getAttribute('data-photo-path'); // Corrected to 'data-photo-path'
+            var caption = button.getAttribute('data-caption');
+            var createdAt = button.getAttribute('data-created-at');
+
+            var modalImage = photoModal.querySelector('.photo-card img');
+            var modalCaption = photoModal.querySelector('#modal-caption');
+            var modalCreatedAt = photoModal.querySelector('#modal-created-at');
+
+            modalImage.src = photoPath;
+            modalCaption.textContent = caption ? caption : "No caption available";
+            modalCreatedAt.textContent = createdAt;
         });
+    });
+
     </script>
 </body>
 </html>

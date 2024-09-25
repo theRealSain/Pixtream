@@ -1,7 +1,4 @@
-modify photo modal in user-profile section
-add follow button
+urgent!!! add same design as user profile to profile.php
 
-if(!isset($_SESSION['admin_id']))
-{
-  header('location:admin-login.php');
-}
+add follow button
+add like comment and share

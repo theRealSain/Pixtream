@@ -1,6 +1,13 @@
 <?php
 include 'dbconfig.php';
 session_start();
+
+if(!isset($_SESSION['username']))
+{
+  header('location:auth.php');
+}
+
+
 $username = $_SESSION['username'];
 
 // Fetch logged-in user's information

@@ -2,6 +2,12 @@
 include 'dbconfig.php';
 session_start();
 
+if(!isset($_SESSION['username']))
+{
+  header('location:auth.php');
+}
+
+
 $username = $_SESSION['username'];
 $log_sql = "SELECT * FROM users WHERE username='$username';";
 $log_result = mysqli_query($conn, $log_sql);
@@ -129,7 +135,7 @@ $postCount = $postInfo[0];
                         <div class="card-body d-flex flex-column">
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
-                                    <img src="assets/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle">
+                                    <img src="assets/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle" width="150">
                                 </div>
                                 <div class="mt-3">
                                     <h4><?php echo htmlspecialchars($name); ?></h4>
@@ -178,10 +184,18 @@ $postCount = $postInfo[0];
                     <!-- Photos Section -->
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Posts - <?php echo htmlspecialchars($name); ?></h5>
+                            <h3 class="card-title">Posts - <?php echo htmlspecialchars($name); ?></h3>
                             <div class="photo-grid">
                                 <?php foreach ($photos as $photo): ?>
-                                    <div class="photo-item" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo-src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>">
+                                    <div class="photo-item" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#photoModal" 
+                                        data-photo-src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>"
+                                        data-caption="<?php echo htmlspecialchars($photo['caption']); ?>"
+                                        data-created-at="<?php
+                                            $photoDate = new DateTime($photo['created_at']);
+                                            echo $photoDate->format('F j, Y, g:i A');
+                                        ?>">
                                         <img src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>" alt="Photo">
                                     </div>
                                 <?php endforeach; ?>
@@ -205,8 +219,10 @@ $postCount = $postInfo[0];
                     <ul class="list-group">
                         <?php foreach ($followersList as $follower): ?>
                             <li class="list-group-item">
-                                <b><?php echo htmlspecialchars($follower['name']); ?></b><br>
-                                <?php echo htmlspecialchars($follower['username']); ?>
+                                <a href="user-profile.php?username=<?php echo htmlspecialchars($follower['username']); ?>" class="text-decoration-none">
+                                    <b><?php echo htmlspecialchars($follower['name']); ?></b><br>
+                                    <?php echo htmlspecialchars($follower['username']); ?>
+                                </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -227,8 +243,10 @@ $postCount = $postInfo[0];
                     <ul class="list-group">
                         <?php foreach ($followingList as $following): ?>
                             <li class="list-group-item">
-                                <b><?php echo htmlspecialchars($following['name']); ?></b><br>
-                                <?php echo htmlspecialchars($following['username']); ?>
+                                <a href="user-profile.php?username=<?php echo htmlspecialchars($following['username']); ?>" class="text-decoration-none">
+                                    <b><?php echo htmlspecialchars($following['name']); ?></b><br>
+                                    <?php echo htmlspecialchars($following['username']); ?>
+                                </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -237,29 +255,28 @@ $postCount = $postInfo[0];
         </div>
     </div>
 
-
     <!-- Photo Modal -->
     <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55"
-                    style="border: none; padding: 0px;">
+                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55" style="border: none; padding: 0px;">&nbsp;
                     <h5 class="modal-title" id="photoModalLabel"><?php echo htmlspecialchars($name); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="photo-card">                    
+                    <div class="photo-card">
                         <p><small><span id="modalCreatedAt"></span></small></p>
                         <img src="" id="modalPhoto" class="img-fluid" alt="Photo">
                         <div class="mt-3">
-                            <p><span id="modalCaption"></span></p>                            
+                            <p><strong><span id="modalCaption"></span></strong></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
 
 
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -267,18 +284,19 @@ $postCount = $postInfo[0];
     document.addEventListener('DOMContentLoaded', function () {
         var photoModal = document.getElementById('photoModal');
         photoModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-            var photoSrc = button.getAttribute('data-photo-src');
-            var createdAt = button.getAttribute('data-created-at');
-            var caption = button.getAttribute('data-caption');
-            
+            var button = event.relatedTarget; // Button that triggered the modal
+            var photoSrc = button.getAttribute('data-photo-src'); // Get photo path
+            var caption = button.getAttribute('data-caption'); // Get caption
+            var createdAt = button.getAttribute('data-created-at'); // Get creation date
+
+            // Update modal content
             var modalPhoto = document.getElementById('modalPhoto');
-            var modalCreatedAt = document.getElementById('modalCreatedAt');
             var modalCaption = document.getElementById('modalCaption');
-            
+            var modalCreatedAt = document.getElementById('modalCreatedAt');
+
             modalPhoto.src = photoSrc;
+            modalCaption.textContent = caption ? caption : "No caption available"; // Default if no caption
             modalCreatedAt.textContent = createdAt;
-            modalCaption.textContent = caption;
         });
     });
     </script>
