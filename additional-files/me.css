@@ -1,6 +1,6 @@
 
 a{
-    color: #6a1b9a;
+    color: inherit;
 }
 
 .btn-custom-warning{
@@ -224,3 +224,27 @@ a{
     height: auto;
 }
 
+#photoModal .modal-body {
+    height: 600px; /* Set your desired fixed height */
+    overflow-y: auto; /* Allow scrolling if content exceeds the height */
+}
+
+#photoModal img {
+    max-width: 100%; /* Allow the image to scale */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.like-share-comment {
+    padding: 20px;
+}
+.like-share-comment .col-lg-4 { 
+    margin: auto;
+}
+.like-share-comment .col-lg-4 i {
+    margin: auto;
+    display: block;
+    text-align: center;
+    width: fit-content;
+    font-size: 1.5rem;
+    filter: drop-shadow(1px);
+}
