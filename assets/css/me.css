@@ -1,0 +1,298 @@
+:root {
+    --bs-body-font-weight: 400;
+}
+
+body{
+    color: black !important;
+}
+
+#login, #register{
+    border-radius: 10px;
+    padding: 50px;
+    box-shadow: 0px 3px 5px #00000056;
+    transform: translate(0px, 200px);
+}
+.auth-head{
+    font-weight: bolder;
+    font-size: 2rem;
+}
+
+.mybtn{
+    background-color: black;
+    color: white;
+    border: none;
+}
+.mybtn:hover{
+    background-color: #202020;
+    color: white !important;
+}
+.mybtn:active{
+    background-color: #363636 !important;
+}
+
+.mybtn-outline{
+    border: 1px solid black;
+    color: black;
+}
+.mybtn-outline:hover{
+    background-color: #dfdfdf;
+}
+
+.mycheck {
+    accent-color: black;
+}
+
+.mybadge{
+    background-color: black !important;
+    font-size: 12px;
+}
+
+#interestForm h3{
+    font-weight: bolder;
+}
+
+a{
+    color: inherit;
+}
+
+.btn-custom-warning{
+    background-color: #5451ee6b;
+}
+
+.btn-custom {
+    background-color: #7f3ace;
+    color: #ffffff;
+}
+.btn-following{
+    border: 1px solid #7f3ace;
+    color: #7f3ace;
+}
+
+
+.btn-custom:hover {
+    background-color: #5451ee;
+    color: white;
+}
+
+.btn-custom2 {
+    background-color: #5451ee6b;
+}
+
+.index-logo{
+    filter: invert();
+    display: block;
+    margin: auto;
+    margin-top: -60px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .index-logo{
+        width: 300px;
+        margin-top: 0px;
+    }
+}
+
+#dash-icon{
+    margin-left: 10px;
+}
+
+.rounded-circle{
+    border: 3px solid #000000;
+    padding: 5px;
+}
+
+
+.profile-img-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-img-container img {
+    border-radius: 50%;
+}
+
+.change-photo-text {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.profile-img-container:hover .change-photo-text {
+    display: block;
+}
+
+.custom-ellipsis{
+    font-size: 1.2rem;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.user-card img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 15px;
+}
+.user-card .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-following {
+    border: 1px solid #5451ee;
+    color: #5451ee;
+    background-color: transparent;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.stat {
+    text-align: center;
+    flex: 1;
+    cursor: pointer;
+}
+.stat:hover{
+    background-color: #00000011;
+}
+
+.stat p:nth-of-type(2) {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, border-color 0.3s;
+    font-size: 16px;
+}
+
+.custom-file-upload:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.custom-file-upload i {
+    margin-right: 8px;
+}
+
+
+/* me.css */
+
+/* Style for user list */
+.user-list {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* Style for each user item */
+.user-item {
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-item:hover {
+    background-color: #f1f1f1;
+}
+
+.send-button {
+    color: #5451ee;
+    border-color: #5451ee;
+}
+
+.send-button:hover {
+    background-color: #5451ee;
+    color: #fff;
+}
+
+
+.message {
+    display: flex;
+    margin-bottom: 10px;
+}
+.message.sent {
+    justify-content: flex-end;
+}
+.message.sent .content {
+    background-color: #5451ee;
+    color: #fff;
+}
+
+.message.received {
+    justify-content: flex-start;
+}
+.content {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.photo-grid img {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+/* Modal styling to ensure the image displays correctly */
+.modal-body img {
+    width: 100%;
+    height: auto;
+}
+
+#photoModal .modal-body {
+    height: 600px; /* Set your desired fixed height */
+    overflow-y: auto; /* Allow scrolling if content exceeds the height */
+}
+
+#photoModal img {
+    max-width: 100%; /* Allow the image to scale */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.like-share-comment {
+    padding: 20px;
+}
+.like-share-comment .col-lg-4 { 
+    margin: auto;
+}
+.like-share-comment .col-lg-4 i {
+    margin: auto;
+    display: block;
+    text-align: center;
+    width: fit-content;
+    font-size: 1.5rem;
+    filter: drop-shadow(1px);
+}

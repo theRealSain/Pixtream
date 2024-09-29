@@ -1,0 +1,921 @@
+:root {
+    --bs-font-sans-serif: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
+    --bs-body-font-weight: 400;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: var(--bs-body-font-family);
+    font-weight: var(--bs-body-font-weight);
+    background: linear-gradient(to bottom, #5451ee7e, #691b9aa1);
+    background-attachment: fixed;
+}
+
+img{
+    fill: #01003a;
+    filter: hue-rotate(140);
+}
+
+a{
+    color: inherit;
+    text-decoration: none;
+}
+button{
+    font-family: var(--bs-body-font-family);
+    font-weight: var(--bs-body-font-weight);
+}
+
+label #btn,
+label #cancel{
+    width: 30px;
+    float: right;
+    line-height: 80px;
+    cursor: pointer;
+    position: relative;
+    display: none;
+}
+label #btn{
+    margin: 21px 55px 0px 0px;
+}
+label #cancel{
+    margin: 17px -30px 0px 0px;
+}
+
+#check{
+    display: none;
+}
+
+nav{
+    width: 100%;
+    height: 100px;
+    padding: 30px 0px 0px 0px;
+    position: fixed;
+    top: 0;
+    background: linear-gradient(to bottom, #8886ff, #a89fed);
+    /* background-color: #380b53; */
+    z-index: 2;
+}
+.nav-main{
+    width: 350px;
+    padding: 0px 0px 0px 0px;
+    margin: -60px 0px 0px 0px;
+    z-index: 5;
+}
+.nav-extra{
+    display: none;
+}
+nav ul{
+    float: right;
+    margin-right: -60px;
+}
+nav ul li{
+    float: left;
+    margin-right: 60px;
+    list-style-type: none;
+    font-weight: bolder;
+    color: black;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+nav ul li:hover{
+    color: #474747;
+}
+
+.drk2{
+    display: none;
+  }
+.nav-btn{
+    background: linear-gradient(to bottom, #5451ee, #6a1b9a);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 5px 25px;
+    cursor: pointer;
+    box-shadow: 0px 3px 5px #000000;
+    margin-top: -15px;
+}
+.nav-btn:hover{
+    background: linear-gradient(to bottom, #5451ee, #380b53);
+    transition: 0.3s ease-in;
+}
+.nav-btn:active{
+    box-shadow: none;
+}
+
+#dropdownButton{
+    border: none;
+    background-color: #00000000;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
+    font-size: 1.5rem;
+}
+#dropdownButton svg{
+    width: 20px;
+}
+
+/********************************************************/
+
+section.one{
+    height:auto;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 135px;
+    padding: 10rem 0rem 11rem 0rem;
+    color: #01003a;
+}
+
+.one-grid{
+    padding: 0px 180px 0px 180px;
+    display: grid;
+    gap: 0px 5px;
+    grid-template-columns: repeat(2,minmax(23rem,1fr));
+}
+.one-card{
+    font-weight: bold;
+    padding: 20px;
+}
+.one-card h1{
+    font-size: 5rem;
+    font-weight: bolder;
+    width: 90%;
+    margin-top: 0px;
+}
+.one-card p{
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-top: -30px;
+}
+.one-card button{
+    background: linear-gradient(to bottom, #5451ee, #6a1b9a);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 15px 35px;
+    border-radius: 100px;
+    border: none;
+    font-size: 1.8rem;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.one-card button:hover{
+    background: linear-gradient(to bottom, #5451ee, #380b53);
+    transition: 0.3s ease-in;
+}
+
+.one-grid img{
+    width: 800px;
+    margin: -10px 0px 0px 100px;
+    border-radius: 10px;
+}
+
+.card{
+    position: relative;
+    margin-top: -60px;
+    width: 800px;
+    height: 500px;
+    padding: 10px;
+    background-position: center !important;
+    background-repeat: no-repeat !important;    
+    background-size: cover;
+    border-radius: 20px;
+    z-index: 1;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/********************************************************/
+
+
+@media (max-width: 1695px){
+    .one-grid{
+        padding: 0px 300px 0px 107px;
+    }
+    .card{
+        background-size: 450px;
+    }
+    .three-grid{        
+        grid-template-columns: repeat(3,minmax(25rem,0fr));
+        width: fit-content;
+        padding: 0px;
+    }
+}
+
+@media (max-width: 1550px){
+    .one-card h1 {
+        font-size: 4.5rem;
+    }
+    .card{
+        width: 620px;
+        height: 380px;
+        margin: 50px 0px 0px 80px;
+    }
+
+    .two-img2{
+        transform: translate(-60px, -192px);
+    }
+}
+
+@media (max-width: 1390px){
+    .one-card h1 {
+      font-size: 4rem;
+      width: 500px;
+    }
+    .one-card button{
+        font-size: 1.6rem;
+    }
+    .card {
+        width: 490px;
+        height: 380px;
+        margin: 0px 0px 0px 133px;
+    }
+    .card__content img{
+        width: 250px;
+    }
+    .two-grid {
+        padding: 0px 175px 0px 75px
+    }
+    .three-grid {
+        grid-template-columns: repeat(3,minmax(21rem,0fr));
+    }
+}
+
+@media (max-width: 1185px){
+    .one-grid {
+        padding: 0px 300px 0px 20px;
+    }
+    .one-grid {
+        grid-template-columns: repeat(2,minmax(19rem,0fr));
+    }
+    .one-card h1 {
+        font-size: 3.2rem;
+        width: 300px;
+    }
+    .card {
+        background-size: 400px;
+        margin: 0px 0px 0px 61px;
+    }
+    .one-card p {
+        font-size: 1.3rem;
+    }
+
+    section.two h1 {
+        font-size: 3rem;
+    }
+    .two-grid {
+        padding: 0px 23px 0px 13px;
+        grid-template-columns: repeat(2,minmax(28rem,0fr));
+        gap: 0px 0px;
+    }
+    .two-para {
+        font-weight: 500;
+        font-size: 1rem;
+        width: 400px;
+    }
+    #two-imgs{
+        padding: 60px 0px 0px 0px;
+    }
+    .two-img1 {
+        width: 398px;
+        height: 490px;
+    }
+    .two-img2 {
+        width: 142px;
+        height: 190px;
+        margin: 50px;
+    }
+
+    .three-grid {
+        grid-template-columns: repeat(3,minmax(16rem,0fr));
+    }
+    .foot-grid1 {
+        grid-template-columns: repeat(2,minmax(20rem,0fr));
+        gap: 82px;
+    }
+    .foot-grid2 {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(18rem,0fr));
+    }
+    .foot-card2 p{
+        font-weight: 500;
+        font-size: 1.1rem;
+        width: 85%;
+    }
+    #card2 {
+        margin-left: 50px;
+    }
+    .foot-social svg {
+        width: 20px;
+        height: 20px;
+        padding: 10px;
+        border-radius: 6px;
+    }
+    #fb{
+        width: 20px !important;
+        height: 20px  !important;
+    }
+}
+
+@media (max-width: 1024px){
+    .one-grid {
+        grid-template-columns: repeat(1,minmax(19rem,0fr));
+    }
+    .one-card{
+        padding: 45px;
+        text-align: center;
+    }
+    .one-card h1{
+        font-size: 4rem;
+        text-align: center;
+        width: 500px;
+        margin: auto;
+        display: block;
+        margin-bottom: 20px;
+    }
+    .one-card p{
+        font-size: 1.5rem;
+        text-align: center;
+        width: 290px;
+        margin: 0px 0px 30px 106px;
+    }
+    .one-card button{
+        margin: 0px 0px 0px 144px;
+        width: max-content;
+    }
+    .card {
+        width: 649px;
+        height: 395px;
+        margin: 48px 0px 0px -40px;
+    }
+    .card__content img{
+        width: 350px;
+    }
+
+    .two-grid {
+        grid-template-columns: repeat(1,minmax(28rem,1fr));
+        padding: 0px 23px 25px 13px;
+    }
+    section.two h1{
+        font-size: 4rem;
+        text-align: center;
+    }
+    .two-para{
+        font-size: 1.2rem;
+        width: 80%;
+        margin: auto;
+    }
+    .two-img2{
+        width: 134px;
+        height: 192px;
+        transform: translate(64px, -214px);
+    }
+
+    section.three h1{
+        font-size: 3.3rem;
+    }
+    .three-para{
+        font-size: 1.2rem;
+        width: 70%;
+    }
+    .three-grid{
+        grid-template-columns: repeat(2,minmax(20rem,0fr));
+    }
+    #card3{
+        margin: 0px -176px 0px 184px;
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(32rem,0fr));
+    }
+    .foot-card1 {
+        padding: 0px 80px 0px 160px;
+    }
+
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(43rem,1fr));
+        gap: 0px 0px;
+    }
+    .foot-card2{
+        margin-bottom: -100px;
+    }
+    .foot-card2 p {
+        margin-top: -85px;
+    }
+    #social-card{
+        padding: 0px 0px 44px 65px;
+        margin-top: -13px;
+    }
+}
+
+@media (max-width: 768px){
+    .nav-main{
+        width: 300px;
+    }
+    .one-grid {
+        grid-template-columns: repeat(1,minmax(14rem,0fr));
+        
+    }
+    .card {
+        width: 504px;
+        height: 400px;
+        margin: 48px 0px 0px -10px;
+    }
+    .card__content img {
+        width: 267px;
+    }
+    .one-card h1 {
+        font-size: 3rem;
+        margin: 0px 0px 0px -45px;
+    }
+    .one-card p {
+        font-size: 1.3rem;
+        margin: 21px 0px 30px 56px;
+    }
+    .one-card button {
+        margin: 0px 0px 0px 93px;
+    }
+
+    .two-grid {
+        grid-template-columns: repeat(1,minmax(31rem,0fr));
+    }
+    .two-para {
+        font-size: 1.2rem;
+        width: 100%;
+    }
+    .two-img2 {
+        transform: translate(-43px, -214px);
+    }
+
+    .three-grid{
+        grid-template-columns: repeat(1,minmax(33rem,0fr));
+    }
+    section.three h1{
+        font-size: 2.6rem;
+    }
+    #card3{
+        margin: auto;
+        margin-top: 20px;
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(22rem,0fr));
+    }
+    .foot-card1 {
+        padding: 0px 80px 0px 80px;
+    }
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(33rem,0fr));
+    }
+
+    #popupContent {
+        width: 380px;
+    }
+}
+
+@media (max-width: 578px){
+    .nav-main{
+        width: 180px;
+        margin: -20px 0px 0px 10px;
+    }
+    .nav-extra{
+        width: 300px;
+        margin: -294px 0px 0px 0px;
+    }
+
+    .nav-btn{
+        font-size: 16px;
+    }
+
+    .one-grid {
+        grid-template-columns: repeat(1,minmax(4rem,0fr));
+    }
+    .one-card h1 {
+        margin: 0px 0px 0px -48px;
+        width: 353px;
+    }
+    .one-card p {
+        margin: 21px 0px 30px -20px;
+    }
+    .one-card button {
+        margin: 0px 0px 0px 12px;
+    }
+    .card {
+        width: 347px;
+        height: 305px;
+        background-size: 350px;
+        margin: 4px 0px 0px -10px;
+    }
+    .card__content img {
+        width: 174px;
+        margin-top: -6px;
+    }
+
+    .two-grid {
+        grid-template-columns: repeat(1,minmax(22rem,0fr));
+    }
+    section.two h1 {
+        font-size: 3rem;
+    }
+    .two-para {
+        font-size: 1.15rem;
+    }
+    .two-img1 {
+        width: 361px;
+        height: 446px;
+    }
+    .two-img2 {
+        width: 111px;
+        height: 149px;
+        transform: translate(-63px, -176px);
+    }
+
+    section.three h1 {
+        font-size: 2rem;
+    }
+    .three-para {
+        font-size: 1rem;
+        margin-top: -5px;
+    }
+    .three-grid {
+        grid-template-columns: repeat(1,minmax(24rem,0fr));
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(13rem,0fr));
+    }
+    .foot-card1 {
+        padding: 0px 80px 0px 32px;
+    }
+    .foot-card1-text p {
+        font-size: 1rem;
+        margin-top: -20px;
+    }
+    .foot-card1-text h3 {
+        font-size: 1.5rem;
+    }
+
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(24rem,0fr));
+    }
+
+    #popupContent {
+        width: 215px;
+    }
+    #icon {
+        margin: 0px 6px 0px 0px;
+    }
+    #popupContent h2 {
+        width: 285px;
+    }
+    #pop-social {
+        margin-left: 18px;
+    }
+    .wa {
+        margin: 8px 5px 0px 51px !important;
+    }
+}
+
+@media (max-width: 425px){
+    nav {
+        height: 90px;
+    }
+    .nav-main {
+        width: 200px;
+        margin: -30px 0px 0px 0px;
+    }
+    .nav-btn{
+        display: none;
+    }
+    .nav-extra {
+        width: 267px;
+        margin: -277px 0px -44px -16px
+    }
+    label #btn {
+        margin: 11px 30px 0px 0px;
+    }
+    label #cancel {
+        margin: 6px 27px -49px 297px !important;
+    }
+    nav ul{
+        width: 90%;
+    }
+
+    .one-grid {
+        grid-template-columns: repeat(1,minmax(1rem,0fr));
+    }
+    .one-card h1 {
+        font-size: 2.6rem;
+        margin: 0px 0px 0px -59px;
+        width: 325px;
+    }
+    .one-card p {
+        margin: 21px 0px 30px -41px;
+    }
+    .one-card button {
+        margin: 0px 0px 0px 0px;
+    }
+    .card {
+        width: 296px;
+        height: 357px;
+        border-radius: 10px;
+    }
+    .card__content img {
+        width: 165px;
+        margin-top: -15px;
+    }
+
+    .two-grid {
+        grid-template-columns: repeat(1,minmax(19rem,0fr));
+    }
+    .two-img1 {
+        width: 314px;
+        height: 388px;
+    }
+
+    .three-grid {
+        grid-template-columns: repeat(1,minmax(21rem,0fr));
+    }
+    section.three h1 {
+        font-size: 2rem;
+        width: 277px;
+        text-align: center;
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(10rem,0fr));
+    }
+    h3.h-mail{
+        position: absolute;
+        margin: 43px 0px 0px -1px;
+    }
+    p.mail{
+        margin: 85px 0px 0px -72px;
+    }
+
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(21rem,0fr));
+    }
+    #card1{
+        margin: 0px 0px -100px -10px;
+        width: 263px;
+    }
+    #card2 {
+        width: 205px;
+    }
+
+    #popupContent {
+        width: 140px;
+        padding: 124px 53px;
+    }
+    #popupContent h2 {
+        width: 160px;
+        text-align: center;
+    }
+    #popupContent p {
+        text-align: center;
+    }
+    .wa {
+        margin: auto!important;
+    }
+    #icon {
+        margin: 0px 0px 0px 0px;
+    }
+}
+
+@media (max-width: 375px){
+    .nav-main {
+        width: 190px;
+        margin: -25px 0px 0px 0px;
+    }
+    .nav-extra{
+        width: 240px;
+        margin: -273px 0px -44px -16px
+    }
+    label #cancel {
+        margin: 6px 27px -54px 297px !important;
+    }
+
+    .one-grid {
+        width: 278px;
+        padding: 0px;
+    }
+
+    .one-card h1 {
+        font-size: 2.4rem;
+        margin: 0px 0px 0px -46px;
+        width: 281px;
+    }
+    .one-card p {
+        margin: 21px 0px 30px -51px;
+    }
+    .one-card button {
+        margin: 0px 0px 0px -16px;
+    }
+    .card {
+        width: 256px;
+        height: 352px;
+        margin: 4px 0px 0px 0px;
+    }
+    .card__content img {
+        width: 147px;
+        margin-top: -17px;
+    }
+
+    .two-grid{
+        display: block;
+        width: 75%;
+    }
+    section.two h1 {
+        font-size: 2.5rem;
+    }
+    .two-img1 {
+        width: 238px;
+        height: 295px;
+    }
+    .two-img2 {
+        width: 78px;
+        height: 102px;
+        transform: translate(-69px, -138px);
+    }
+
+    .three-grid{
+        display: block;
+        width: 75%;
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(6rem,0fr));
+    }
+    .foot-card1 {
+        padding: 0px 80px 0px 18px;
+    }
+    p.mail {
+        margin: 85px 0px 0px -95px;
+    }
+
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(17rem,0fr));
+    }
+    #card1 {
+        margin: 0px 0px -100px -43px;
+    }
+    .foot-card2 p {
+        font-size: 1rem;
+    }
+    #card2 {
+        margin: 0px 0px -100px 21px;
+    }
+    #social-card {
+        padding: 0px 0px 44px 33px;
+    }
+    .foot-social svg {
+        width: 15px;
+        height: 15px;
+        padding: 8px;
+    }
+    #fb {
+        width: 15px !important;
+        height: 15px !important;
+        padding: 8px;
+    }    
+}
+
+@media (max-width: 320px){
+    nav{
+        height: 65px;
+    }
+    .nav-main {
+        width: 150px;
+        margin: -20px 0px 0px 0px;
+    }
+    .nav-extra {
+        width: 194px;
+        margin: -259px 0px -44px -16px;
+    }
+    label #btn, label #cancel {
+        width: 25px;
+    }
+    label #btn {
+        margin: 8px 20px 0px 0px;
+    }
+    label #cancel {
+        margin: 4px 15px -54px 297px !important;
+    }
+
+    .one-grid {
+        width: 203px;
+    }
+    .one-card h1 {
+        font-size: 1.5rem;
+        width: 206px;
+    }
+    .one-card p {
+        margin: 21px 0px 30px -25px;
+        width: 165px;
+        font-size: 1rem;
+    }
+    .one-card button {
+        margin: 0px 0px 0px -16px;
+        font-size: 1.2rem;
+        padding: 10px 20px;
+    }
+    .card {
+        width: 182px;
+        height: 306px;
+        background-size: 280px;
+    }
+    .card__content img {
+        width: 105px;
+        margin-top: -19px;
+    }
+    
+    section.two h1 {
+        font-size: 1.9rem;
+    }
+    .two-para {
+        font-size: 1rem;
+    }
+    .two-img1 {
+        width: 193px;
+        height: 238px;
+    }
+    .two-img2 {
+        width: 70px;
+        height: 88px;
+        transform: translate(-59px, -128px);
+    }
+
+    section.three h1 {
+        font-size: 1.5rem;
+        width: 205px;
+    }
+
+    .foot-grid1 {
+        grid-template-columns: repeat(1,minmax(2rem,0fr));
+    }
+    .foot-grid2 {
+        grid-template-columns: repeat(1,minmax(13rem,0fr));
+    }
+
+    .foot-card1 {
+        padding: 0px 80px 0px 0px;
+    }
+    p.mail {
+        margin: 85px 0px 0px -88px;
+        font-size: 13px;
+    }
+    .foot-card2 img {
+        width: 225px;
+        filter: invert();
+        margin: 0px 0px 15px 13px;
+    }
+    .foot-card2 p {
+        font-size: 15px;
+        width: 148px;
+    }
+    .foot-card2 h2 {
+        font-size: 1.5rem;
+    }
+    .foot-card2 ul li {
+        font-size: 1.1rem;
+    }
+    #card1{
+        width: 185px;
+    }
+    #card2{
+        margin: 0px 0px -100px 14px;
+        width: 148px;
+    }
+    .foot-social svg {
+        width: 13px;
+        height: 13px;
+        padding: 7px;
+        margin-right: 3px;
+    }
+    #fb {
+        width: 13px !important;
+        height: 13px !important;
+        padding: 7px !important;
+        margin-right: 3px !important;
+    }
+
+    #popupContent {
+        width: 100px;
+    }
+}
+
+@media (max-height: 650px) and (max-width: 1390px){
+    nav ul li{
+        margin: 50px 0px -27px 0px;
+    }
+    .hm{
+        margin-top: 7px;
+    }
+}
