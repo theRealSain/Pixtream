@@ -20,18 +20,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $_SESSION['error'] = "Username already exists!";
-        header("Location: auth.php");
+        header("Location: authen.php");
         exit();
     } else {
         $sql = "INSERT INTO users (name, username, email, password) VALUES ('$name', '$username', '$email', '$password')";
 
         if ($conn->query($sql) === TRUE) {
-            // Redirect to login page or dashboard
-            header("Location: auth.php");
+            // Set session variable for the username
+            $_SESSION['username'] = $username;
+
+            // Redirect to user details page
+            header("Location: user_details.php");
             exit();
         } else {
             $_SESSION['error'] = "Error: " . $sql . "<br>" . $conn->error;
-            header("Location: auth.php");
+            header("Location: authen.php");
             exit();
         }
     }

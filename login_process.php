@@ -27,12 +27,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         } else {
             $_SESSION['error'] = "Invalid username or password!";
-            header("Location: auth.php");
+            header("Location: authen.php");
             exit();
         }
     } else {
         $_SESSION['error'] = "No user found with that username!";
-        header("Location: auth.php");
+        header("Location: authen.php");
         exit();
     }
 }

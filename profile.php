@@ -4,10 +4,8 @@ session_start();
 
 if(!isset($_SESSION['username']))
 {
-  header('location:auth.php');
+  header('location:authen.php');
 }
-
-
 $username = $_SESSION['username'];
 
 // Fetch user information
@@ -25,27 +23,27 @@ $date = new DateTime($datetimeString);
 $formattedDate = $date->format('F Y');
 
 // Fetch number of followers
-$followersSql = "SELECT COUNT(*) AS follower_count FROM follows WHERE following='$username';";
+$followersSql = "SELECT COUNT(*) AS follower_count FROM follows WHERE followed_id='$username';";
 $followersResult = mysqli_query($conn, $followersSql);
 $followersCount = mysqli_fetch_assoc($followersResult)['follower_count'];
 
 // Fetch number of following
-$followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower='$username';";
+$followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower_id='$username';";
 $followingResult = mysqli_query($conn, $followingSql);
 $followingCount = mysqli_fetch_assoc($followingResult)['following_count'];
 
 // Fetch followers list
-$followersListSql = "SELECT follower FROM follows WHERE following='$username';";
+$followersListSql = "SELECT follower_id FROM follows WHERE followed_id='$username';";
 $followersListResult = mysqli_query($conn, $followersListSql);
 $followersListInfo = mysqli_fetch_all($followersListResult, MYSQLI_ASSOC);
 
 // Fetch following list
-$followingListSql = "SELECT following FROM follows WHERE follower='$username';";
+$followingListSql = "SELECT followed_id FROM follows WHERE follower_id='$username';";
 $followingListResult = mysqli_query($conn, $followingListSql);
 $followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
 
 // Fetch user's photos
-$photosSql = "SELECT * FROM photos WHERE username='$username' ORDER BY created_at DESC;";
+$photosSql = "SELECT * FROM posts WHERE username='$username' ORDER BY created_at DESC;";
 $photosResult = mysqli_query($conn, $photosSql);
 $photos = [];
 while ($row = mysqli_fetch_assoc($photosResult)) {
@@ -53,10 +51,27 @@ while ($row = mysqli_fetch_assoc($photosResult)) {
 }
 
 //Posts count
-$postSql = "SELECT COUNT(*) FROM photos WHERE username = '$username';";
+$postSql = "SELECT COUNT(*) FROM posts WHERE username = '$username';";
 $postResult = mysqli_query($conn, $postSql);
 $postInfo = mysqli_fetch_array($postResult);
 $postCount = $postInfo[0];
+
+// Fetch user interests
+$interests = [];
+$sql = "SELECT o.option_name 
+        FROM user_selections us
+        JOIN options o ON us.option_id = o.id
+        WHERE us.user_id = (SELECT id FROM users WHERE username = ? LIMIT 1)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $interests[] = $row['option_name'];
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -68,17 +83,16 @@ $postCount = $postInfo[0];
     <title>PIXTREAM - <?php echo $name; ?></title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="library-files/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="additional-files/extra.css">
-    <link rel="stylesheet" href="additional-files/me.css">
-    <link rel="icon" type="image/x-icon" href="assets/LOGO_tab.svg" />
+    <link rel="stylesheet" href="assets/css/me.css">
+    <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
     <style>        
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">        
-        <a class="navbar-brand" href="#">
-            <img src="assets/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
+        <a class="navbar-brand" href="dashboard.php">
+            <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,12 +136,13 @@ $postCount = $postInfo[0];
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
+                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interestsModal">User Interests</a></li>
                                 </ul>
                             </div>
 
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
-                                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="150">
+                                    <img src="assets/img/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="150">
                                     <form action="profile-photo.php" method="post" enctype="multipart/form-data">
                                         <input type="file" name="profile_photo" id="profile_photo" style="display: none;" onchange="this.form.submit()">
                                     </form>
@@ -152,6 +167,34 @@ $postCount = $postInfo[0];
                             </div>
                         </div>
                     </div>
+
+                    <!-- User Interests Modal -->                    
+                    <div class="modal fade" id="interestsModal" tabindex="-1" aria-labelledby="interestsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog mt-5">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="interestsModalLabel">Your Interests</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body d-flex justify-content-center flex-wrap">
+                                    <?php if (!empty($interests)): ?>
+                                        <div class="d-flex flex-wrap">
+                                            <?php foreach ($interests as $interest): ?>
+                                                <span class="badge mybadge me-2 mb-2"><?php echo htmlspecialchars($interest); ?></span> <!-- Bootstrap badge -->
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div>No interests added.</div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="modal-footer justify-content-center"> <!-- Center the footer content -->
+                                    <a href="user_details.php" class="btn mybtn-outline">Edit Interests</a> <!-- Edit button -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <!-- Info Card -->
                     <div class="card mt-3 h-50">
@@ -219,8 +262,8 @@ $postCount = $postInfo[0];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php 
-                        foreach ($followersListInfo as $follower) {
-                            $follower_user = $follower['follower'];
+                        foreach ($followersListInfo as $follower_id) {
+                            $follower_user = $follower_id['follower_id'];
                             $nameSql = "SELECT name FROM users WHERE username = '$follower_user';";
                             $nameResult = mysqli_query($conn, $nameSql);
                             $nameInfo = mysqli_fetch_assoc($nameResult);

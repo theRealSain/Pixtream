@@ -30,16 +30,15 @@ $email = $info['email'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIXTREAM - <?php echo htmlspecialchars($name); ?></title>
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="additional-files/extra.css">
-    <link rel="stylesheet" href="additional-files/me.css">
-    <link rel="icon" type="image/x-icon" href="assets/LOGO_tab.svg" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">    
+    <link rel="stylesheet" href="assets/css/me.css">
+    <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">        
         <a class="navbar-brand" href="#">
-            <img src="assets/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
+            <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,7 +79,7 @@ $email = $info['email'];
         <?php endif; ?>
 
         <div class="text-right">
-            <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#newPost">
+            <button type="button" class="btn mybtn" data-bs-toggle="modal" data-bs-target="#newPost">
                 New Post
             </button>
         </div>

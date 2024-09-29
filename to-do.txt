@@ -2,3 +2,8 @@ urgent!!! add same design as user profile to profile.php
 
 add follow button
 add like comment and share
+
+
+
+
+add location: india all states
