@@ -4,7 +4,7 @@ session_start();
 
 if(!isset($_SESSION['username']))
 {
-  header('location:auth.php');
+  header('location:authen.php');
 }
 
 $username = $_SESSION['username'];

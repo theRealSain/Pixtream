@@ -15,7 +15,7 @@ $info = mysqli_fetch_assoc($result);
 
 $name = $info['name'];
 $email = $info['email'];
-$profilePhoto = $info['profile_photo'] ?? 'default.png';
+$profilePhoto = $info['profile_picture'] ?? 'default.png';
 
 // Format join date
 $datetimeString = $info['created_at'];
@@ -71,6 +71,11 @@ while ($row = $result->fetch_assoc()) {
     $interests[] = $row['option_name'];
 }
 
+$bioSql = "SELECT * FROM users WHERE username = '$username';";
+$bioResult = mysqli_query($conn, $bioSql);
+$bioInfo = mysqli_fetch_assoc($bioResult);
+$bio = $bioInfo['bio'];
+$location = $bioInfo['location'];
 
 ?>
 
@@ -142,15 +147,15 @@ while ($row = $result->fetch_assoc()) {
 
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
-                                    <img src="assets/img/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="150">
+                                    <img src="profile_picture/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="150">
                                     <form action="profile-photo.php" method="post" enctype="multipart/form-data">
-                                        <input type="file" name="profile_photo" id="profile_photo" style="display: none;" onchange="this.form.submit()">
+                                        <input type="file" name="profile_picture" id="profile_photo" style="display: none;" onchange="this.form.submit()">
                                     </form>
                                 </div>
-                                <div class="mt-3">
+                                <div class="mt-3 mb-4">
                                     <h4><?php echo $name; ?></h4>
                                 </div>
-                                <div class="d-flex justify-content-around stats">
+                                <div class="d-flex justify-content-around stats mb-3">
                                     <div class="stat">
                                         <p><b>Posts</b></p>
                                         <p><?php echo $postCount; ?></p>
@@ -162,6 +167,21 @@ while ($row = $result->fetch_assoc()) {
                                     <div class="stat" data-bs-toggle="modal" data-bs-target="#followingModal">
                                         <p><b>Following</b></p>
                                         <p><?php echo $followingCount; ?></p>
+                                    </div>
+                                </div>
+                                <!-- Bio Section Below Stats -->
+                                <div class="mt-3 bio-text text-start">
+                                    <p><?php echo nl2br(htmlspecialchars($bio)); ?></p>
+                                    <span class="mt-3 profile-location">
+                                        <i class="fa-solid fa-location-dot"></i> <?php echo $location; ?>
+                                    </span>
+                                </div>
+
+                                <div class="mt-5 profile-interest">
+                                    <div class="d-flex flex-wrap">
+                                        <?php foreach ($interests as $interest): ?>
+                                            <span class="badge mybadge2 me-2 mb-2"><?php echo htmlspecialchars($interest); ?></span> <!-- Bootstrap badge -->
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +217,7 @@ while ($row = $result->fetch_assoc()) {
 
 
                     <!-- Info Card -->
-                    <div class="card mt-3 h-50">
+                    <div class="card mt-3 mb-5 info-card">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
                                 <h6 class="mb-0">Full Name</h6>

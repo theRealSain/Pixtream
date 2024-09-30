@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root"; // Change if you have a different database username
-$password = "root"; // Change if you have a database password
+$password = ""; // Change if you have a database password
 $dbname = "pixtream";
 
 // Create connection
