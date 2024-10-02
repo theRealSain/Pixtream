@@ -13,6 +13,7 @@ $sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
 
+$id = $info['id'];
 $name = $info['name'];
 $email = $info['email'];
 $profilePhoto = $info['profile_picture'] ?? 'default.png';
@@ -23,22 +24,22 @@ $date = new DateTime($datetimeString);
 $formattedDate = $date->format('F Y');
 
 // Fetch number of followers
-$followersSql = "SELECT COUNT(*) AS follower_count FROM follows WHERE followed_id='$username';";
+$followersSql = "SELECT COUNT(*) AS follower_count FROM follows WHERE followed_id='$id';";
 $followersResult = mysqli_query($conn, $followersSql);
 $followersCount = mysqli_fetch_assoc($followersResult)['follower_count'];
 
 // Fetch number of following
-$followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower_id='$username';";
+$followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower_id='$id';";
 $followingResult = mysqli_query($conn, $followingSql);
 $followingCount = mysqli_fetch_assoc($followingResult)['following_count'];
 
 // Fetch followers list
-$followersListSql = "SELECT follower_id FROM follows WHERE followed_id='$username';";
+$followersListSql = "SELECT follower_id FROM follows WHERE followed_id='$id';";
 $followersListResult = mysqli_query($conn, $followersListSql);
 $followersListInfo = mysqli_fetch_all($followersListResult, MYSQLI_ASSOC);
 
 // Fetch following list
-$followingListSql = "SELECT followed_id FROM follows WHERE follower_id='$username';";
+$followingListSql = "SELECT followed_id FROM follows WHERE follower_id='$id';";
 $followingListResult = mysqli_query($conn, $followingListSql);
 $followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
 
@@ -141,7 +142,7 @@ $location = $bioInfo['location'];
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
-                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interestsModal">User Interests</a></li>
+                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interestsModal">Edit Your Details</a></li>
                                 </ul>
                             </div>
 
@@ -169,6 +170,7 @@ $location = $bioInfo['location'];
                                         <p><?php echo $followingCount; ?></p>
                                     </div>
                                 </div>
+                                
                                 <!-- Bio Section Below Stats -->
                                 <div class="mt-3 bio-text text-start">
                                     <p><?php echo nl2br(htmlspecialchars($bio)); ?></p>
@@ -208,7 +210,7 @@ $location = $bioInfo['location'];
                                     <?php endif; ?>
                                 </div>
                                 <div class="modal-footer justify-content-center"> <!-- Center the footer content -->
-                                    <a href="user_details.php" class="btn mybtn-outline">Edit Interests</a> <!-- Edit button -->
+                                    <a href="user_details.php" class="btn mybtn-outline">Edit Profile</a> <!-- Edit button -->
                                 </div>
                             </div>
                         </div>
@@ -282,17 +284,18 @@ $location = $bioInfo['location'];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php 
-                        foreach ($followersListInfo as $follower_id) {
-                            $follower_user = $follower_id['follower_id'];
-                            $nameSql = "SELECT name FROM users WHERE username = '$follower_user';";
+                        foreach ($followersListInfo as $followers) {
+                            $follower_user_id = $followers['follower_id'];
+                            $nameSql = "SELECT * FROM users WHERE id = '$follower_user_id';";
                             $nameResult = mysqli_query($conn, $nameSql);
                             $nameInfo = mysqli_fetch_assoc($nameResult);
                             $follower_name = $nameInfo['name'];
+                            $follower_username = $nameInfo['username'];
                         ?>
-                            <li class="list-group-item">
-                                <a href="user-profile.php?username=<?php echo htmlspecialchars($follower_user); ?>" class="text-decoration-none">
+                            <li class="list-group-item">                            
+                                <a href="user_profile.php?username=<?php echo htmlspecialchars($follower_username); ?>" class="text-decoration-none">
                                     <strong><?php echo htmlspecialchars($follower_name); ?></strong>
-                                    <div class="text-muted"><?php echo htmlspecialchars($follower_user); ?></div>
+                                    <div class="text-muted"><?php echo htmlspecialchars($follower_username); ?></div>
                                 </a>
                             </li>
                         <?php
@@ -314,18 +317,19 @@ $location = $bioInfo['location'];
                 </div>
                 <div class="modal-body">
                     <ul class="list-group">
-                        <?php 
+                        <?php
                         foreach ($followingListInfo as $following) {
-                            $following_user = $following['following'];
-                            $nameSql = "SELECT name FROM users WHERE username = '$following_user';";
+                            $following_user_id = $following['followed_id'];
+                            $nameSql = "SELECT * FROM users WHERE id = '$following_user_id';";
                             $nameResult = mysqli_query($conn, $nameSql);
                             $nameInfo = mysqli_fetch_assoc($nameResult);
                             $following_name = $nameInfo['name'];
+                            $following_username = $nameInfo['username'];
                         ?>
                             <li class="list-group-item">
-                                <a href="user-profile.php?username=<?php echo htmlspecialchars($following_user); ?>" class="text-decoration-none">
+                                <a href="user_profile.php?username=<?php echo htmlspecialchars($following_username); ?>" class="text-decoration-none">
                                     <strong><?php echo htmlspecialchars($following_name); ?></strong>
-                                    <div class="text-muted"><?php echo htmlspecialchars($following_user); ?></div>
+                                    <div class="text-muted"><?php echo htmlspecialchars($following_username); ?></div>
                                 </a>
                             </li>
                         <?php

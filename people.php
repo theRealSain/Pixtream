@@ -21,12 +21,17 @@ $sql = "SELECT * FROM users WHERE username != '$username';";
 $result = mysqli_query($conn, $sql);
 
 // Fetch users the current user is following
-$followSql = "SELECT followed_id FROM follows WHERE follower_id = '$username';";
+$followSql = "SELECT followed_id FROM follows WHERE follower_id = (SELECT id FROM users WHERE username='$username');";
 $followResult = mysqli_query($conn, $followSql);
 $following = [];
 while ($followRow = mysqli_fetch_assoc($followResult)) {
-    $following[] = $followRow['followed_id']; // Corrected field name
+    $following[] = $followRow['followed_id']; // Store the followed user IDs
 }
+
+// Fetching the current user's ID for easier reference
+$currentUserIdResult = mysqli_query($conn, "SELECT id FROM users WHERE username='$username';");
+$currentUserIdRow = mysqli_fetch_assoc($currentUserIdResult);
+$currentUserId = $currentUserIdRow['id'];
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +42,7 @@ while ($followRow = mysqli_fetch_assoc($followResult)) {
     <title>PIXTREAM - People</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/me.css">
-    <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />    
+    <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
 </head>
 <body>
     <!-- Navbar -->
@@ -77,65 +82,43 @@ while ($followRow = mysqli_fetch_assoc($followResult)) {
     <div class="container mt-4">
         <h2>People</h2>
         <ul class="list-group">
-            <?php
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $profilePhoto = $row['profile_picture'] ?? 'default.png'; // Default photo if none is set
-                    $isFollowing = in_array($row['username'], $following);
-                    $btnClass = $isFollowing ? 'mybtn-outline' : 'mybtn'; // Change based on follow status
-                    $btnText = $isFollowing ? 'Following' : 'Follow';
-                    echo "<li class='list-group-item user-card'>";
-                    echo "<a href='user-profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
-                    echo "<img src='profile_picture/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
-                    echo "<div class='card-body'>";
-                    echo "<div>";
-                    echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
-                    echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
-                    echo "</div></a>";
-                    echo "<button class='btn $btnClass' data-username='" . htmlspecialchars($row['username']) . "'>$btnText</button>";
-                    echo "</div>";
-                    echo "</li>";
-                }
-            } else {
-                echo "<li class='list-group-item'>No users found.</li>";
+        <?php
+        if (mysqli_num_rows($result) > 0) {
+            // Inside your while loop where you fetch each user
+            while ($row = mysqli_fetch_assoc($result)) {
+                $profilePhoto = $row['profile_picture'] ?? 'default.png'; // Default photo if none is set
+            
+                // Check if the current user is following this user
+                $isFollowing = in_array($row['id'], $following); // Use user ID for follow check
+                $buttonClass = $isFollowing ? 'mybtn-outline' : 'mybtn'; // Change class based on following status
+                $buttonText = $isFollowing ? 'Following' : 'Follow'; // Change text based on following status
+                $action = $isFollowing ? 'unfollow' : 'follow'; // Define action based on following status
+            
+                echo "<li class='list-group-item user-card'>";
+                echo "<a href='user_profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
+                echo "<img src='profile_picture/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
+                echo "<div class='card-body'>";
+                echo "<div>";
+                echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
+                echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
+                echo "</div></a>";
+                echo "<form action='follow_unfollow.php' method='POST' style='display:inline;'>"; // Added form for follow/unfollow
+                echo "<input type='hidden' name='username' value='" . htmlspecialchars($row['username']) . "'>";
+                echo "<input type='hidden' name='action' value='$action'>"; // Action to perform
+                echo "<button type='submit' class='btn $buttonClass'>$buttonText</button>"; // Button to submit form
+                echo "</form>";
+                echo "</div>";
+                echo "</li>";
             }
-            ?>
+        } else {
+            echo "<li class='list-group-item'>No users found.</li>";
+        }
+        ?>
         </ul>
     </div>
 
     <!-- JS files -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/jquery-3.6.0.min.js"></script>
-
-    <script>
-        document.querySelectorAll('.mybtn, .mybtn-outline').forEach(button => {
-            button.addEventListener('click', function () {
-                const username = this.getAttribute('data-username');
-                const isFollowing = this.classList.contains('mybtn-outline'); // Check if currently following
-                
-                // AJAX request
-                fetch('follow_unfollow.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, action: isFollowing ? 'unfollow' : 'follow' })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Toggle button text and class
-                        this.textContent = isFollowing ? 'Follow' : 'Following';
-                        this.classList.toggle('mybtn-outline');
-                        this.classList.toggle('mybtn');
-                    } else {
-                        console.error(data.message); // Log any error message
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-    </script>
-
 </body>
 </html>

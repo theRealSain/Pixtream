@@ -20,12 +20,21 @@ $stmt->bind_result($user_id);
 $stmt->fetch();
 $stmt->close();
 
+// Fetch current user details (location and bio)
+$query_user_details = "SELECT location, bio FROM users WHERE id = ?";
+$stmt_user_details = $conn->prepare($query_user_details);
+$stmt_user_details->bind_param("i", $user_id);
+$stmt_user_details->execute();
+$stmt_user_details->bind_result($current_location, $current_bio);
+$stmt_user_details->fetch();
+$stmt_user_details->close();
+
 // Check if form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the posted interests and user details
     $selected_interests = isset($_POST['interests']) ? $_POST['interests'] : [];
-    $location = $_POST['location'] ?? '';
-    $bio = $_POST['bio'] ?? '';
+    $location = $_POST['location'] !== '' ? $_POST['location'] : $current_location; // Use current location if not selected
+    $bio = $_POST['bio'] ?? $current_bio; // Use current bio if not filled
 
     // Update user location and bio
     $query_update_details = "UPDATE users SET location = ?, bio = ? WHERE id = ?";

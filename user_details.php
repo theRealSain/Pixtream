@@ -121,60 +121,65 @@ $bio = $user_details['bio'] ?? '';
             </div>
 
             <div class="row mt-4">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <div class="form-group mb-3">
                         <label for="inputState" class="d-block text-uppercase"><b>State</b></label>
-                        <select class="form-control" id="inputState" onchange="populateDistricts()">
-                            <option selected hidden>Select State</option>
-                            <option value="AndraPradesh">Andra Pradesh</option>
-                            <option value="ArunachalPradesh">Arunachal Pradesh</option>
-                            <option value="Assam">Assam</option>
-                            <option value="Bihar">Bihar</option>
-                            <option value="Chhattisgarh">Chhattisgarh</option>
-                            <option value="Goa">Goa</option>
-                            <option value="Gujarat">Gujarat</option>
-                            <option value="Haryana">Haryana</option>
-                            <option value="HimachalPradesh">Himachal Pradesh</option>
-                            <option value="JammuKashmir">Jammu and Kashmir</option>
-                            <option value="Jharkhand">Jharkhand</option>
-                            <option value="Karnataka">Karnataka</option>
-                            <option value="Kerala">Kerala</option>
-                            <option value="MadhyaPradesh">Madya Pradesh</option>
-                            <option value="Maharashtra">Maharashtra</option>
-                            <option value="Manipur">Manipur</option>
-                            <option value="Meghalaya">Meghalaya</option>
-                            <option value="Mizoram">Mizoram</option>
-                            <option value="Nagaland">Nagaland</option>
-                            <option value="Odisha">Odisha</option>
-                            <option value="Punjab">Punjab</option>
-                            <option value="Rajasthan">Rajasthan</option>
-                            <option value="Sikkim">Sikkim</option>
-                            <option value="TamilNadu">Tamil Nadu</option>
-                            <option value="Telangana">Telangana</option>
-                            <option value="Tripura">Tripura</option>
-                            <option value="Uttaranchal">Uttaranchal</option>
-                            <option value="UttarPradesh">Uttar Pradesh</option>
-                            <option value="WestBengal">West Bengal</option>
-                            <option disabled style="background-color:#aaa; color:#fff">UNION Territories</option>
-                            <option value="AndamanNicobar">Andaman and Nicobar Islands</option>
-                            <option value="Chandigarh">Chandigarh</option>
-                            <option value="DadraNagarHaveli">Dadra and Nagar Haveli</option>
-                            <option value="DamanDiu">Daman and Diu</option>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Lakshadweep">Lakshadweep</option>
-                            <option value="Puducherry">Puducherry</option>
+                        <select class="form-control" id="inputState" name="location">
+                            <option selected hidden>Select a city</option>
+                            <?php
+                            // Array of options for the cities
+                            $cities = [
+                                "Agartala", "Ahmedabad", "Ahmadnagar", "Alappuzha", "Aligarh", 
+                                "Almora", "Alipur Duar", "Ambala", "Ambikapur", "Amravati", 
+                                "Amritsar", "Anantapur", "Anantnag", "Angul", "Ara", 
+                                "Arrah", "Arcot", "Aurangabad", "Aizawl", "Badami", 
+                                "Badaun", "Balaghat", "Balangir", "Baleshwar", "Ballari", 
+                                "Banda", "Bara Banki", "Baramula", "Bardhaman", "Bariyarpur", 
+                                "Baripada", "Barwani", "Bastar", "Bhopal", "Bhubaneshwar", 
+                                "Bilaspur", "Bihar Sharif", "Bikaner", "Bodhan", "Bodh Gaya", 
+                                "Bongaigaon", "Brahmapur", "Budaun", "Bulandshahr", "Chandigarh", 
+                                "Chennai", "Chhatarpur", "Chhindwara", "Churachandpur", "Coimbatore", 
+                                "Cuddalore", "Cuttack", "Dahod", "Daman", "Davanagere", 
+                                "Deoghar", "Deoria", "Dehradun", "Delhi", "Dhanbad", 
+                                "Dhar", "Dharamshala", "Dibrugarh", "Dimapur", "Dindigul", 
+                                "Durg", "Durgapur", "Eluru", "Ernakulam", "Erode", "Faridabad", 
+                                "Faridkot", "Fatehgarh", "Fatehpur", "Firozpur", "Gadag", 
+                                "Gandhinagar", "Gangtok", "Gaya", "Ghaziabad", "Ghazipur", 
+                                "Giridih", "Gurgaon", "Guwahati", "Hamirpur", "Hapur", 
+                                "Hazaribagh", "Hindupur", "Hissar", "Hoshiarpur", "Hubballi-Dharwad", 
+                                "Hyderabad", "Idukki", "Imphal", "Indore", "Itanagar", "Itarsi", 
+                                "Jabalpur", "Jaipur", "Jaisalmer", "Jalandhar", "Jammu", 
+                                "Jamshedpur", "Jodhpur", "Junagadh", "Kachchh", "Kadra", 
+                                "Kangra", "Kannur", "Kanpur", "Kanyakumari", "Karaikal", 
+                                "Kargil", "Karimnagar", "Karnal", "Kasargod", "Kendujhar", "Khammam", 
+                                "Khargone", "Kolar", "Kolhapur", "Kollam", "Kottayam",
+                                "Kozhikode", "Krishnanagar", "Lakhimpur", "Latur", "Madhubani", 
+                                "Madurai", "Mahabubnagar", "Malappuram", "Malda", "Mandi", 
+                                "Mangaluru", "Manipal", "Mathura", "Mau", "Meerut", 
+                                "Mehsana", "Midnapore", "Mizoram", "Moga", "Moradabad", 
+                                "Muzaffarpur", "Nagapattinam", "Nagpur", "Nalgonda", "Nanded", 
+                                "Nashik", "Navi Mumbai", "Nellore", "Nizamabad", "Noida", 
+                                "Ooty", "Palakkad", "Panchkula", "Panipat", "Pathanamthitta", "Patiala", 
+                                "Patna", "Pimpri-Chinchwad", "Puducherry", "Pune", "Raebareli", 
+                                "Raipur", "Rajkot", "Rajpur", "Ranchi", "Ratnagiri", 
+                                "Rudrapur", "Sagar", "Sangli", "Sangrur", "Sant Ravidas Nagar", 
+                                "Satara", "Satna", "Shahjahanpur", "Shimla", "Sikar", 
+                                "Siliguri", "Solapur", "Srinagar", "Surat", "Tirunelveli", 
+                                "Tirupati", "Thane", "Thiruvananthapuram", "Thrissur", "Udaipur", "Ujjain", 
+                                "Vadodara", "Varanasi", "Vellore", "Vijayawada", "Visakhapatnam", 
+                                "Warangal", "Wayanad", "Yamunanagar"
+                            ];
+
+                            // Loop through cities to create <option> elements
+                            foreach ($cities as $city) {
+                                $selected = ($city == $location) ? 'selected' : '';
+                                echo "<option value=\"$city\" $selected>$city</option>";
+                            }
+                            ?>
                         </select>
                     </div>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="form-group mb-3">
-                        <label for="inputDistrict" class="d-block text-uppercase"><b>District</b></label>
-                        <select name="location" class="form-control" id="inputDistrict">
-                            <option selected hidden>Select District</option>
-                        </select>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <div class="form-group mb-3">
@@ -183,10 +188,11 @@ $bio = $user_details['bio'] ?? '';
                     </div>
                 </div>
             </div>
+        
 
 
             <div class="d-flex justify-content-between mt-4">
-                <button type="reset" class="btn mybtn-outline me-2">Reset to previous state</button>
+                <button type="reset" class="btn mybtn-outline me-2">Restore to default</button>
                 <div class="ms-auto">
                     <a href="profile.php"><button type="button" class="btn mybtn-outline mr-3">Skip</button></a>
                     <button type="submit" class="btn mybtn">Submit <i class="fa-regular fa-circle-right"></i></button>
