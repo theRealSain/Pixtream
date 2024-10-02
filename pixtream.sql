@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 29, 2024 at 03:25 PM
+-- Generation Time: Oct 02, 2024 at 04:15 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -70,6 +70,16 @@ CREATE TABLE `follows` (
   `followed_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `follows`
+--
+
+INSERT INTO `follows` (`id`, `follower_id`, `followed_id`, `created_at`) VALUES
+(10, 11, 12, '2024-10-02 13:13:11'),
+(11, 12, 11, '2024-10-02 13:29:01'),
+(12, 16, 11, '2024-10-02 13:38:18'),
+(13, 16, 12, '2024-10-02 13:38:18');
 
 -- --------------------------------------------------------
 
@@ -232,9 +242,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `bio`, `profile_picture`, `location`, `created_at`) VALUES
-(11, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', '', NULL, 'Ernakulam', '2024-09-29 04:07:17'),
-(12, 'Jack', 'jack', 'jack@example.com', 'jjjj', 'Hai', NULL, 'Thrissur', '2024-09-29 05:33:06'),
-(13, 'Jain Roy P', 'jain_panengadan', 'jain@example.com', 'jjjj', NULL, NULL, NULL, '2024-09-29 05:55:36');
+(11, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', '❤️ Lucky Boy👑\r\nGym Addict..⚡\r\nLove to play cricket 🏏\r\nPhotoholic ❤️\r\nMusic lover 🎧\r\nWish Me On 9 May 🎂', 'sain.jpg', 'Thrissur', '2024-09-29 04:07:17'),
+(12, 'Jack', 'jack', 'jack@example.com', 'jjjj', 'Welcome to My Profile💞\r\nEnjoying Life🖤😘\r\nHeartsKing💞\r\nMusic Addicted🎶\r\nBeach LoVer 🏖\r\nGym Lover 🏋‍♀\r\nRoyal entry on 22 June🎁', 'jack.jpg', 'Thiruvananthapuram', '2024-09-29 05:33:06'),
+(16, 'Jain Roy P', 'jain_panengadan', 'jain@example.com', 'jjjj', '⚫Login In The World 4th July🎂\r\n⚫😉BAD BOY💋\r\n⚫Fantasy❤\r\n⚫From Kerala🏠\r\n⚫Hobby PES Gaming📸\r\n⚫🎤⛱📲🏍📸🎸', 'jain_panengadan.png', 'Thrissur', '2024-10-02 13:37:35');
 
 -- --------------------------------------------------------
 
@@ -266,11 +276,34 @@ CREATE TABLE `user_selections` (
 --
 
 INSERT INTO `user_selections` (`id`, `user_id`, `option_id`) VALUES
-(89, 11, 51),
-(90, 11, 9),
-(91, 11, 39),
-(92, 11, 16),
-(93, 11, 24);
+(94, 11, 48),
+(95, 11, 7),
+(96, 11, 6),
+(97, 11, 4),
+(98, 11, 8),
+(99, 11, 27),
+(100, 11, 26),
+(101, 11, 37),
+(102, 11, 38),
+(103, 11, 15),
+(104, 11, 12),
+(105, 11, 13),
+(106, 11, 11),
+(107, 11, 22),
+(108, 12, 51),
+(109, 12, 8),
+(110, 12, 9),
+(111, 12, 26),
+(112, 12, 39),
+(113, 12, 20),
+(114, 12, 16),
+(115, 12, 24),
+(116, 16, 48),
+(117, 16, 7),
+(118, 16, 33),
+(119, 16, 40),
+(120, 16, 17),
+(121, 16, 25);
 
 --
 -- Indexes for dumped tables
@@ -389,7 +422,7 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `follows`
 --
 ALTER TABLE `follows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `likes`
@@ -431,7 +464,7 @@ ALTER TABLE `shares`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `user_blocks`
@@ -443,7 +476,7 @@ ALTER TABLE `user_blocks`
 -- AUTO_INCREMENT for table `user_selections`
 --
 ALTER TABLE `user_selections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- Constraints for dumped tables
