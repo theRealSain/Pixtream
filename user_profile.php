@@ -12,6 +12,7 @@ $username = $_SESSION['username'];
 $log_sql = "SELECT * FROM users WHERE username='$username';";
 $log_result = mysqli_query($conn, $log_sql);
 $log_info = mysqli_fetch_assoc($log_result);
+$log_id = $log_info['id'];
 $log_name = $log_info['name'];
 
 $viewedUsername = $_GET['username']; // Username of the viewed profile
@@ -20,9 +21,10 @@ $sql = "SELECT * FROM users WHERE username='$viewedUsername';";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
 $user_id = $info['id'];
+$user_name = $info['username'];
 $name = $info['name'];
 $email = $info['email'];
-$profilePhoto = $info['profile_photo'] ?? 'default.png';
+$profilePhoto = $info['profile_picture'] ?? 'default.png';
 $bio = $info['bio'];
 $location = $info['location'];
 
@@ -81,6 +83,11 @@ $postSql = "SELECT COUNT(*) FROM posts WHERE username = '$viewedUsername';";
 $postResult = mysqli_query($conn, $postSql);
 $postInfo = mysqli_fetch_array($postResult);
 $postCount = $postInfo[0];
+
+$isFollowingQuery = "SELECT * FROM follows WHERE follower_id = '$log_id' AND followed_id = '$user_id'";
+$isFollowingResult = mysqli_query($conn, $isFollowingQuery);
+$isFollowing = mysqli_num_rows($isFollowingResult) > 0;
+
 ?>
 
 <!DOCTYPE html>
@@ -138,7 +145,7 @@ $postCount = $postInfo[0];
                         <div class="card-body d-flex flex-column">
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
-                                    <img src="assets/img/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle" width="150">
+                                    <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle" width="150">
                                 </div>
                                 <div class="mt-3">
                                     <h4><?php echo htmlspecialchars($name); ?></h4>
@@ -157,6 +164,28 @@ $postCount = $postInfo[0];
                                         <p><?php echo htmlspecialchars($followingCount); ?></p>
                                     </div>
                                 </div>
+
+                                <!-- Follow and Message Buttons Section -->
+                                <div class="mt-3 w-100 d-flex">
+                                    <!-- Follow/Unfollow Button -->
+                                    <form action="follow_unfollow.php" method="POST" class="w-50 me-1">
+                                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($user_name); ?>">
+                                        <?php if ($isFollowing): ?>
+                                            <input type="hidden" name="action" value="unfollow">
+                                            <button type="submit" class="btn mybtn-outline w-100">Following</button>
+                                        <?php else: ?>
+                                            <input type="hidden" name="action" value="follow">
+                                            <button type="submit" class="btn mybtn w-100">Follow</button>
+                                        <?php endif; ?>
+                                    </form>
+
+                                    <!-- Message Button -->
+                                    <form action="message.php" method="POST" class="w-50 ms-1">
+                                        <input type="hidden" name="message_user_id" value="<?php echo htmlspecialchars($profileUserId); ?>">
+                                        <button type="submit" class="btn mybtn-outline w-100">Message</button>
+                                    </form>
+                                </div>
+
 
                                 <!-- Bio Section Below Stats -->
                                 <div class="mt-3 bio-text text-start">

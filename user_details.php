@@ -71,7 +71,7 @@ $bio = $user_details['bio'] ?? '';
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Your Profile - Pixtream</title>
+    <title>Edit Your Profile - Pixtream</title>
     <link rel="stylesheet" href="library-files/css/bootstrap.min.css">
     <link rel="stylesheet" href="library-files/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/me.css">
@@ -80,7 +80,7 @@ $bio = $user_details['bio'] ?? '';
 <body>
     <div class="container mt-5">
         <form id="interestForm" action="profile_complete.php" method="POST" class="p-4 shadow rounded">
-            <h3 class="mb-4 text-center text-uppercase">Complete Your Profile</h3>
+            <h3 class="mb-4 text-center text-uppercase">Edit Your Profile</h3>
 
             <div class="row">
                 <div class="col-md-6">
@@ -206,7 +206,3 @@ $bio = $user_details['bio'] ?? '';
     <script src="library-files/js/bootstrap.bundle.min.js"></script>    
 </body>
 </html>
-
-
-
-<input type="text" name="location" class="form-control" value="<?php echo htmlspecialchars($location); ?>" required>

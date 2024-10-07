@@ -31,7 +31,7 @@ if ($action === 'follow') {
     if ($followerId && $followedId) {
         $sql = "INSERT INTO follows (follower_id, followed_id) VALUES ('$followerId', '$followedId')";
         if (mysqli_query($conn, $sql)) {
-            header('Location: people.php'); // Redirect back to the people page after following
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit;
         } else {
             echo "Failed to follow user.";
@@ -43,7 +43,7 @@ if ($action === 'follow') {
     if ($followerId && $followedId) {
         $sql = "DELETE FROM follows WHERE follower_id = '$followerId' AND followed_id = '$followedId'";
         if (mysqli_query($conn, $sql)) {
-            header('Location: people.php'); // Redirect back to the people page after unfollowing
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit;
         } else {
             echo "Failed to unfollow user.";

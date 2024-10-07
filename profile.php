@@ -142,7 +142,6 @@ $location = $bioInfo['location'];
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
-                                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#interestsModal">Edit Your Details</a></li>
                                 </ul>
                             </div>
 
@@ -156,7 +155,7 @@ $location = $bioInfo['location'];
                                 <div class="mt-3 mb-4">
                                     <h4><?php echo $name; ?></h4>
                                 </div>
-                                <div class="d-flex justify-content-around stats mb-3">
+                                <div class="d-flex justify-content-around stats">
                                     <div class="stat">
                                         <p><b>Posts</b></p>
                                         <p><?php echo $postCount; ?></p>
@@ -169,6 +168,12 @@ $location = $bioInfo['location'];
                                         <p><b>Following</b></p>
                                         <p><?php echo $followingCount; ?></p>
                                     </div>
+                                </div>
+
+                                <div class="w-100 mb-3">
+                                    <a href="user_details.php">
+                                        <button type="button" class="btn mybtn-outline w-100">Edit Profile</button>
+                                    </a>
                                 </div>
                                 
                                 <!-- Bio Section Below Stats -->
@@ -189,34 +194,6 @@ $location = $bioInfo['location'];
                             </div>
                         </div>
                     </div>
-
-                    <!-- User Interests Modal -->                    
-                    <div class="modal fade" id="interestsModal" tabindex="-1" aria-labelledby="interestsModalLabel" aria-hidden="true">
-                        <div class="modal-dialog mt-5">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="interestsModalLabel">Your Interests</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body d-flex justify-content-center flex-wrap">
-                                    <?php if (!empty($interests)): ?>
-                                        <div class="d-flex flex-wrap">
-                                            <?php foreach ($interests as $interest): ?>
-                                                <span class="badge mybadge me-2 mb-2"><?php echo htmlspecialchars($interest); ?></span> <!-- Bootstrap badge -->
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <div>No interests added.</div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="modal-footer justify-content-center"> <!-- Center the footer content -->
-                                    <a href="user_details.php" class="btn mybtn-outline">Edit Profile</a> <!-- Edit button -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
 
                     <!-- Info Card -->
                     <div class="card mt-3 mb-5 info-card">
