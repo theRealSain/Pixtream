@@ -6,6 +6,14 @@ body{
     color: black !important;
 }
 
+li{
+    cursor: pointer;
+}
+.dropdown-menu .dropdown-item:active {
+    background-color: #000000  !important;
+    color: white;
+}
+
 #login, #register{
     border-radius: 10px;
     padding: 50px;
@@ -75,12 +83,40 @@ body{
     margin-bottom: -450px !important;
 }
 
-.follow-btn{
-
+.chat-dropdown {
+    width: 100%; /* Ensure it takes full width of parent */
+    max-height: 300px; /* Keep height for scrolling */
+    overflow-y: auto; /* Allow vertical scrolling */
+    display: none; /* Initially hidden */
+    z-index: 1000; /* Ensure it's above other elements */
+    border-radius: 0; /* Remove corner radius for a clean look */
 }
-.btn-following{
-    border: 1px solid black;
-    color: black;
+.chat-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.chat-dropdown .dropdown-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.chat-dropdown .dropdown-item .name {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+.chat-dropdown .dropdown-item .username {
+    font-size: 0.9em;
+    color: gray;
+}
+.chat-dropdown .dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+.chat-dropdown .dropdown-item:active {
+    background-color: #d6d6d6 !important;
+    color: inherit;
 }
 
 a{
