@@ -9,6 +9,46 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
+// Function to fetch recent chats
+function getRecentChats($conn, $username) {
+    $recentChats = [];
+    
+    // Get sender's user ID
+    $senderSQL = "SELECT id FROM users WHERE username='$username'";
+    $senderResult = mysqli_query($conn, $senderSQL);
+    $senderData = mysqli_fetch_assoc($senderResult);
+    $sender_id = $senderData['id'];
+
+    // Fetch recent messages for the logged-in user
+    $messageSQL = "
+        SELECT m.*, u.name, u.username, u.profile_picture 
+        FROM messages m 
+        JOIN users u ON (u.id = m.sender_id OR u.id = m.receiver_id)
+        WHERE (m.sender_id = '$sender_id' OR m.receiver_id = '$sender_id')
+        ORDER BY m.created_at DESC
+        LIMIT 10"; // Adjust the limit as needed
+    $messageResult = mysqli_query($conn, $messageSQL);
+
+    while ($chat = mysqli_fetch_assoc($messageResult)) {
+        // Store recent chat with sender/receiver information
+        $recentChats[] = [
+            'chat_id' => $chat['id'],
+            'message' => $chat['message'],
+            'created_at' => $chat['created_at'],
+            'partner_username' => ($chat['sender_id'] == $sender_id) ? $chat['receiver_id'] : $chat['sender_id'],
+            'partner_name' => $chat['name'],
+            'profile_picture' => !empty($chat['profile_picture']) ? $chat['profile_picture'] : 'profile_picture/default.png',
+            'is_sender' => $chat['sender_id'] == $sender_id
+        ];
+    }
+    
+    return $recentChats;
+}
+
+// Load recent chats
+$recentChats = getRecentChats($conn, $username);
+
+// Search for users
 if (isset($_POST['searchUser'])) {
     $searchQuery = mysqli_real_escape_string($conn, $_POST['searchUser']);
     $searchedUsers = [];
@@ -26,11 +66,11 @@ if (isset($_POST['searchUser'])) {
         foreach ($searchedUsers as $user) {
             $profilePic = !empty($user['profile_picture']) ? $user['profile_picture'] : 'profile_picture/default.png';
             echo '
-            <a class="dropdown-item user-item" data-username="' . $user['username'] . '">
+            <a class="dropdown-item user-item" data-username="' . htmlspecialchars($user['username']) . '">
                 <img src="profile_picture/' . $profilePic . '" alt="Profile Picture">
                 <div>
-                    <div class="name">' . $user['name'] . '</div>
-                    <div class="username">' . $user['username'] . '</div>
+                    <div class="name">' . htmlspecialchars($user['name']) . '</div>
+                    <div class="username">' . htmlspecialchars($user['username']) . '</div>
                 </div>
             </a>';
         }
@@ -40,12 +80,26 @@ if (isset($_POST['searchUser'])) {
     exit();
 }
 
+// Send message
 if (isset($_POST['message'], $_POST['receiver'])) {
     $message = mysqli_real_escape_string($conn, $_POST['message']);
     $receiver = mysqli_real_escape_string($conn, $_POST['receiver']);
 
     if (!empty($message) && !empty($receiver)) {
-        $insertSQL = "INSERT INTO messages (sender, receiver, content) VALUES ('$username', '$receiver', '$message')";
+        // Get sender's user ID
+        $senderSQL = "SELECT id FROM users WHERE username='$username'";
+        $senderResult = mysqli_query($conn, $senderSQL);
+        $senderData = mysqli_fetch_assoc($senderResult);
+        $sender_id = $senderData['id'];
+
+        // Get receiver's user ID
+        $receiverSQL = "SELECT id FROM users WHERE username='$receiver'";
+        $receiverResult = mysqli_query($conn, $receiverSQL);
+        $receiverData = mysqli_fetch_assoc($receiverResult);
+        $receiver_id = $receiverData['id'];
+
+        // Insert message into messages table
+        $insertSQL = "INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES ('$sender_id', '$receiver_id', '$message', NOW())";
         if (mysqli_query($conn, $insertSQL)) {
             echo 'Message sent';
         } else {
@@ -53,5 +107,58 @@ if (isset($_POST['message'], $_POST['receiver'])) {
         }
     }
     exit();
+}
+
+// Fetch messages between the logged-in user and selected user
+if (isset($_POST['fetchMessages'])) {
+    $partnerUsername = mysqli_real_escape_string($conn, $_POST['partnerUsername']);
+
+    // Get sender's user ID
+    $senderSQL = "SELECT id FROM users WHERE username='$username'";
+    $senderResult = mysqli_query($conn, $senderSQL);
+    $senderData = mysqli_fetch_assoc($senderResult);
+    $sender_id = $senderData['id'];
+
+    // Get receiver's user ID
+    $receiverSQL = "SELECT id FROM users WHERE username='$partnerUsername'";
+    $receiverResult = mysqli_query($conn, $receiverSQL);
+    $receiverData = mysqli_fetch_assoc($receiverResult);
+    $receiver_id = $receiverData['id'];
+
+    // Fetch messages between the two users
+    $messagesSQL = "
+        SELECT m.*, u.name, u.username 
+        FROM messages m 
+        JOIN users u ON u.id = IF(m.sender_id = '$sender_id', m.receiver_id, m.sender_id)
+        WHERE (m.sender_id = '$sender_id' AND m.receiver_id = '$receiver_id') 
+           OR (m.sender_id = '$receiver_id' AND m.receiver_id = '$sender_id')
+        ORDER BY m.created_at ASC"; // Change ASC to DESC if you want the newest messages first
+    $messagesResult = mysqli_query($conn, $messagesSQL);
+    
+    while ($message = mysqli_fetch_assoc($messagesResult)) {
+        echo '
+        <div class="message ' . ($message['sender_id'] == $sender_id ? 'sent' : 'received') . '">
+            <strong>' . htmlspecialchars($message['username']) . ':</strong> ' . htmlspecialchars($message['message']) . '
+            <span class="timestamp">' . date('Y-m-d H:i:s', strtotime($message['created_at'])) . '</span>
+        </div>';
+    }
+    exit();
+}
+
+// Display recent chats in the modal
+if (!empty($recentChats)) {
+    foreach ($recentChats as $chat) {
+        echo '
+        <div class="recent-chat">
+            <a href="#" class="chat-link" data-username="' . htmlspecialchars($chat['partner_username']) . '">
+                <img src="profile_picture/' . htmlspecialchars($chat['profile_picture']) . '" alt="Profile Picture">
+                <div class="chat-info">
+                    <span class="chat-name">' . htmlspecialchars($chat['partner_name']) . '</span>
+                    <span class="chat-message">' . htmlspecialchars($chat['message']) . '</span>
+                    <span class="chat-timestamp">' . date('Y-m-d H:i:s', strtotime($chat['created_at'])) . '</span>
+                </div>
+            </a>
+        </div>';
+    }
 }
 ?>

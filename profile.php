@@ -140,8 +140,11 @@ $location = $bioInfo['location'];
                                     <i class="fa-solid fa-ellipsis custom-ellipsis"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountInfoModal">About your Account</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
+                                    <li><a class="dropdown-item" href="">Submit Complaints</a></li>
+                                    <li><a class="dropdown-item text-danger" href="">De-activate Account</a></li>
                                 </ul>
                             </div>
 
@@ -195,27 +198,34 @@ $location = $bioInfo['location'];
                         </div>
                     </div>
 
-                    <!-- Info Card -->
-                    <div class="card mt-3 mb-5 info-card">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Full Name</h6>
-                                <span class="text-secondary"><?php echo $name; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb0">Username</h6>
-                                <span class="text-secondary"><?php echo $username; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Email</h6>
-                                <span class="text-secondary"><?php echo $email; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Date Joined</h6>
-                                <span class="text-secondary"><?php echo $formattedDate; ?></span>
-                            </li>
-                        </ul>
+                    <!-- Info Modal -->
+                    <div class="modal fade" id="accountInfoModal" tabindex="-1" aria-labelledby="accountInfoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="accountInfoModalLabel">Account Information</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6 class="mb-0">Full Name</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($name); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Username</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($username); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Email</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($email); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Date Joined</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($formattedDate); ?></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn mybtn-outline" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
                 <div class="col-md-8">

@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Sep 29, 2024 at 03:25 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Host: 127.0.0.1:3306
+-- Generation Time: Oct 14, 2024 at 12:07 AM
+-- Server version: 8.0.31
+-- PHP Version: 8.0.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -27,10 +27,12 @@ SET time_zone = "+00:00";
 -- Table structure for table `categories`
 --
 
-CREATE TABLE `categories` (
-  `id` int(11) NOT NULL,
-  `category_name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categories`
@@ -50,12 +52,16 @@ INSERT INTO `categories` (`id`, `category_name`) VALUES
 -- Table structure for table `comments`
 --
 
-CREATE TABLE `comments` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `post_id` int(11) DEFAULT NULL,
-  `comment` longtext DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `post_id` int DEFAULT NULL,
+  `comment` longtext COLLATE utf8mb4_general_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `post_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -64,12 +70,25 @@ CREATE TABLE `comments` (
 -- Table structure for table `follows`
 --
 
-CREATE TABLE `follows` (
-  `id` int(11) NOT NULL,
-  `follower_id` int(11) DEFAULT NULL,
-  `followed_id` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `follows`;
+CREATE TABLE IF NOT EXISTS `follows` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `follower_id` int DEFAULT NULL,
+  `followed_id` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `follower_id` (`follower_id`),
+  KEY `followed_id` (`followed_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `follows`
+--
+
+INSERT INTO `follows` (`id`, `follower_id`, `followed_id`, `created_at`) VALUES
+(3, 12, 11, '2024-10-13 22:40:59'),
+(4, 13, 11, '2024-10-13 22:41:18'),
+(6, 11, 12, '2024-10-13 22:41:51');
 
 -- --------------------------------------------------------
 
@@ -77,11 +96,15 @@ CREATE TABLE `follows` (
 -- Table structure for table `likes`
 --
 
-CREATE TABLE `likes` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `post_id` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `likes`;
+CREATE TABLE IF NOT EXISTS `likes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `post_id` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `post_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -90,13 +113,28 @@ CREATE TABLE `likes` (
 -- Table structure for table `messages`
 --
 
-CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `sender_id` int(11) DEFAULT NULL,
-  `receiver_id` int(11) DEFAULT NULL,
-  `message` longtext DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender_id` int DEFAULT NULL,
+  `receiver_id` int DEFAULT NULL,
+  `message` longtext COLLATE utf8mb4_general_ci,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at`) VALUES
+(1, 11, 12, 'hii', '2024-10-13 23:12:38'),
+(2, 11, 12, 'hii', '2024-10-13 23:14:31'),
+(3, 11, 12, 'dfgd', '2024-10-13 23:15:56'),
+(5, 11, 13, 'f', '2024-10-13 23:38:50'),
+(6, 11, 12, 'sdfsg', '2024-10-13 23:53:58');
 
 -- --------------------------------------------------------
 
@@ -104,11 +142,14 @@ CREATE TABLE `messages` (
 -- Table structure for table `options`
 --
 
-CREATE TABLE `options` (
-  `id` int(11) NOT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `option_name` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `options`;
+CREATE TABLE IF NOT EXISTS `options` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `category_id` int DEFAULT NULL,
+  `option_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `options`
@@ -173,13 +214,16 @@ INSERT INTO `options` (`id`, `category_id`, `option_name`) VALUES
 -- Table structure for table `posts`
 --
 
-CREATE TABLE `posts` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `post_path` varchar(255) DEFAULT NULL,
-  `caption` longtext DEFAULT NULL,
-  `category` set('Photos','Videos','Stories','Music','Articles','Memes','Art & Design','Photography','Travel & Adventure','Food & Cooking','Others') NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `posts`;
+CREATE TABLE IF NOT EXISTS `posts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `post_path` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `caption` longtext COLLATE utf8mb4_general_ci,
+  `category` set('Photos','Videos','Stories','Music','Articles','Memes','Art & Design','Photography','Travel & Adventure','Food & Cooking','Others') COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -188,11 +232,15 @@ CREATE TABLE `posts` (
 -- Table structure for table `saved_posts`
 --
 
-CREATE TABLE `saved_posts` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `post_id` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `saved_posts`;
+CREATE TABLE IF NOT EXISTS `saved_posts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `post_id` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `post_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -201,12 +249,17 @@ CREATE TABLE `saved_posts` (
 -- Table structure for table `shares`
 --
 
-CREATE TABLE `shares` (
-  `id` int(11) NOT NULL,
-  `from_user_id` int(11) DEFAULT NULL,
-  `to_user_id` int(11) DEFAULT NULL,
-  `post_id` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `shares`;
+CREATE TABLE IF NOT EXISTS `shares` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `from_user_id` int DEFAULT NULL,
+  `to_user_id` int DEFAULT NULL,
+  `post_id` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `from_user_id` (`from_user_id`),
+  KEY `to_user_id` (`to_user_id`),
+  KEY `post_id` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -215,25 +268,29 @@ CREATE TABLE `shares` (
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `bio` varchar(255) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `location` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `bio` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `profile_picture` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `bio`, `profile_picture`, `location`, `created_at`) VALUES
-(11, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', '', NULL, 'Ernakulam', '2024-09-29 04:07:17'),
-(12, 'Jack', 'jack', 'jack@example.com', 'jjjj', 'Hai', NULL, 'Thrissur', '2024-09-29 05:33:06'),
+(11, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', '👉Mr. Perfect😎\r\n💪 Fitness Freak⚡\r\n📸PhotoHolic📸\r\n🎵Music Addict🎶\r\n❤‍🔥Love my Mom dad 👑\r\n💝Friends Forever👬\r\n👑Cake Murder on 23 April🎂', 'default.png', 'Thrissur', '2024-09-29 04:07:17'),
+(12, 'Jack', 'jack', 'jack@example.com', 'jjjj', 'Hai', 'jack.jpg', 'Thrissur', '2024-09-29 05:33:06'),
 (13, 'Jain Roy P', 'jain_panengadan', 'jain@example.com', 'jjjj', NULL, NULL, NULL, '2024-09-29 05:55:36');
 
 -- --------------------------------------------------------
@@ -242,11 +299,15 @@ INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `bio`, `prof
 -- Table structure for table `user_blocks`
 --
 
-CREATE TABLE `user_blocks` (
-  `id` int(11) NOT NULL,
-  `blocked_by` int(11) DEFAULT NULL,
-  `blocked_user` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+DROP TABLE IF EXISTS `user_blocks`;
+CREATE TABLE IF NOT EXISTS `user_blocks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `blocked_by` int DEFAULT NULL,
+  `blocked_user` int DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `blocked_by` (`blocked_by`),
+  KEY `blocked_user` (`blocked_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -255,195 +316,34 @@ CREATE TABLE `user_blocks` (
 -- Table structure for table `user_selections`
 --
 
-CREATE TABLE `user_selections` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `option_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `user_selections`;
+CREATE TABLE IF NOT EXISTS `user_selections` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `option_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `option_id` (`option_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user_selections`
 --
 
 INSERT INTO `user_selections` (`id`, `user_id`, `option_id`) VALUES
-(89, 11, 51),
-(90, 11, 9),
-(91, 11, 39),
-(92, 11, 16),
-(93, 11, 24);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `follows`
---
-ALTER TABLE `follows`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `follower_id` (`follower_id`),
-  ADD KEY `followed_id` (`followed_id`);
-
---
--- Indexes for table `likes`
---
-ALTER TABLE `likes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `messages`
---
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `sender_id` (`sender_id`),
-  ADD KEY `receiver_id` (`receiver_id`);
-
---
--- Indexes for table `options`
---
-ALTER TABLE `options`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `category_id` (`category_id`);
-
---
--- Indexes for table `posts`
---
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `username` (`username`);
-
---
--- Indexes for table `saved_posts`
---
-ALTER TABLE `saved_posts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `shares`
---
-ALTER TABLE `shares`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `from_user_id` (`from_user_id`),
-  ADD KEY `to_user_id` (`to_user_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indexes for table `user_blocks`
---
-ALTER TABLE `user_blocks`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `blocked_by` (`blocked_by`),
-  ADD KEY `blocked_user` (`blocked_user`);
-
---
--- Indexes for table `user_selections`
---
-ALTER TABLE `user_selections`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `option_id` (`option_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `categories`
---
-ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `comments`
---
-ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `follows`
---
-ALTER TABLE `follows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `likes`
---
-ALTER TABLE `likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `options`
---
-ALTER TABLE `options`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
-
---
--- AUTO_INCREMENT for table `posts`
---
-ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `saved_posts`
---
-ALTER TABLE `saved_posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `shares`
---
-ALTER TABLE `shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT for table `user_blocks`
---
-ALTER TABLE `user_blocks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `user_selections`
---
-ALTER TABLE `user_selections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+(94, 11, 48),
+(95, 11, 7),
+(96, 11, 6),
+(97, 11, 4),
+(98, 11, 8),
+(99, 11, 27),
+(100, 11, 26),
+(101, 11, 37),
+(102, 11, 38),
+(103, 11, 12),
+(104, 11, 13),
+(105, 11, 11),
+(106, 11, 22);
 
 --
 -- Constraints for dumped tables

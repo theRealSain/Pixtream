@@ -140,9 +140,20 @@ $isFollowing = mysqli_num_rows($isFollowingResult) > 0;
         <div class="main-body">                        
             <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
+
                     <!-- Profile Card -->
                     <div class="card h-100 position-relative">
                         <div class="card-body d-flex flex-column">
+                            <div class="dropdown position-absolute top-0 end-0 p-2">
+                                <button class="btn btn-light custom-dropdown-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis custom-ellipsis"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountInfoModal">About this Account</a></li>
+                                    <li><a class="dropdown-item" href="#">Report</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#">Block User</a></li>                                    
+                                </ul>
+                            </div>
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
                                     <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" class="rounded-circle" width="150">
@@ -181,7 +192,7 @@ $isFollowing = mysqli_num_rows($isFollowingResult) > 0;
 
                                     <!-- Message Button -->
                                     <form action="message.php" method="POST" class="w-50 ms-1">
-                                        <input type="hidden" name="message_user_id" value="<?php echo htmlspecialchars($profileUserId); ?>">
+                                        <input type="hidden" name="message_user_id">
                                         <button type="submit" class="btn mybtn-outline w-100">Message</button>
                                     </form>
                                 </div>
@@ -207,28 +218,37 @@ $isFollowing = mysqli_num_rows($isFollowingResult) > 0;
                         </div>
                     </div>
 
-                    <!-- Info Card -->
-                    <div class="card mt-3 info-card">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Full Name</h6>
-                                <span class="text-secondary"><?php echo htmlspecialchars($name); ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Username</h6>
-                                <span class="text-secondary"><?php echo htmlspecialchars($viewedUsername); ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Email</h6>
-                                <span class="text-secondary"><?php echo htmlspecialchars($email); ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap py-3">
-                                <h6 class="mb-0">Date Joined</h6>
-                                <span class="text-secondary"><?php echo htmlspecialchars($formattedDate); ?></span>
-                            </li>
-                        </ul>
+                    <!-- Info Modal -->
+                    <div class="modal fade" id="accountInfoModal" tabindex="-1" aria-labelledby="accountInfoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="accountInfoModalLabel">Account Information</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6 class="mb-0">Full Name</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($name); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Username</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($viewedUsername); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Email</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($email); ?></span>
+
+                                    <h6 class="mb-0 mt-4">Date Joined</h6>
+                                    <span class="text-secondary mb-5"><?php echo htmlspecialchars($formattedDate); ?></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn mybtn-outline" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
                 </div>
+
                 <div class="col-md-8">
                     <!-- Photos Section -->
                     <div class="card">

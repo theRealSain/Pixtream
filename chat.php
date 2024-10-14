@@ -12,6 +12,26 @@ $sql = "SELECT * FROM users WHERE username='$username'";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
 $name = $info['name'];
+$profilePhoto = $info['profile_picture'] ?? 'default.png';
+
+// Function to fetch recent users
+function fetchRecentUsers($conn, $username) {
+    $recentUsers = [];
+    $recentUsersSql = "SELECT DISTINCT receiver_id FROM messages WHERE sender_id = (SELECT id FROM users WHERE username = '$username') ORDER BY created_at DESC";
+    $recentUsersResult = mysqli_query($conn, $recentUsersSql);
+    
+    while ($row = mysqli_fetch_assoc($recentUsersResult)) {
+        $receiverId = $row['receiver_id'];
+        $userSql = "SELECT username, name FROM users WHERE id = $receiverId";
+        $userResult = mysqli_query($conn, $userSql);
+        if ($userRow = mysqli_fetch_assoc($userResult)) {
+            $recentUsers[] = $userRow; // Store the recent user info
+        }
+    }
+    return $recentUsers;
+}
+
+$recentUsers = fetchRecentUsers($conn, $username);
 ?>
 
 <!DOCTYPE html>
@@ -25,16 +45,9 @@ $name = $info['name'];
     <link rel="stylesheet" href="library-files/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/me.css">
     <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
-    
-    <style>
-    /* Additional styles for dropdown */
-    
-    </style>
-
-
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
         <a class="navbar-brand" href="#">
             <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
@@ -64,7 +77,7 @@ $name = $info['name'];
     </nav>
 
     <div class="container mt-4">
-        <h3>Pixtream Chat</h3>
+        <h3 class="mb-4">Pixtream Chat</h3>
 
         <div class="input-group mb-3">
             <input type="text" id="searchUser" class="form-control" placeholder="Search users..." aria-label="Search users">
@@ -75,22 +88,46 @@ $name = $info['name'];
             <div id="searchResults" class="dropdown-menu chat-dropdown"></div>
         </div>
 
+        <!-- Recent Chats Section -->
+        <div class="recent-chats">
+            <h5 class="mt-4 mb-5">Recent Chats</h5>
+            <div id="recentChatsContainer">
+                <?php foreach ($recentUsers as $user): ?>
+                    <div class="user-item p-3" data-username="<?php echo $user['username']; ?>">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="profile-img-container">
+                                <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Photo" width="30">
+                            </div>
+                            <strong><?php echo $user['name']; ?></strong>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
 
         <!-- Message Modal -->
         <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalTitle">Send Message</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <div id="chatWindow" class="mb-3 chat-window" style="height: 300px; overflow-y: auto;">
+                            <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" class="rounded-circle mx-auto d-block mb-2" alt="Profile Photo" width="10" style="width: 100px;">
+                            <p class="text-center"><strong>Name of the User</strong></p>
+                            <p class="text-center text-muted mt-0">username</p>
+                            <p class="text-center">Following from December 2024</p>
+                            <!-- Messages will be dynamically loaded here -->
+                        </div>
+
                         <form id="messageForm">
-                            <div class="mb-3">
+                            <div class="input-group">
                                 <input type="hidden" id="receiver" name="receiver">
-                                <textarea class="form-control" id="message" name="message" rows="3" placeholder="Type your message..."></textarea>
+                                <textarea class="form-control" id="message" name="message" rows="1" placeholder="Type your message..."></textarea>
+                                <button type="submit" class="btn mybtn">Send</button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Send Message</button>
                         </form>
                         <div id="messageStatus" class="mt-2"></div>
                     </div>
@@ -103,6 +140,17 @@ $name = $info['name'];
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Function to fetch recent users
+            function fetchRecentUsers() {
+                $.ajax({
+                    url: 'fetch_recent_users.php', // Create this file to handle fetching recent users
+                    method: 'GET',
+                    success: function(response) {
+                        $('#recentChatsContainer').html(response);
+                    }
+                });
+            }
+
             // Search users
             $('#searchUser').on('input', function() {
                 var query = $(this).val();
@@ -146,9 +194,15 @@ $name = $info['name'];
                     success: function(response) {
                         $('#messageStatus').text(response);
                         $('#message').val(''); // Clear the message input
+
+                        // Fetch recent users after sending a message
+                        fetchRecentUsers();
                     }
                 });
             });
+
+            // Initial fetch of recent users
+            fetchRecentUsers();
         });
     </script>
 </body>

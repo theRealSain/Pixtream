@@ -95,6 +95,7 @@ $email = $info['email'];
                 </div>
                 <div class="modal-body">
                     <form action="upload.php" method="post" enctype="multipart/form-data">
+                        
                         <div class="form-group">
                             <label for="fileInput" class="custom-file-upload">
                                 <i class="bi bi-upload"></i> Choose file
