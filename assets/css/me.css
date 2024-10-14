@@ -75,13 +75,6 @@ li{
     border-radius: 5px;
 }
 
-.profile-interest{
-    margin-bottom: 200px !important;
-}
-
-.info-card{
-    margin-bottom: -450px !important;
-}
 
 .chat-dropdown {
     width: 100%; /* Ensure it takes full width of parent */
@@ -119,29 +112,60 @@ li{
     color: inherit;
 }
 
+/* Chat window styling */
+.chat-window {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Message bubbles */
+.message {
+    display: block;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 70%;
+}
+
+.message.sent {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message.received {
+    background-color: #e9ecef;
+    color: black;
+    align-self: flex-start;
+}
+
+/* Scroll bar styling for chat window */
+.chat-window::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 5px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+
+
+
+
 a{
     color: inherit;
 }
 
-.btn-custom-warning{
-    background-color: #5451ee6b;
-}
-
-.btn-custom {
-    background-color: #7f3ace;
-    color: #ffffff;
-}
-
-
-
-.btn-custom:hover {
-    background-color: #5451ee;
-    color: white;
-}
-
-.btn-custom2 {
-    background-color: #5451ee6b;
-}
 
 .index-logo{
     filter: invert();
