@@ -1,99 +1,3 @@
-<?php
-include 'dbconfig.php';
-session_start();
-
-if(!isset($_SESSION['username']))
-{
-  header('location:authen.php');
-}
-
-$username = $_SESSION['username'];
-$log_sql = "SELECT * FROM users WHERE username='$username';";
-$log_result = mysqli_query($conn, $log_sql);
-$log_info = mysqli_fetch_assoc($log_result);
-$log_id = $log_info['id'];
-$log_name = $log_info['name'];
-
-$viewedUsername = $_GET['username']; // Username of the viewed profile
-$sql = "SELECT * FROM users WHERE username='$viewedUsername';";
-$result = mysqli_query($conn, $sql);
-$info = mysqli_fetch_assoc($result);
-$user_id = $info['id'];
-$user_name = $info['username'];
-$name = $info['name'];
-$email = $info['email'];
-$profilePhoto = $info['profile_picture'] ?? 'default.png';
-$bio = $info['bio'];
-$location = $info['location'];
-
-// Fetch user interests
-$interests = [];
-$sql = "SELECT o.option_name 
-        FROM user_selections us
-        JOIN options o ON us.option_id = o.id
-        WHERE us.user_id = (SELECT id FROM users WHERE username = ? LIMIT 1)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $viewedUsername);
-$stmt->execute();
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $interests[] = $row['option_name'];
-}
-
-
-// Format join date
-$datetimeString = $info['created_at'];
-$date = new DateTime($datetimeString);
-$formattedDate = $date->format('F Y');
-
-// Fetch number of followers
-$followersSql = "SELECT COUNT(*) AS follower_count FROM follows WHERE followed_id='$user_id';";
-$followersResult = mysqli_query($conn, $followersSql);
-$followersCount = mysqli_fetch_assoc($followersResult)['follower_count'];
-
-// Fetch number of following
-$followingSql = "SELECT COUNT(*) AS following_count FROM follows WHERE follower_id='$user_id';";
-$followingResult = mysqli_query($conn, $followingSql);
-$followingCount = mysqli_fetch_assoc($followingResult)['following_count'];
-
-
-// Fetch followers list with names
-$followersListSql = "SELECT follower_id FROM follows WHERE followed_id='$user_id';";
-$followersListResult = mysqli_query($conn, $followersListSql);
-$followersListInfo = mysqli_fetch_all($followersListResult, MYSQLI_ASSOC);
-
-// Fetch following list with names
-$followingListSql = "SELECT followed_id FROM follows WHERE follower_id='$user_id';";
-$followingListResult = mysqli_query($conn, $followingListSql);
-$followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
-
-// Fetch user's photos
-$photosSql = "SELECT * FROM posts WHERE user_id='$viewedUsername' ORDER BY created_at DESC;";
-$photosResult = mysqli_query($conn, $photosSql);
-$photos = [];
-while ($row = mysqli_fetch_assoc($photosResult)) {
-    $photos[] = $row;
-}
-
-// Posts count
-$postSql = "SELECT COUNT(*) FROM posts WHERE user_id = '$user_id';";
-$postResult = mysqli_query($conn, $postSql);
-$postInfo = mysqli_fetch_array($postResult);
-$postCount = $postInfo[0];
-
-$isFollowingQuery = "SELECT * FROM follows WHERE follower_id = '$log_id' AND followed_id = '$user_id'";
-$isFollowingResult = mysqli_query($conn, $isFollowingQuery);
-$isFollowing = mysqli_num_rows($isFollowingResult) > 0;
-
-// Check if the logged-in user has blocked the viewed user
-$isBlockedQuery = "SELECT * FROM user_blocks WHERE blocked_by = '$log_id' AND blocked_user = '$user_id'";
-$isBlockedResult = mysqli_query($conn, $isBlockedQuery);
-$isBlocked = mysqli_num_rows($isBlockedResult) > 0;
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,7 +45,7 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
     </nav> <br>
 
     <div class="container">
-        <div class="main-body">
+        <div class="main-body">                        
             <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
 
@@ -154,11 +58,8 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountInfoModal">About this Account</a></li>
-                                    <!-- Only show Report option if user is not blocked -->
-                                    <?php if (!$isBlocked): ?>
-                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reportModal">Report</a></li>
-                                        <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#blockModal">Block User</a></li>
-                                    <?php endif; ?>
+                                    <li><a class="dropdown-item" href="#">Report</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#">Block User</a></li>                                    
                                 </ul>
                             </div>
                             <div class="d-flex flex-column align-items-center text-center">
@@ -183,34 +84,27 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                     </div>
                                 </div>
 
-                                <!-- Follow/Unfollow or Unblock Button Section -->
+                                <!-- Follow and Message Buttons Section -->
                                 <div class="mt-3 w-100 d-flex">
-                                    <!-- Unblock Button if blocked -->
-                                    <?php if ($isBlocked): ?>
-                                        <form action="unblock_user.php" method="POST" class="w-100">
-                                            <input type="hidden" name="unblock_user_id" value="<?php echo htmlspecialchars($user_id); ?>">
-                                            <button type="submit" class="btn mybtn w-100">Unblock</button>
-                                        </form>
-                                    <?php else: ?>
-                                        <!-- Follow/Unfollow Button -->
-                                        <form action="follow_unfollow.php" method="POST" class="w-50 me-1">
-                                            <input type="hidden" name="username" value="<?php echo htmlspecialchars($user_name); ?>">
-                                            <?php if ($isFollowing): ?>
-                                                <input type="hidden" name="action" value="unfollow">
-                                                <button type="submit" class="btn mybtn-outline w-100">Following</button>
-                                            <?php else: ?>
-                                                <input type="hidden" name="action" value="follow">
-                                                <button type="submit" class="btn mybtn w-100">Follow</button>
-                                            <?php endif; ?>
-                                        </form>
+                                    <!-- Follow/Unfollow Button -->
+                                    <form action="follow_unfollow.php" method="POST" class="w-50 me-1">
+                                        <input type="hidden" name="username" value="<?php echo htmlspecialchars($user_name); ?>">
+                                        <?php if ($isFollowing): ?>
+                                            <input type="hidden" name="action" value="unfollow">
+                                            <button type="submit" class="btn mybtn-outline w-100">Following</button>
+                                        <?php else: ?>
+                                            <input type="hidden" name="action" value="follow">
+                                            <button type="submit" class="btn mybtn w-100">Follow</button>
+                                        <?php endif; ?>
+                                    </form>
 
-                                        <!-- Message Button -->
-                                        <form action="message.php" method="POST" class="w-50 ms-1">
-                                            <input type="hidden" name="message_user_id" value="<?php echo htmlspecialchars($user_id); ?>">
-                                            <button type="submit" class="btn mybtn-outline w-100">Message</button>
-                                        </form>
-                                    <?php endif; ?>
+                                    <!-- Message Button -->
+                                    <form action="message.php" method="POST" class="w-50 ms-1">
+                                        <input type="hidden" name="message_user_id">
+                                        <button type="submit" class="btn mybtn-outline w-100">Message</button>
+                                    </form>
                                 </div>
+
 
                                 <!-- Bio Section Below Stats -->
                                 <div class="mt-3 bio-text text-start">
@@ -223,39 +117,16 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                 <div class="mt-5 profile-interest">
                                     <div class="d-flex flex-wrap">
                                         <?php foreach ($interests as $interest): ?>
-                                            <span class="badge mybadge2 me-2 mb-2"><?php echo htmlspecialchars($interest); ?></span>
+                                            <span class="badge mybadge2 me-2 mb-2"><?php echo htmlspecialchars($interest); ?></span> <!-- Bootstrap badge -->
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
-
-                        <?php
-                        // Display session messages
-                        if (isset($_SESSION['report_success'])) {
-                            echo '<div class="alert alert-success">' . $_SESSION['report_success'] . '</div>';
-                            unset($_SESSION['report_success']); // Clear the message after displaying
-                        }
-
-                        if (isset($_SESSION['report_fail'])) {
-                            echo '<div class="alert alert-danger">' . $_SESSION['report_fail'] . '</div>';
-                            unset($_SESSION['report_fail']); // Clear the message after displaying
-                        }
-
-                        if (isset($_SESSION['block_success'])) {
-                            echo '<div class="alert alert-success">' . $_SESSION['block_success'] . '</div>';
-                            unset($_SESSION['block_success']); // Clear the message after displaying
-                        }
-
-                        if (isset($_SESSION['block_fail'])) {
-                            echo '<div class="alert alert-danger">' . $_SESSION['block_fail'] . '</div>';
-                            unset($_SESSION['block_fail']); // Clear the message after displaying
-                        }                        
-                        ?>
-
                     </div>
 
-                    <!-- Account Info Modal -->
+                    <!-- Info Modal -->
                     <div class="modal fade" id="accountInfoModal" tabindex="-1" aria-labelledby="accountInfoModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -281,110 +152,30 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                 </div>
                             </div>
                         </div>
-                    </div>                                        
-
-                    <!-- User Report Modal -->
-                    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="userReportModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="userReportModalLabel">Report User</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="text-center">Please note that reporting a user is a serious matter. Make sure to use this feature responsibly. If you still wish to proceed with reporting this user, click the button below:</p>
-                                    <form name="userReport" id="userReportForm" method="POST" action="" class="d-flex justify-content-center">
-                                        <input type="hidden" name="action" value="report"> <!-- Distinguish action -->
-                                        <input type="hidden" name="reported_user" value="<?php echo $user_id; ?>"> <!-- Pass the reported user's ID -->
-                                        <button type="submit" class="btn mybtn">Report <?php echo $name;?></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Block User Modal -->
-                    <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockUserModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="blockUserModalLabel">Block User</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="text-center">Warning: Blocking a user will prevent them from interacting with you. Are you sure you want to proceed?</p>
-                                    <form name="userBlock" id="userBlockForm" method="POST" action="" class="d-flex justify-content-center">
-                                        <input type="hidden" name="action" value="block"> <!-- Distinguish action -->
-                                        <input type="hidden" name="blocked_user" value="<?php echo $user_id; ?>"> <!-- Pass the blocked user's ID -->
-                                        <button type="submit" class="btn mybtn" style="background-color: #7a0b11;">Block <?php echo $name;?></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <?php
-
-                    ob_start();
-
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        // Initialize variables for actions
-                        $action = isset($_POST['action']) ? $_POST['action'] : '';
-
-                        if ($action === 'report') {
-                            $reported_by = $log_id; // ID of the user who is reporting
-                            $reported_user = $_POST['reported_user']; // Get the reported user's ID from the form
-
-                            // Insert into the reports table
-                            $report_sql = "INSERT INTO reports (reported_by, reported_user, created_at) VALUES ('$reported_by', '$reported_user', NOW())";
-                            $report_result = mysqli_query($conn, $report_sql);
-
-                            // Check if the query was successful
-                            if ($report_result) {
-                                $_SESSION['report_success'] = 'User Reported!';
-                            } else {
-                                $_SESSION['report_fail'] = 'User Not Reported! Error: ' . mysqli_error($conn); // Capture the error
-                            }
-                        } 
-                        
-                        elseif ($action === 'block') {
-                            $blocked_by = $log_id; // ID of the user who is blocking
-                            $blocked_user = $_POST['blocked_user']; // Get the blocked user's ID from the form
-
-                            // Insert into the user_blocks table
-                            $block_sql = "INSERT INTO user_blocks (blocked_by, blocked_user, created_at) VALUES ('$blocked_by', '$blocked_user', NOW())";
-                            $block_result = mysqli_query($conn, $block_sql);
-
-                            // Check if the query was successful
-                            if ($block_result) {
-                                $_SESSION['block_success'] = 'User Blocked!';
-                            } else {
-                                $_SESSION['block_fail'] = 'User Not Blocked! Error: ' . mysqli_error($conn); // Capture the error
-                            }
-                        }
-
-                        // Redirect to the same page to prevent form resubmission
-                        header('Location: ' . $_SERVER['PHP_SELF']); // Redirects to the same page
-                        exit();
-                    }
-                    ?>
 
                 </div>
 
-
-                <!-- Right Blank Section -->
                 <div class="col-md-8">
-                    <!-- Your Posts Section -->
-                    <div class="row gutters-sm">
-                        <div class="col-sm-12 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h3 class="d-flex align-items-center mb-3">Posts - <?php echo $name; ?></h3>
-                                    <!-- Photo Grid -->
-                                    <div class="photo-grid">
-
+                    <!-- Photos Section -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Posts - <?php echo htmlspecialchars($name); ?></h3>
+                            <div class="photo-grid">
+                                <?php foreach ($photos as $photo): ?>
+                                    <div class="photo-item" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#photoModal" 
+                                        data-photo-src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>"
+                                        data-caption="<?php echo htmlspecialchars($photo['caption']); ?>"
+                                        data-created-at="<?php
+                                            $photoDate = new DateTime($photo['created_at']);
+                                            echo $photoDate->format('F j, Y, g:i A');
+                                        ?>">
+                                        <img src="posts/<?php echo htmlspecialchars($photo['photo_path']); ?>" alt="Photo">
                                     </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -519,7 +310,7 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
             modalCreatedAt.textContent = createdAt;
         });
     });
-    </script>    
+    </script>
 
 </body>
 </html>

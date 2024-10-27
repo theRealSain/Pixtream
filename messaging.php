@@ -48,37 +48,45 @@ function getRecentChats($conn, $username) {
 // Load recent chats
 $recentChats = getRecentChats($conn, $username);
 
-// Search for users
 if (isset($_POST['searchUser'])) {
     $searchQuery = mysqli_real_escape_string($conn, $_POST['searchUser']);
     $searchedUsers = [];
 
     if (!empty($searchQuery)) {
-        $searchSQL = "SELECT * FROM users WHERE (username LIKE '$searchQuery%' OR name LIKE '$searchQuery%') AND username != '$username'";
+        $searchSQL = "
+            SELECT u.*, 
+                   (SELECT COUNT(*) FROM follows WHERE followed_id = u.id) AS follow_count, 
+                   (SELECT COUNT(*) FROM posts WHERE user_id = u.id) AS post_count 
+            FROM users u 
+            WHERE (u.username LIKE '$searchQuery%' OR u.name LIKE '$searchQuery%') 
+            AND u.username != '$username'";
+        
         $searchResult = mysqli_query($conn, $searchSQL);
 
         while ($user = mysqli_fetch_assoc($searchResult)) {
-            $searchedUsers[] = $user;
-        }
-    }
-
-    if (!empty($searchedUsers)) {
-        foreach ($searchedUsers as $user) {
             $profilePic = !empty($user['profile_picture']) ? $user['profile_picture'] : 'profile_picture/default.png';
             echo '
-            <a class="dropdown-item user-item" data-username="' . htmlspecialchars($user['username']) . '">
-                <img src="profile_picture/' . $profilePic . '" alt="Profile Picture">
+            <div class="dropdown-item user-item" 
+                 data-name="' . htmlspecialchars($user['name']) . '" 
+                 data-user-name="' . htmlspecialchars($user['username']) . '" 
+                 data-profile-picture="profile_picture/' . htmlspecialchars($profilePic) . '" 
+                 data-follow-count="' . htmlspecialchars($user['follow_count']) . '" 
+                 data-post-count="' . htmlspecialchars($user['post_count']) . '" 
+                 onclick="showUserDetails(this)">
+                <img src="profile_picture/' . $profilePic . '" alt="Profile Picture" width="30">
                 <div>
                     <div class="name">' . htmlspecialchars($user['name']) . '</div>
-                    <div class="username">' . htmlspecialchars($user['username']) . '</div>
+                    <div class="username">' . htmlspecialchars($user['username']) . '</div>                    
                 </div>
-            </a>';
+            </div>';
         }
     } else {
         echo '<div class="dropdown-item text-center">No users found</div>';
     }
     exit();
 }
+
+
 
 // Send message
 if (isset($_POST['message'], $_POST['receiver'])) {

@@ -18,10 +18,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
-        
-        if ($password == $user['password']) { // Simple string comparison
+
+        // Check if the user has an approved report
+        $reportCheckSql = "SELECT approval FROM reports WHERE reported_user = " . $user['id'] . " AND approval = TRUE LIMIT 1";
+        $reportCheckResult = $conn->query($reportCheckSql);
+
+        // If user has an approved report, show a suspension message
+        if ($reportCheckResult->num_rows > 0) {
+            $_SESSION['error'] = "Your account is suspended for 1 day due to a report. Please try again later.";
+            header("Location: authen.php");
+            exit();
+        }
+
+        // Verify password (ensure to use password hashing in real scenarios)
+        if ($password == $user['password']) { // Simple string comparison; ideally, use password_verify() here
             // Start session and set session variables
             $_SESSION['username'] = $user['username'];
+            $_SESSION['user_id'] = $user['id']; // Store user ID for future use
             // Redirect to dashboard or home page
             header("Location: dashboard.php");
             exit();

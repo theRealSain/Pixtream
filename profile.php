@@ -44,7 +44,7 @@ $followingListResult = mysqli_query($conn, $followingListSql);
 $followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
 
 // Fetch user's photos
-$photosSql = "SELECT * FROM posts WHERE username='$username' ORDER BY created_at DESC;";
+$photosSql = "SELECT * FROM posts WHERE user_id='$id' ORDER BY created_at DESC;";
 $photosResult = mysqli_query($conn, $photosSql);
 $photos = [];
 while ($row = mysqli_fetch_assoc($photosResult)) {
@@ -52,7 +52,7 @@ while ($row = mysqli_fetch_assoc($photosResult)) {
 }
 
 //Posts count
-$postSql = "SELECT COUNT(*) FROM posts WHERE username = '$username';";
+$postSql = "SELECT COUNT(*) FROM posts WHERE user_id = '$id';";
 $postResult = mysqli_query($conn, $postSql);
 $postInfo = mysqli_fetch_array($postResult);
 $postCount = $postInfo[0];
@@ -143,7 +143,7 @@ $location = $bioInfo['location'];
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountInfoModal">About your Account</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
-                                    <li><a class="dropdown-item" href="">Submit Complaints</a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#complaintModal">Submit Complaints</a></li>
                                     <li><a class="dropdown-item text-danger" href="">De-activate Account</a></li>
                                 </ul>
                             </div>
@@ -225,6 +225,90 @@ $location = $bioInfo['location'];
                             </div>
                         </div>
                     </div>
+
+                    <!-- Complaints Modal -->
+                    <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="complaintModalLabel">Submit a Complaint</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="complaintForm" method="POST" action="">
+                                        <div class="mb-3">
+                                            <label for="complaintCategory" class="form-label">Category</label>
+                                            <select class="form-select" id="complaintCategory" name="complaint_category" required>
+                                                <option value="" disabled selected>Select a category</option>
+                                                <option value="Technical Issue">Technical Issue</option>
+                                                <option value="User Behavior">User Behavior</option>
+                                                <option value="Inappropriate Content">Inappropriate Content</option>
+                                                <option value="Privacy Violation">Privacy Violation</option>
+                                                <option value="Harassment">Harassment</option>
+                                                <option value="Spam or Scams">Spam or Scams</option>
+                                                <option value="Account Access Issues">Account Access Issues</option>
+                                                <option value="Billing or Payments">Billing or Payments</option>
+                                                <option value="Security or Hacking">Security or Hacking</option>
+                                                <option value="Data Protection Request">Data Protection Request</option>
+                                                <option value="Copyright Violation">Copyright Violation</option>
+                                                <option value="Feedback or Suggestion">Feedback or Suggestion</option>
+                                                <option value="Misinformation or Fake News">Misinformation or Fake News</option>
+                                                <option value="Phishing Attempts">Phishing Attempts</option>
+                                                <option value="Fraud or Identity Theft">Fraud or Identity Theft</option>
+                                                <option value="Impersonation">Impersonation</option>
+                                                <option value="Malware or Viruses">Malware or Viruses</option>
+                                                <option value="Inappropriate Advertisements">Inappropriate Advertisements</option>
+                                                <option value="Slow Performance">Slow Performance</option>
+                                                <option value="App or Website Crashes">App or Website Crashes</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Input for custom complaint text (enabled only when "Other" is selected) -->
+                                        <div class="mb-3" id="customComplaintField" style="display: none;">
+                                            <label for="customComplaint" class="form-label">Please Describe</label>
+                                            <textarea class="form-control" id="customComplaint" name="custom_complaint_text" placeholder="Type your issue here..."></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn mybtn">Submit Complaint</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php
+                    include 'dbconfig.php';
+                    session_start();
+
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $complaint_category = $_POST['complaint_category'];
+                        
+                        // Check if "Other" is selected and a custom complaint is provided
+                        if ($complaint_category === 'Other' && !empty($_POST['custom_complaint_text'])) {
+                            $complaint_text = $_POST['custom_complaint_text']; // Custom complaint text
+                        } 
+                        else {
+                            $complaint_text = $complaint_category; // Predefined complaint category
+                        }
+
+                        // Insert complaint into the database
+                        $sql = "INSERT INTO complaints (user_id, complaint_text, created_at) VALUES (?, ?, NOW())";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param('is', $id, $complaint_text);
+
+                        if ($stmt->execute()) {
+                            // Redirect back to the dashboard or display a success message
+                            header("Location: profile.php?complaint=submitted");
+                        } else {
+                            echo "Error: " . $conn->error;
+                        }
+
+                        $stmt->close();
+                        $conn->close();
+                    }
+                    ?>
+
 
                 </div>
 
@@ -364,6 +448,19 @@ $location = $bioInfo['location'];
 
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/main.js"></script>
+
+    <script>
+    document.getElementById('complaintCategory').addEventListener('change', function () {
+        var customField = document.getElementById('customComplaintField');
+        if (this.value === 'Other') {
+            customField.style.display = 'block'; // Show the custom input field
+        } else {
+            customField.style.display = 'none'; // Hide the custom input field
+        }
+    });
+    </script>
+
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var photoModal = document.getElementById('photoModal');
