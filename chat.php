@@ -88,32 +88,31 @@ $recentUsers = fetchRecentUsers($conn, $username);
             <div id="searchResults" class="dropdown-menu chat-dropdown"></div>
         </div>
 
-        <!-- Recent Chats Section -->
+       <!-- Recent Chats Section -->
 <div class="recent-chats">
     <h5 class="mt-4 mb-5"><b>Recent Chats</b></h5>
     <div id="recentChatsContainer">
         <?php foreach ($recentUsers as $user): 
             $userDP = !empty($user['profile_picture']) ? $user['profile_picture'] : 'default.png'; // Use default if empty
-            $joiningDate = $user['created_at'];
-            $user_user_id = $user['id'];                    
+            $user_user_id = $user['id']; // User ID from database                    
             
+            // Count followers
             $fcount_sql = "SELECT COUNT(*) FROM follows WHERE followed_id = '$user_user_id';";
             $fcount_result = mysqli_query($conn, $fcount_sql);
-            $fcount_info = mysqli_fetch_array($fcount_result);
-            $followCount = $fcount_info[0];
+            $followCount = mysqli_fetch_array($fcount_result)[0];
             
+            // Count posts
             $pcount_sql = "SELECT COUNT(*) FROM posts WHERE user_id = '$user_user_id';";
             $pcount_result = mysqli_query($conn, $pcount_sql);
-            $pcount_info = mysqli_fetch_array($pcount_result);
-            $postCount = $pcount_info[0];
-
+            $postCount = mysqli_fetch_array($pcount_result)[0];
         ?>
-            <div class="user-item p-3" 
+            <div class="user-item p-3"
                 data-name="<?php echo htmlspecialchars($user['name']); ?>"
                 data-user-name="<?php echo htmlspecialchars($user['username']); ?>"
                 data-profile-picture="<?php echo "profile_picture/$userDP"; ?>"
                 data-follow-count="<?php echo htmlspecialchars($followCount); ?>"
                 data-post-count="<?php echo htmlspecialchars($postCount); ?>"
+                data-user-id="<?php echo htmlspecialchars($user_user_id); ?>"
                 onclick="showUserDetails(this)">
 
                 <a href="#" class="list-group-item list-group-item-action">
@@ -128,63 +127,102 @@ $recentUsers = fetchRecentUsers($conn, $username);
 </div>
 
 <script>
-function showUserDetails(userElement) {
+function showUserDetails(userElement) {            
     const name = userElement.getAttribute('data-name');
-    const userName = userElement.getAttribute('data-user-name'); // Correctly retrieve the username
-    const profilePicture = userElement.getAttribute('data-profile-picture');
+    const userName = userElement.getAttribute('data-user-name');
+    const profilePicture = userElement.getAttribute('data-profile-picture') || 'profile_picture/default.png'; // Use default if empty
     const followCount = userElement.getAttribute('data-follow-count');
     const postCount = userElement.getAttribute('data-post-count');
+    const userId = userElement.getAttribute('data-user-id'); // Retrieve user ID correctly
 
-    // Populate the modal with user details
-    document.getElementById('messageModalLabel').innerText = name;            
+    // Debugging: Check if userId is retrieved correctly
+    console.log('User ID:', userId);
+
+    // Populate the modal with user details            
+    document.getElementById('messageModalLabel').innerText = name;
     document.getElementById('modalProfilePicture').src = profilePicture;
     document.getElementById('modalUserName').innerText = name;
+    document.getElementById('modalUserId').innerText = `User ID: ${userId}`; // Set user ID in the modal
     document.getElementById('modalUserFollowCount').innerText = `${followCount} Followers`;
     document.getElementById('modalUserPostCount').innerText = `${postCount} Posts`;
 
+    // Set the hidden receiver input value to the user's ID
+    document.getElementById('receiver').value = userId;
+
     // Update the View Profile button href correctly
-    document.getElementById('viewProfileButton').href = 'user_profile.php?username=' + encodeURIComponent(userName); // Use userName here
+    document.getElementById('viewProfileButton').href = 'user_profile.php?username=' + encodeURIComponent(userName);
 
     // Show the modal
     $('#messageModal').modal('show');
 }
+
 </script>
 
-<!-- Message Modal -->
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable chat-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="messageModalLabel"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div class="chat-area">
-                    <div id="chatWindow" class="mb-3 chat-window">
-                        <img id="modalProfilePicture" src="" class="rounded-circle mb-2" alt="Profile Photo" style="width: 130px;">
-                        <p class="text-center"><strong id="modalUserName"></strong></p>
-                        <a href="user_profile.php?username=" id="viewProfileButton" class="btn mybtn-outline btn-sm mb-3">View Profile</a>
-                        <p class="text-center"><span id="modalUserFollowCount"></span> &emsp; <span id="modalUserPostCount"></span></p>                            
+
+
+
+        <!-- Message Modal -->
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable chat-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="chat-area">
+                            <div id="chatWindow" class="mb-3 chat-window">
+                                <img id="modalProfilePicture" src="" class="rounded-circle mb-2" alt="Profile Photo" style="width: 130px;">
+                                <p class="text-center"><strong id="modalUserName"></strong></p>
+                                <a href="user_profile.php?username=" id="viewProfileButton" class="btn mybtn-outline btn-sm mb-3">View Profile</a>
+                                <p class="text-center"><span id="modalUserId"></span></p>
+                                <p class="text-center"><span id="modalUserFollowCount"></span> &emsp; <span id="modalUserPostCount"></span></p>                            
+                            </div>
+
+                            <div class="chat-area">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message-area">
+                        <form id="messageForm" action="#" method="POST">
+                            <div class="input-group">
+                                <input type="hidden" id="receiver" name="receiver" value="">
+                                <textarea class="form-control" id="message" name="message" rows="1" placeholder="Type your message..."></textarea>
+                                <button type="submit" class="btn mybtn"><i class="fa-solid fa-arrow-up"></i></button>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="chat-area">
-                        <!-- Additional chat area content here -->
-                    </div>
-                </div>
-                <div class="message-area">
-                    <form id="messageForm">
-                        <div class="input-group">
-                            <input type="hidden" id="receiver" name="receiver">
-                            <textarea class="form-control" id="message" name="message" rows="1" placeholder="Type your message..."></textarea>
-                            <button type="submit" class="btn mybtn"><i class="fa-solid fa-arrow-up"></i></button>
-                        </div>
-                    </form>
+                    <?php
+                    // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    //     // Get the username of the receiver and the message
+                    //     $sender = $info['id']; // Get sender's ID from user info
+                    //     $receiver = $_POST['receiver']; // Receiver's username
+                    //     $message = $_POST['message']; // Message content
+
+                        
+
+                    //     echo $sender, $reciever, $message;
+                    
+                    //     // Prepare the SQL insert statement to add the message
+                    //     $insertSql = "INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES ('$sender', '$receiver', '$message', NOW())";
+                    //     $insertResult = mysqli_query($conn, $insertSql);
+                        
+                    //     if ($insertResult){
+                    //         echo "Message sent!";
+                    //         echo $sender, $reciever, $message;
+                    //     }
+                    //     else{
+                    //         echo "Message not sent!";
+                    //     }
+                    // }
+                    ?>
+
+                    <div id="messageStatus" class="mt-2"></div>
                 </div>
             </div>
-            <div id="messageStatus" class="mt-2"></div>
-        </div>
-    </div>
-</div>
+        </div>        
 
 
 
