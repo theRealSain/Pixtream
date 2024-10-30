@@ -158,7 +158,15 @@ li{
     background-color: #f1f1f1;
 }
 
+.message-area{
+    width: 90%;
+    margin: auto;
+    display: block;
+}
 
+.chat-area{
+    margin-bottom: 20px !important;
+}
 
 
 
