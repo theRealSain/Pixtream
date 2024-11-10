@@ -43,14 +43,6 @@ $followingListSql = "SELECT followed_id FROM follows WHERE follower_id='$id';";
 $followingListResult = mysqli_query($conn, $followingListSql);
 $followingListInfo = mysqli_fetch_all($followingListResult, MYSQLI_ASSOC);
 
-// Fetch user's photos
-$photosSql = "SELECT * FROM posts WHERE user_id='$id' ORDER BY created_at DESC;";
-$photosResult = mysqli_query($conn, $photosSql);
-$photos = [];
-while ($row = mysqli_fetch_assoc($photosResult)) {
-    $photos[] = $row;
-}
-
 //Posts count
 $postSql = "SELECT COUNT(*) FROM posts WHERE user_id = '$id';";
 $postResult = mysqli_query($conn, $postSql);
@@ -279,7 +271,6 @@ $location = $bioInfo['location'];
 
                     <?php
                     include 'dbconfig.php';
-                    session_start();
 
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $complaint_category = $_POST['complaint_category'];
@@ -320,27 +311,123 @@ $location = $bioInfo['location'];
                                 <div class="card-body">
                                     <h3 class="d-flex align-items-center mb-3">Your Posts - <?php echo $name; ?></h3>
                                     <!-- Photo Grid -->
-                                    <div class="photo-grid">
-                                        <?php foreach ($photos as $photo): ?>
-                                            <?php
-                                            $photoPath = $photo['photo_path'];
-                                            $caption = $photo['caption'];
-                                            $createdAt = new DateTime($photo['created_at']);
+                                    <div class="media-grid">
+
+                                        <?php
+                                        // Fetch user's photos
+                                        $postsSql = "SELECT * FROM posts WHERE user_id='$id' ORDER BY created_at DESC;";
+                                        $postsResult = mysqli_query($conn, $postsSql);
+                                        $posts = [];
+                                        while ($row = mysqli_fetch_assoc($postsResult)) {
+                                            $posts[] = $row;
+                                        }
+                                        foreach ($posts as $post)
+                                        {                                            
+                                            $post_id = $post['id'];
+                                            $mediaPath = $post['post_path'];
+                                            $caption = $post['caption'];
+                                            $createdAt = new DateTime($post['created_at']);
                                             $formattedDate = $createdAt->format('F j, Y g:i A');
-                                            ?>
-                                            <div class="photo-item">
-                                                <img src="posts/<?php echo htmlspecialchars($photoPath); ?>" alt="Photo" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo-path="posts/<?php echo htmlspecialchars($photoPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                            $category = $post['category'];
+
+                                            // Get the like count for each post
+                                            $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
+                                            $likeCountResult = mysqli_query($conn, $likeCountSql);
+                                            $likeCountRow = mysqli_fetch_assoc($likeCountResult);
+                                            $likeCount = $likeCountRow['like_count'];
+
+                                            // Determine if the media is a video or image
+                                            $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+                                            $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
+                                        ?>
+
+                                        <a href="post_info.php?user_id=<?php echo $id; ?>&post_id=<?php echo $post_id; ?>">
+                                            <div class="media-item">
+                                                <?php if ($isVideo): ?>
+                                                    <div class="video-thumbnail" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                                        <video muted>
+                                                            <source src="<?php echo htmlspecialchars($mediaPath); ?>" type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                        <div class="video-icon-overlay">
+                                                            <i class="fas fa-play-circle"></i>
+                                                        </div>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <img src="<?php echo htmlspecialchars($mediaPath); ?>" alt="Pixtream Post" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                                <?php endif; ?>
+
+                                                <!-- Like Count Overlay -->
+                                                <div class="like-count-overlay">
+                                                    <i class="fa-solid fa-thumbs-up"></i>&nbsp;<?php echo $likeCount; ?>
+                                                </div>
+
                                             </div>
-                                        <?php endforeach; ?>
+                                        </a>
+
+                                        <?php
+                                        }
+                                        ?>
+                                            
                                     </div>
                                 </div>
                             </div>
-                        </div>                                                
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>  
+    </div>
+
+
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = new bootstrap.Modal(document.getElementById('postModal'));
+            const modalMediaContainer = document.getElementById('modalMediaContainer');
+            const modalCaption = document.getElementById('modal-caption');
+            const modalCreatedAt = document.getElementById('modal-created-at');
+            const modalCategory = document.getElementById('modal-category');
+
+            document.querySelectorAll('.media-item img, .video-thumbnail').forEach(mediaItem => {
+                mediaItem.addEventListener('click', function () {
+                    const mediaPath = this.getAttribute('data-media-path');
+                    const caption = this.getAttribute('data-caption');
+                    const createdAt = this.getAttribute('data-created-at');
+                    const category = this.getAttribute('data-category');
+                    const isVideo = mediaPath.match(/\.(mp4|mov|avi|wmv)$/i);
+
+                    // Clear previous content
+                    modalMediaContainer.innerHTML = '';
+
+                    if (isVideo) {
+                        const videoElement = document.createElement('video');
+                        videoElement.setAttribute('controls', 'controls');
+                        videoElement.setAttribute('class', 'img-fluid');
+                        videoElement.innerHTML = `<source src="${mediaPath}" type="video/mp4">Your browser does not support the video tag.`;
+                        modalMediaContainer.appendChild(videoElement);
+                    } else {
+                        const imgElement = document.createElement('img');
+                        imgElement.setAttribute('src', mediaPath);
+                        imgElement.setAttribute('class', 'img-fluid');
+                        imgElement.setAttribute('alt', 'Pixtream Post');
+                        modalMediaContainer.appendChild(imgElement);
+                    }
+
+                    // Set other modal details
+                    modalCaption.textContent = caption;
+                    modalCreatedAt.textContent = createdAt;
+                    modalCategory.textContent = category;
+
+                    // Show modal
+                    modal.show();
+                });
+            });
+        });
+
+    </script>
 
 
 
@@ -412,40 +499,6 @@ $location = $bioInfo['location'];
         </div>
     </div>
 
-    <!-- Photo Modal -->
-    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;"> <!-- Fixed width for the modal -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55" style="border: none; padding: 0px;"> &nbsp;
-                    <h5 class="modal-title" id="photoModalLabel"><?php echo htmlspecialchars($name); ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="photo-card">                    
-                        <p><small><span id="modal-created-at"></span></small></p>
-                        <img src="posts/default.png" id="modalPhoto" class="img-fluid" alt="Photo">
-                        <div class="row like-share-comment">
-                            <div class="col-lg-4">
-                                <i class="far fa-heart"></i>
-                            </div>
-                            <div class="col-lg-4">
-                                <i class="far fa-comment"></i>
-                            </div>
-                            <div class="col-lg-4">
-                                <i class="far fa-share"></i>
-                            </div>
-                        </div>
-
-                        <div class="mt-3">
-                            <p><strong><span id="modal-caption"></span></strong></p>
-                        </div>
-                    </div>                    
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/main.js"></script>
 
@@ -460,27 +513,6 @@ $location = $bioInfo['location'];
     });
     </script>
 
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var photoModal = document.getElementById('photoModal');
-        photoModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget; // Button that triggered the modal
-            var photoPath = button.getAttribute('data-photo-path'); // Corrected to 'data-photo-path'
-            var caption = button.getAttribute('data-caption');
-            var createdAt = button.getAttribute('data-created-at');
-
-            var modalImage = photoModal.querySelector('.photo-card img');
-            var modalCaption = photoModal.querySelector('#modal-caption');
-            var modalCreatedAt = photoModal.querySelector('#modal-created-at');
-
-            modalImage.src = photoPath;
-            modalCaption.textContent = caption ? caption : "No caption available";
-            modalCreatedAt.textContent = createdAt;
-        });
-    });
-
-    </script>
 </body>
 </html>
 

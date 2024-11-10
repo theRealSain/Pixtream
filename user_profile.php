@@ -2,6 +2,8 @@
 include 'dbconfig.php';
 session_start();
 
+// error_reporting(0);
+
 if(!isset($_SESSION['username']))
 {
   header('location:authen.php');
@@ -380,18 +382,154 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                             <div class="card h-100">
                                 <div class="card-body">
                                     <h3 class="d-flex align-items-center mb-3">Posts - <?php echo $name; ?></h3>
-                                    <!-- Photo Grid -->
-                                    <div class="photo-grid">
+                                    <!-- Media Grid -->                                    
+                                    <div class="media-grid">
+
+                                    <?php
+                                    // Fetch the user's posts
+                                    $postsSql = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY created_at DESC;";
+                                    $postsResult = mysqli_query($conn, $postsSql);
+                                    while ($post = mysqli_fetch_assoc($postsResult)) {
+                                        $post_id = $post['id'];
+                                        $mediaPath = $post['post_path'];
+                                        $caption = $post['caption'];
+                                        $createdAt = new DateTime($post['created_at']);
+                                        $formattedDate = $createdAt->format('F j, Y g:i A');
+                                        $category = $post['category'];
+
+                                        // Get the like count for each post
+                                        $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
+                                        $likeCountResult = mysqli_query($conn, $likeCountSql);
+                                        $likeCountRow = mysqli_fetch_assoc($likeCountResult);
+                                        $likeCount = $likeCountRow['like_count'];
+
+                                        // Determine if the media is a video or image
+                                        $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+                                        $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
+                                    ?>
+
+                                        <a href="post_info.php?user_id=<?php echo $user_id; ?>&post_id=<?php echo $post_id; ?>">
+                                            <div class="media-item">
+                                                <?php if ($isVideo): ?>
+                                                    <div class="video-thumbnail">
+                                                        <video muted>
+                                                            <source src="<?php echo htmlspecialchars($mediaPath); ?>" type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                        <div class="video-icon-overlay">
+                                                            <i class="fas fa-play-circle"></i>
+                                                        </div>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <img src="<?php echo htmlspecialchars($mediaPath); ?>" alt="Pixtream Post" class="img-fluid" style="cursor:pointer;">
+                                                <?php endif; ?>
+
+                                                <!-- Like Count Overlay -->
+                                                <div class="like-count-overlay">
+                                                    <i class="fa-solid fa-thumbs-up"></i>&nbsp;<?php echo $likeCount; ?>
+                                                </div>
+
+                                            </div>
+                                        </a>
+
+                                    <?php 
+                                    }
+                                    ?>
 
                                     </div>
-                                </div>
+                                </div>               
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </div>                   
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const commentModal = document.getElementById('commentModal');
+            const commentModalImage = document.getElementById('commentModalImage');
+            const commentModalVideo = document.getElementById('commentModalVideo');
+            const commentModalVideoSource = document.getElementById('commentModalVideoSource');
+            const postIdInput = document.getElementById('postId');
+
+            // Populate the media source when the comment modal is shown
+            commentModal.addEventListener('show.bs.modal', function (event) {
+                const modalMediaContainer = document.getElementById('modalMediaContainer');
+                const mediaElement = modalMediaContainer.querySelector('img, video');
+
+                if (mediaElement) {
+                    if (mediaElement.tagName === 'IMG') {
+                        commentModalImage.src = mediaElement.src;
+                        commentModalImage.style.display = 'block'; // Show the image
+                        commentModalVideo.style.display = 'none'; // Hide the video
+                    } else if (mediaElement.tagName === 'VIDEO') {
+                        commentModalVideoSource.src = mediaElement.querySelector('source').src; // Get the video source
+                        commentModalVideo.load(); // Load the new video source
+                        commentModalVideo.style.display = 'block'; // Show the video
+                        commentModalImage.style.display = 'none'; // Hide the image
+                    }
+                }
+
+                const postId = event.relatedTarget.getAttribute('data-post-id');
+                postIdInput.value = postId; // Set the post ID in the hidden input
+            });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = new bootstrap.Modal(document.getElementById('postModal'));
+            const modalMediaContainer = document.getElementById('modalMediaContainer');
+            const modalPostId = document.getElementById('modal-post-id');
+            const cmtModalPostId = document.getElementById('post-id-fetch');
+            const modalCaption = document.getElementById('modal-caption');
+            const modalCreatedAt = document.getElementById('modal-created-at');
+            const modalCategory = document.getElementById('modal-category');
+
+            document.querySelectorAll('.media-item img, .video-thumbnail').forEach(mediaItem => {
+                mediaItem.addEventListener('click', function () {
+                    const cmtPostId = this.getAttribute('data-post-id');
+                    const postId = this.getAttribute('data-post-id');
+                    const mediaPath = this.getAttribute('data-media-path');
+                    const caption = this.getAttribute('data-caption');
+                    const createdAt = this.getAttribute('data-created-at');
+                    const category = this.getAttribute('data-category');
+                    const isVideo = mediaPath.match(/\.(mp4|mov|avi|wmv)$/i);
+
+                    // Clear previous content
+                    modalMediaContainer.innerHTML = '';
+
+                    if (isVideo) {
+                        const videoElement = document.createElement('video');
+                        videoElement.setAttribute('controls', 'controls');
+                        videoElement.setAttribute('class', 'img-fluid');
+                        videoElement.innerHTML = `<source src="${mediaPath}" type="video/mp4">Your browser does not support the video tag.`;
+                        modalMediaContainer.appendChild(videoElement);
+                    } else {
+                        const imgElement = document.createElement('img');
+                        imgElement.setAttribute('src', mediaPath);
+                        imgElement.setAttribute('class', 'img-fluid');
+                        imgElement.setAttribute('alt', 'Pixtream Post');
+                        modalMediaContainer.appendChild(imgElement);
+                    }
+
+                    // Set other modal details
+                    cmtModalPostId.value = postId;
+                    modalPostId.textContent = postId;
+                    modalCaption.textContent = caption;
+                    modalCreatedAt.textContent = createdAt;
+                    modalCategory.textContent = category;
+
+                    // Show modal
+                    modal.show();
+                });
+            });
+        });
+    </script>
 
     <!-- Followers Modal -->
     <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
@@ -473,53 +611,9 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Photo Modal -->
-    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <img src="assets/<?php echo $profilePhoto; ?>" alt="Profile Photo" class="rounded-circle" width="55" style="border: none; padding: 0px;">&nbsp;
-                    <h5 class="modal-title" id="photoModalLabel"><?php echo htmlspecialchars($name); ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="photo-card">
-                        <p><small><span id="modalCreatedAt"></span></small></p>
-                        <img src="" id="modalPhoto" class="img-fluid" alt="Photo">
-                        <div class="mt-3">
-                            <p><strong><span id="modalCaption"></span></strong></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </div>  
     
-
-
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var photoModal = document.getElementById('photoModal');
-        photoModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget; // Button that triggered the modal
-            var photoSrc = button.getAttribute('data-photo-src'); // Get photo path
-            var caption = button.getAttribute('data-caption'); // Get caption
-            var createdAt = button.getAttribute('data-created-at'); // Get creation date
-
-            // Update modal content
-            var modalPhoto = document.getElementById('modalPhoto');
-            var modalCaption = document.getElementById('modalCaption');
-            var modalCreatedAt = document.getElementById('modalCreatedAt');
-
-            modalPhoto.src = photoSrc;
-            modalCaption.textContent = caption ? caption : "No caption available"; // Default if no caption
-            modalCreatedAt.textContent = createdAt;
-        });
-    });
-    </script>    
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>   
 
 </body>
 </html>

@@ -2,9 +2,8 @@
 include 'dbconfig.php';
 session_start();
 
-if(!isset($_SESSION['username']))
-{
-  header('location:authen.php');
+if (!isset($_SESSION['username'])) {
+    header('location:authen.php');
 }
 
 $username = $_SESSION['username'];
@@ -30,13 +29,14 @@ $email = $info['email'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIXTREAM - <?php echo htmlspecialchars($name); ?></title>
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">    
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="library-files/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/me.css">
     <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">        
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
             <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
@@ -47,13 +47,13 @@ $email = $info['email'];
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#"><b>Home</b><span class="sr-only"></span></a>
+                    <a class="nav-link" href="#"><b>Home</b></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="people.php"><b>People</b><span class="sr-only"></span></a>
+                    <a class="nav-link" href="people.php"><b>People</b></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="chat.php"><b>Chat</b><span class="sr-only"></span></a>
+                    <a class="nav-link" href="chat.php"><b>Chat</b></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,22 +94,38 @@ $email = $info['email'];
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="upload.php" method="post" enctype="multipart/form-data">
+                    <form action="post_upload.php" method="post" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="fileInput" class="custom-file-upload">
-                                <i class="bi bi-upload"></i> Choose file
+                            <label for="mediaInput" class="custom-file-upload">
+                                <i class="fa-solid fa-upload"></i> Choose file
                             </label>
-                            <input type="file" class="form-control-file" id="fileInput" name="photo" style="display: none;" required>
+                            <input type="file" class="form-control-file" id="mediaInput" name="media" accept="image/*,video/*" style="display: none;" required>
                         </div>
                         <div class="mt-3">
-                            <img id="preview" src="#" alt="Image preview" style="display: none; max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;">
+                            <div id="preview" style="display: none;"></div>
                         </div>
                         <div class="form-group mt-3">
                             <label for="caption">Caption</label>
-                            <textarea class="form-control" id="caption" name="caption" rows="3" required></textarea>
+                            <textarea class="form-control" id="caption" name="caption" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="" hidden selected>Select a category</option>
+                                <option value="photos">Photos</option>
+                                <option value="videos">Videos</option>
+                                <option value="music">Music</option>
+                                <option value="articles">Articles</option>
+                                <option value="memes">Memes</option>
+                                <option value="art-design">Art & Design</option>
+                                <option value="photography">Photography</option>
+                                <option value="travel-adventure">Travel & Adventure</option>
+                                <option value="food-cooking">Food & Cooking</option>
+                                <option value="others">Others</option>
+                            </select>
                         </div>
                         <div class="form-group mt-3">
-                            <button type="submit" class="btn btn-custom">Upload</button>
+                            <button type="submit" class="btn mybtn">Upload</button>
                         </div>
                     </form>
                 </div>
@@ -118,21 +134,45 @@ $email = $info['email'];
     </div>
 
     <script>
-        document.getElementById('fileInput').addEventListener('change', function(event) {
+        document.getElementById('mediaInput').addEventListener('change', function(event) {
             var file = event.target.files[0];
             var reader = new FileReader();
-
-            reader.onload = function(e) {
-                var img = document.getElementById('preview');
-                img.src = e.target.result;
-                img.style.display = 'block'; // Show the image
-            };
+            var preview = document.getElementById('preview');
 
             if (file) {
-                reader.readAsDataURL(file); // Read the file as a data URL
+                var fileType = file.type;
+                preview.style.display = 'none';
+                preview.innerHTML = '';
+
+                if (fileType.startsWith('image/')) {
+                    reader.onload = function(e) {
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100%';
+                        img.style.border = '1px solid #ddd';
+                        img.style.borderRadius = '4px';
+                        preview.appendChild(img);
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType.startsWith('video/')) {
+                    var video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    video.style.maxWidth = '100%';
+                    video.style.border = '1px solid #ddd';
+                    video.style.borderRadius = '4px';
+                    video.addEventListener('loadeddata', function() {
+                        URL.revokeObjectURL(video.src);
+                    });
+                    preview.appendChild(video);
+                    preview.style.display = 'block';
+                } else {
+                    alert('Please upload an image or video file.');
+                    event.target.value = '';
+                }
             } else {
-                var img = document.getElementById('preview');
-                img.style.display = 'none'; // Hide the image if no file is selected
+                preview.style.display = 'none';
             }
         });
     </script>

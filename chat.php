@@ -85,147 +85,79 @@ $recentUsers = fetchRecentUsers($conn, $username);
         </div>
 
         <div class="position-relative">
-            <div id="searchResults" class="dropdown-menu chat-dropdown"></div>
-        </div>
-
-       <!-- Recent Chats Section -->
-<div class="recent-chats">
-    <h5 class="mt-4 mb-5"><b>Recent Chats</b></h5>
-    <div id="recentChatsContainer">
-        <?php foreach ($recentUsers as $user): 
-            $userDP = !empty($user['profile_picture']) ? $user['profile_picture'] : 'default.png'; // Use default if empty
-            $user_user_id = $user['id']; // User ID from database                    
-            
-            // Count followers
-            $fcount_sql = "SELECT COUNT(*) FROM follows WHERE followed_id = '$user_user_id';";
-            $fcount_result = mysqli_query($conn, $fcount_sql);
-            $followCount = mysqli_fetch_array($fcount_result)[0];
-            
-            // Count posts
-            $pcount_sql = "SELECT COUNT(*) FROM posts WHERE user_id = '$user_user_id';";
-            $pcount_result = mysqli_query($conn, $pcount_sql);
-            $postCount = mysqli_fetch_array($pcount_result)[0];
-        ?>
-            <div class="user-item p-3"
-                data-name="<?php echo htmlspecialchars($user['name']); ?>"
-                data-user-name="<?php echo htmlspecialchars($user['username']); ?>"
-                data-profile-picture="<?php echo "profile_picture/$userDP"; ?>"
-                data-follow-count="<?php echo htmlspecialchars($followCount); ?>"
-                data-post-count="<?php echo htmlspecialchars($postCount); ?>"
-                data-user-id="<?php echo htmlspecialchars($user_user_id); ?>"
-                onclick="showUserDetails(this)">
-
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="profile-img-container">
-                        <img src="profile_picture/<?php echo htmlspecialchars($userDP); ?>" alt="Profile Photo" width="50">
-                    </div>
-                    <strong class="fs-5"><?php echo htmlspecialchars($user['name']); ?></strong>
+            <div id="searchResults" class="dropdown-menu chat-dropdown">
+                <a href="chat_screen.php?user_id=123&username=johndoe">
                 </a>
             </div>
-        <?php endforeach; ?>
-    </div>
-</div>
+        </div>
 
-<script>
-function showUserDetails(userElement) {            
-    const name = userElement.getAttribute('data-name');
-    const userName = userElement.getAttribute('data-user-name');
-    const profilePicture = userElement.getAttribute('data-profile-picture') || 'profile_picture/default.png'; // Use default if empty
-    const followCount = userElement.getAttribute('data-follow-count');
-    const postCount = userElement.getAttribute('data-post-count');
-    const userId = userElement.getAttribute('data-user-id'); // Retrieve user ID correctly
+        <?php
+        $userSQL = "SELECT id FROM users WHERE username = '$username'";
+        $userResult = mysqli_query($conn, $userSQL);
+        $userData = mysqli_fetch_assoc($userResult);
+        $user_id = $userData['id'];
 
-    // Debugging: Check if userId is retrieved correctly
-    console.log('User ID:', userId);
+        // Query to fetch distinct users who have messaged 'abijith' or whom 'abijith' has messaged
+        $messageSQL = "
+            SELECT u.id AS user_id, u.name, u.username, u.profile_picture, m.message, m.created_at
+            FROM users u
+            JOIN messages m ON (m.sender_id = u.id OR m.receiver_id = u.id)
+            WHERE (m.sender_id = '$user_id' OR m.receiver_id = '$user_id') 
+            AND u.username != '$username'  -- Exclude the logged-in user from the results
+            ORDER BY m.created_at DESC";  // Most recent messages first
 
-    // Populate the modal with user details            
-    document.getElementById('messageModalLabel').innerText = name;
-    document.getElementById('modalProfilePicture').src = profilePicture;
-    document.getElementById('modalUserName').innerText = name;
-    document.getElementById('modalUserId').innerText = `User ID: ${userId}`; // Set user ID in the modal
-    document.getElementById('modalUserFollowCount').innerText = `${followCount} Followers`;
-    document.getElementById('modalUserPostCount').innerText = `${postCount} Posts`;
+        $messageResult = mysqli_query($conn, $messageSQL);
 
-    // Set the hidden receiver input value to the user's ID
-    document.getElementById('receiver').value = userId;
+        // Array to store the latest chat for each user
+        $recentChats = [];
 
-    // Update the View Profile button href correctly
-    document.getElementById('viewProfileButton').href = 'user_profile.php?username=' + encodeURIComponent(userName);
+        while ($chat = mysqli_fetch_assoc($messageResult)) {
+            $partner_id = $chat['user_id'];  // ID of the user in the chat
 
-    // Show the modal
-    $('#messageModal').modal('show');
-}
+            // Check if we have already stored the chat for this user
+            if (!isset($recentChats[$partner_id]) || strtotime($recentChats[$partner_id]['created_at']) < strtotime($chat['created_at'])) {
+                // Store or update the chat with the most recent message
+                $recentChats[$partner_id] = [
+                    'user_id' => $chat['user_id'],
+                    'name' => $chat['name'],
+                    'username' => $chat['username'],
+                    'profile_picture' => !empty($chat['profile_picture']) ? $chat['profile_picture'] : 'profile_picture/default.png',
+                    'message' => $chat['message'],
+                    'created_at' => $chat['created_at']
+                ];
+            }
+        }
 
-</script>
+        // Now $recentChats contains the most recent chat for each user
+        $recentUsers = array_values($recentChats);
+        ?>
 
 
+        <!-- Recent Chats Section -->
+        <div class="recent-chats">
+            <h5 class="mt-4 mb-5"><b>Recent Chats</b></h5>
+            <div id="recentChatsContainer">
 
+                <?php if (empty($recentUsers)): ?>
+                    <p class="text-center fs-5 mt-5"><b>No recent chats</b></p>
+                <?php else: ?>
+                    <?php foreach ($recentUsers as $user): 
+                        $userDP = !empty($user['profile_picture']) ? $user['profile_picture'] : 'default.png'; // Use default if empty
+                        $user_user_id = $user['user_id']; // User ID from database                    
+                        ?>
 
-        <!-- Message Modal -->
-        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable chat-modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="messageModalLabel"></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <div class="chat-area">
-                            <div id="chatWindow" class="mb-3 chat-window">
-                                <img id="modalProfilePicture" src="" class="rounded-circle mb-2" alt="Profile Photo" style="width: 130px;">
-                                <p class="text-center"><strong id="modalUserName"></strong></p>
-                                <a href="user_profile.php?username=" id="viewProfileButton" class="btn mybtn-outline btn-sm mb-3">View Profile</a>
-                                <p class="text-center"><span id="modalUserId"></span></p>
-                                <p class="text-center"><span id="modalUserFollowCount"></span> &emsp; <span id="modalUserPostCount"></span></p>                            
-                            </div>
-
-                            <div class="chat-area">
-                                
-                            </div>
+                        <div class="user-item p-3">
+                            <a href="chat_screen.php?user_id=<?= htmlspecialchars($user_user_id);?>" class="list-group-item list-group-item-action">
+                                <div class="profile-img-container">
+                                    <img src="profile_picture/<?= htmlspecialchars($userDP); ?>" alt="Profile Photo" width="50">
+                                </div>
+                                <strong class="fs-5"><?= htmlspecialchars($user['name']); ?></strong>
+                            </a>
                         </div>
-                    </div>
-                    <div class="message-area">
-                        <form id="messageForm" action="#" method="POST">
-                            <div class="input-group">
-                                <input type="hidden" id="receiver" name="receiver" value="">
-                                <textarea class="form-control" id="message" name="message" rows="1" placeholder="Type your message..."></textarea>
-                                <button type="submit" class="btn mybtn"><i class="fa-solid fa-arrow-up"></i></button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <?php
-                    // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    //     // Get the username of the receiver and the message
-                    //     $sender = $info['id']; // Get sender's ID from user info
-                    //     $receiver = $_POST['receiver']; // Receiver's username
-                    //     $message = $_POST['message']; // Message content
-
-                        
-
-                    //     echo $sender, $reciever, $message;
-                    
-                    //     // Prepare the SQL insert statement to add the message
-                    //     $insertSql = "INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES ('$sender', '$receiver', '$message', NOW())";
-                    //     $insertResult = mysqli_query($conn, $insertSql);
-                        
-                    //     if ($insertResult){
-                    //         echo "Message sent!";
-                    //         echo $sender, $reciever, $message;
-                    //     }
-                    //     else{
-                    //         echo "Message not sent!";
-                    //     }
-                    // }
-                    ?>
-
-                    <div id="messageStatus" class="mt-2"></div>
-                </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>        
-
-
-
 
     </div>
 
