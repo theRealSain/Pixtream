@@ -13,6 +13,11 @@ li{
     background-color: #000000  !important;
     color: white;
 }
+.dropdown-menu .dropdown-item:active {
+    i{
+        color: white;
+    }
+}
 
 #login, #register{
     border-radius: 10px;
@@ -168,10 +173,28 @@ li{
     margin-bottom: 20px !important;
 }
 
+.uploaded-media {
+    max-width: 520px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: auto;
+    display: block;
+}
+.green-alert{
+    width: 590px;
+    margin: auto;
+    display: block;
+}
+.post-text{
+    margin-left: 22px;
+    margin-top: 14px;
+}
 
 
 a{
     color: inherit;
+    text-decoration: none;
 }
 
 
@@ -344,13 +367,14 @@ a{
     border-radius: 5px;
 }
 
-.photo-grid {
+.media-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-.photo-grid img {
+.media-grid img,
+.media-grid video {
     width: 260px;
     height: 260px;
     object-fit: cover;
@@ -358,34 +382,383 @@ a{
     padding: 10px;
     background-color: #f0f0f0;
 }
-
-/* Modal styling to ensure the image displays correctly */
-.modal-body img {
-    width: 100%;
-    height: auto;
+.media-grid video {
+    display: block;
+    border: 1px solid #ccc; /* Optional: adds a subtle border around videos */
+}
+.video-thumbnail {
+    position: relative;
+    display: inline-block;
 }
 
-#photoModal .modal-body {
-    height: 600px; /* Set your desired fixed height */
-    overflow-y: auto; /* Allow scrolling if content exceeds the height */
+.video-icon-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: white;
+    opacity: 0.8;
+    pointer-events: none; /* Ensures the icon does not interfere with clicks */
+}
+#modalMediaContainer img,
+#modalMediaContainer video {
+    max-width: 100%; /* Ensures responsiveness */
+    width: 350px;    /* Set the desired width for the media */
+    height: auto;    /* Maintains aspect ratio */
+    background-color: yellowgreen !important;
 }
 
-#photoModal img {
-    max-width: 100%; /* Allow the image to scale */
+
+.sidebar {
+    height: 100vh; /* Full height for the sidebar */
+    background-color: #f8f9fa; /* Example background color */
+    transition: width 0.3s; /* Smooth transition for collapsing */
+    padding: 20px; /* Padding for the sidebar */
+    width: 15%;
+}
+.sidebar.collapsed {
+    width: 0; /* Collapsed width */
+    overflow: hidden; /* Hide overflow */
+}
+.active-now{
+    background-color: #e9e9e9;
+}
+.content {
+    transition: margin-left 0.3s; /* Smooth transition for content */
+    margin-left: 50px; /* Default margin for sidebar width */
+    padding: 20px; /* Padding for content */
+}
+.content.collapsed {
+    margin-left: 0; /* Adjust margin when sidebar is collapsed */
+}
+.toggle-btn {
+    position: fixed; /* Fixed position for toggle button */
+    top: 20px; /* Positioning */
+    left: 20px; /* Positioning */
+    z-index: 1000; /* Make sure the button is above other elements */
+    border: none;
+}
+.sidebar-logo {
+    max-width: 100%; /* Make sure the logo is responsive */
     height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Spacing below the logo */
+}
+.sidebar .nav-link {
+    color: #343a40; /* Customize link color */
+}
+.sidebar .nav-link:hover {
+    background-color: #e9ecef; /* Background color on hover */
+}
+.user-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Circular profile picture */
+    margin-right: 10px; /* Spacing between image and name */
+}
+.admin-table {
+    width: 100%; /* Ensure the table uses full width */
+}
+.admin-dash a{
+    text-decoration: none;
+}
+.admin-card{
+    text-decoration: none;
+    height: 250px;
+}
+
+.admin-2divs {
+    display: flex; /* Use flexbox layout */
+    height: 100vh; /* Full height of the viewport */
+}
+
+.content {
+    margin-left: 0%; /* Space for the fixed sidebar */
+    flex: 1; /* Allow content to take up remaining space */
+    padding: 20px; /* Padding for content */
+}
+
+.table-container {
+    width: 100%; /* Full width for the container */    
+    overflow-x: auto; /* Enable horizontal scrolling */
+}
+
+.admin-table {
+    width: 100%; /* Make the table full width */
+    border-collapse: collapse; /* Ensure borders collapse */
+}
+
+.table th, .table td {
+    padding: 10px 15px; /* Adjust padding */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.post-option{
+    float: right !important;
+    position: relative;
+    --bs-btn-close-bg: none;
+    border-width: none;
+    border-style: none;
+    border-color: none;
+    border-image: none;
+    background: none;
+    margin-right: 5px;
+}
+.post-option i{
+    font-size: 1.3rem;
+    color: black;
+}
+.post-option:hover{
+    background-color: #ffffff00;
+}
+.post-option:active{
+    background-color: #ffffff00 !important;
+}
+
+.modal-backdrop.show {
+    z-index: 1040 !important; /* Lower z-index to keep the postModal visible */
+}
+
+#postModal {
+    z-index: 1045 !important; /* Ensure it stays below the commentModal */
+}
+
+#commentModal {
+    z-index: 1055 !important; /* Higher z-index to appear above the postModal */
+}
+
+
+.cmt{
+    padding: 15px;
+    background-color: #ececec;
+}
+
+.alert-msg{
+    background-color: yellow;
+}
+
+#commentForm{
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+}
+
+
+
+
+/* Centered chat container */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    max-width: 50%;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Header for receiver's name */
+.chat-header {
+    padding: 15px;
+    background-color: #e7e7e7;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Message display area */
+.messages {
+    padding: 20px;
+    height: 90%;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+/* Messages area styling */
+.messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Individual message styling */
+.message {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    word-wrap: break-word;
+}
+
+/* Styling for received messages on the left */
+.message.received {
+    align-self: flex-start;
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+/* Styling for sent messages on the right */
+.message.sent {
+    align-self: flex-end;
+    background-color: #000000;
+    color: #fff;
+}
+
+/* Timestamp styling */
+.timestamp {
+    display: block;
+    font-size: 10px;
+    color: #666;
+    margin-top: 15px;
+    margin-left: 10px;
+}
+
+/* Profile info styling */
+.chat-info {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+
+.message-form {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f8f9fa;
+    margin-bottom: 0px;
+}
+
+.message-form .input-group {
+    display: flex;
+    align-items: center;
+}
+
+.chat-info{
+    margin-bottom: 80px;
+}
+
+.chat-dp{
+    margin-top: 20px !important;
+    margin: auto;
+    display: block;
+}
+.chat-pf{
+    margin: auto;
+    display: block;
+    width: fit-content;
+}
+.confirm-alert{
+    font-size: 12px;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+
+
+
+.post-container {
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    max-width: 50%;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Header for receiver's name */
+.post-header {
+    padding: 15px;
+    background-color: #e7e7e7;
+    text-align: center;
+    font-weight: bold;
+}
+.post-head{
+    margin-left: 5px !important;
+}
+.post-head span:nth-of-type(2){
+    margin-left: -30px;
+    font-weight: lighter;    
+}
+.post-info{
+    height: 58vh;
+}
+.post-info img{
+    margin: auto;
+    display: block;
+    height: 100%;
+    width: auto;
+}
+.post-info video{
+    height: 100%;
+    margin: auto;
+    display: block;
+}
+.post-details{
+    background-color: #e7e7e76b;
+    padding: 20px 20px 35px 20px;
+    border-radius: 0px 0px 7px 7px;
 }
 
 .like-share-comment {
     padding: 20px;
 }
-.like-share-comment .col-lg-4 { 
-    margin: auto;
-}
-.like-share-comment .col-lg-4 i {
+
+.post-inter{
+    font-size: 15px;
+    border-radius: 8px;    
+    padding: 5px 30px;
+    background-color: #cccccc;
+    font-weight: bold;
     margin: auto;
     display: block;
-    text-align: center;
-    width: fit-content;
-    font-size: 1.5rem;
-    filter: drop-shadow(1px);
+    width: 30%;
+    cursor: pointer;
+}
+.int-count{
+    font-size: 10px;
+}
+
+.small{
+    font-weight: light;
+    font-size: 11px;
+}
+
+
+.post-liked {
+    color: #cccccc; /* Change this color as desired */
+    background-color: black;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 8px;    
+    padding: 5px 30px;
+    margin: auto;
+    display: block;
+    width: 30%;
+    cursor: pointer;
+}
+
+.like-count-overlay {
+    position: absolute;
+    margin-top: -50px;
+    margin-left: 20px;
+    background-color: #ffffffbe; /* Semi-transparent black background */
+    color: #000000; /* White text */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.post-menu{
+    position: relative;
+    left: 730px;
 }
