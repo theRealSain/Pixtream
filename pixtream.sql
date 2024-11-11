@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Nov 11, 2024 at 09:36 AM
+-- Generation Time: Nov 11, 2024 at 10:11 AM
 -- Server version: 8.0.31
 -- PHP Version: 8.0.26
 
@@ -159,7 +159,14 @@ CREATE TABLE IF NOT EXISTS `likes` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `post_id` (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `likes`
+--
+
+INSERT INTO `likes` (`id`, `user_id`, `post_id`, `created_at`) VALUES
+(95, 1, 41, '2024-11-11 09:38:04');
 
 -- --------------------------------------------------------
 
@@ -268,7 +275,14 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`id`, `user_id`, `post_path`, `caption`, `category`, `created_at`) VALUES
+(41, 2, 'post_uploads/post_6731d04a159d7.jpg', 'Nature❤', 'Photography', '2024-11-11 09:37:14');
 
 -- --------------------------------------------------------
 
@@ -303,7 +317,14 @@ CREATE TABLE IF NOT EXISTS `saved_posts` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `post_id` (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `saved_posts`
+--
+
+INSERT INTO `saved_posts` (`id`, `user_id`, `post_id`, `created_at`) VALUES
+(17, 1, 41, '2024-11-11 09:38:05');
 
 -- --------------------------------------------------------
 
