@@ -209,7 +209,9 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                         <!-- Message Button -->
                                         <form action="message.php" method="POST" class="w-50 ms-1">
                                             <input type="hidden" name="message_user_id" value="<?php echo htmlspecialchars($user_id); ?>">
-                                            <button type="submit" class="btn mybtn-outline w-100">Message</button>
+                                            <a href="chat_screen.php?user_id=<?= htmlspecialchars($user_id);?>
+                                                <button type="submit" class="btn mybtn-outline w-100">Message</button>
+                                            </a>
                                         </form>
                                     <?php endif; ?>
                                 </div>

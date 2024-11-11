@@ -47,7 +47,7 @@ $currentUserId = $currentUserIdRow['id'];
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="dashboard.php">
             <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
         </a>

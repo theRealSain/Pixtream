@@ -57,7 +57,7 @@ $messages_result = mysqli_query($conn, $messages_query);
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="dashboard.php">
             <img src="assets/img/LOGO.svg" width="30" height="30" class="d-inline-block align-top" alt="" id="dash-icon">
             <b>PIXTREAM</b>
         </a>

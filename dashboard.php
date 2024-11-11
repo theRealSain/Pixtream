@@ -21,6 +21,22 @@ $info = mysqli_fetch_assoc($result);
 
 $name = $info['name'];
 $email = $info['email'];
+
+$name = $info['name'];
+$email = $info['email'];
+$user_id = $info['id'];
+
+// Fetch posts from followed users
+$post_query = "
+    SELECT posts.id, posts.user_id, posts.post_path, posts.caption, posts.category, posts.created_at, users.username, users.profile_picture
+    FROM posts
+    JOIN follows ON follows.followed_id = posts.user_id
+    JOIN users ON users.id = posts.user_id
+    WHERE follows.follower_id = $user_id
+    ORDER BY posts.created_at DESC
+";
+$post_result = mysqli_query($conn, $post_query);
+
 ?>
 
 <!DOCTYPE html>
@@ -83,7 +99,56 @@ $email = $info['email'];
                 New Post
             </button>
         </div>
+
+        <!-- News Feed Section -->
+        <div id="newsFeed" class="mt-3">
+            <?php while ($post = mysqli_fetch_assoc($post_result)): ?>
+                <div class="card mb-3 feed-card">
+                    <div class="card-body">
+
+                        <div class="feed-header d-flex align-items-center mb-2">
+                            <img src="profile_picture/<?php echo htmlspecialchars($post['profile_picture']); ?>" alt="<?php echo htmlspecialchars($post['username']); ?>" width="40" height="40" style="border-radius: 50%;">
+                            <strong class="ms-2"><?php echo htmlspecialchars($post['username']); ?></strong>
+                        </div>
+
+                        <div class="feed-media">
+                            <?php if (str_ends_with($post['post_path'], '.mp4')): ?>
+                                <video src="<?php echo htmlspecialchars($post['post_path']); ?>" controls class="feed-video mb-2"></video>
+                            <?php else: ?>
+                                <img src="<?php echo htmlspecialchars($post['post_path']); ?>" class="feed-photo mb-2" alt="Post Image">
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Like, Comment, Share Section -->
+                        <div class="row like-share-comment mt-3 g-2">
+                            <!-- Like Button -->
+                            <div class="col-sm-4 text-center post-inter">
+                                <i class="fa-solid fa-thumbs-up"></i>&nbsp;<b>Like</b>                       
+                            </div>
+
+                            <!-- Comment Button -->
+                            <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#commentModal">
+                                <i class="fa-solid fa-comment"></i>&nbsp;<b>Comment</b>
+                            </div>
+
+                            <!-- Share Button -->
+                            <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-footer">
+                            <p><b><?php echo htmlspecialchars($post['caption']); ?></b></p>
+                            <small class="text-muted"><?php echo date('F j, Y, g:i a', strtotime($post['created_at'])); ?></small>
+                        </div>                        
+
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+
     </div>
+
 
     <!-- New Post Modal -->
     <div class="modal fade" id="newPost" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">

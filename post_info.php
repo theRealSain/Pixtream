@@ -209,11 +209,11 @@ if (mysqli_num_rows($like_check_result) > 0) {
                     </div>
 
                     <!-- Share Button -->
-                    <div class="col-sm-4 text-center post-inter">
+                    <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#shareModal">
                         <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         <span class="confirm-alert">                    
 
@@ -349,6 +349,43 @@ if (mysqli_num_rows($like_check_result) > 0) {
         </div>
     </div>
 
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Share Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shareForm">
+                        <input type="hidden" name="post_id" value="<?php echo $post_id; ?>"> <!-- Pass the post ID -->
+                        <div class="mb-3">
+                            <label for="userSelect" class="form-label">Select a user to share with:</label>
+                            <select class="form-select" id="userSelect" name="to_user_id" required>
+                                <?php
+                                // Fetch the list of users the logged-in user follows
+                                $follower_id = $_SESSION['user_id']; // Assuming the user ID is stored in the session
+                                $query = "SELECT users.id, users.username FROM follows
+                                        JOIN users ON follows.followed_id = users.id
+                                        WHERE follows.follower_id = ?";
+                                $stmt = $pdo->prepare($query);
+                                $stmt->execute([$follower_id]);
+                                $followers = $stmt->fetchAll();
+                                
+                                foreach ($followers as $follower) {
+                                    echo "<option value='" . $follower['id'] . "'>" . htmlspecialchars($follower['username']) . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Share</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     if ( window.history.replaceState )
     {
@@ -356,6 +393,7 @@ if (mysqli_num_rows($like_check_result) > 0) {
     }
     </script>
 
+    <!-- JS files -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
