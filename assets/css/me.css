@@ -762,3 +762,29 @@ a{
     position: relative;
     left: 730px;
 }
+
+
+
+.feed-card{
+    width: 75%;
+    margin: auto;
+    border: none !important;
+    box-shadow: 0px 3px 5px #0000007c !important;
+    margin-bottom: 80px !important;
+}
+.feed-photo, .feed-video{
+    position: relative;
+    width: 90%;
+    margin: auto;
+    display: block;
+    margin-bottom: 50px !important;
+}
+
+.feed-header{        
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+}
+.feed-footer{    
+    padding: 20px 20px 20px 50px !important;
+    margin-bottom: 20px !important;
+}
