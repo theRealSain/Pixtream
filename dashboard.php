@@ -14,6 +14,14 @@ if (isset($_SESSION['upload_message'])) {
     unset($_SESSION['upload_message']); // Clear message after displaying
 }
 
+
+$post_sql = "SELECT * FROM posts WHERE id = '$post_id';";
+$post_result = mysqli_query($conn, $post_sql);
+$post_info = mysqli_fetch_assoc($post_result);
+
+$post_path = $post_info['post_path'];
+$isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);  // Adjust the pattern for any other video formats
+
 // Fetch user info
 $sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
@@ -101,49 +109,91 @@ $post_result = mysqli_query($conn, $post_query);
         </div>
 
         <!-- News Feed Section -->
-        <div id="newsFeed" class="mt-3">
-            <?php while ($post = mysqli_fetch_assoc($post_result)): ?>
-                <div class="card mb-3 feed-card">
-                    <div class="card-body">
+        <div id="newsFeed" class="mt-5">
+            <?php while ($post = mysqli_fetch_assoc($post_result)): 
 
-                        <div class="feed-header d-flex align-items-center mb-2">
-                            <img src="profile_picture/<?php echo htmlspecialchars($post['profile_picture']); ?>" alt="<?php echo htmlspecialchars($post['username']); ?>" width="40" height="40" style="border-radius: 50%;">
-                            <strong class="ms-2"><?php echo htmlspecialchars($post['username']); ?></strong>
+                $user_username = $post['username'];
+                $user_sql = "SELECT * FROM users WHERE username = '$user_username';";
+                $user_result = mysqli_query($conn, $user_sql);
+                $user_info = mysqli_fetch_assoc($user_result);
+
+                $user_name = $user_info['name'];
+
+                $post_id = $post['id'];
+                $post_sql = "SELECT * FROM posts WHERE id = '$post_id';";
+                $post_result = mysqli_query($conn, $post_sql);
+                $post_info = mysqli_fetch_assoc($post_result);
+
+                $post_category = $post_info['category'];
+            ?>
+
+            <div class="post-header d-flex align-items-center">
+                <img src="profile_picture/<?php echo htmlspecialchars($post['profile_picture']); ?>" alt="Profile Picture" width="50" class="me-2" style="border-radius: 50%;"/>
+                <div class="post-head">
+                    <span><?php echo htmlspecialchars($user_name); ?></span><br>
+                    <span class="small"><?php echo date("M d Y", strtotime($post['created_at'])); ?></span>
+                </div>
+                
+                <!-- Bookmark Button -->
+                <?php
+                    // // Check if the post is already saved for this user
+                    // $query = "SELECT * FROM saved_posts WHERE user_id = ? AND post_id = ?";
+                    // $stmt = $conn->prepare($query);
+                    // $stmt->bind_param("ii", $log_id, $post_id);
+                    // $stmt->execute();
+                    // $isSaved = $stmt->get_result()->num_rows > 0;
+                ?>
+
+                <div class="dropdown post-menu">
+                    <i id="bookmarkIcon-<?php echo $post_id; ?>" 
+                    class="
+                    <?php // echo $isSaved ? 'fa-solid fa-bookmark' : 'fa-regular'; ?>
+                     fa-bookmark"
+                    style="font-size: 1.3rem; cursor: pointer;" 
+                    onclick="toggleSavePost(<?php //echo $post_id; ?>)"></i>
+                </div>
+            </div>
+
+            <!-- Post Area -->
+            <div class="post">
+                <div class="post-info">
+                    <?php if ($isVideo): ?>
+                        <video controls width="300" class="img-fluid">
+                            <source src="<?php echo htmlspecialchars($post_path); ?>" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    <?php else: ?>
+                        <img src="<?php echo htmlspecialchars($post['post_path']); ?>" alt="Pixtream Post" class="img-fluid">
+                    <?php endif; ?>
+                </div>
+
+                <div class="post-details">                
+                    <p><strong><?php echo htmlspecialchars($post['caption']); ?></strong></p>
+                    <p><strong><span class="badge mybadge2"><?php echo htmlspecialchars($post_category); ?></span></strong></p>
+
+                    <!-- Like, Comment, Share Section -->
+                    <div class="row like-share-comment mt-3 g-2">
+                        <!-- Like Button -->
+                        <div class="col-sm-4 text-center like-button <?php //echo ($user_has_liked ? 'post-liked' : 'post-inter'); ?>" 
+                            data-liked="<?php //echo ($user_has_liked ? 'true' : 'false'); ?>">
+                            <b id="like-text">
+                                <?php //echo ($user_has_liked ? "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Liked" : "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Like"); ?>
+                            </b>                        
                         </div>
 
-                        <div class="feed-media">
-                            <?php if (str_ends_with($post['post_path'], '.mp4')): ?>
-                                <video src="<?php echo htmlspecialchars($post['post_path']); ?>" controls class="feed-video mb-2"></video>
-                            <?php else: ?>
-                                <img src="<?php echo htmlspecialchars($post['post_path']); ?>" class="feed-photo mb-2" alt="Post Image">
-                            <?php endif; ?>
+                        <!-- Comment Button -->
+                        <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#commentModal">
+                            <i class="fa-solid fa-comment"></i>&nbsp;<b>Comment</b>
                         </div>
 
-                        <!-- Like, Comment, Share Section -->
-                        <div class="row like-share-comment mt-3 g-2">
-                            <!-- Like Button -->
-                            <div class="col-sm-4 text-center post-inter">
-                                <i class="fa-solid fa-thumbs-up"></i>&nbsp;<b>Like</b>                       
-                            </div>
-
-                            <!-- Comment Button -->
-                            <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#commentModal">
-                                <i class="fa-solid fa-comment"></i>&nbsp;<b>Comment</b>
-                            </div>
-
-                            <!-- Share Button -->
-                            <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#shareModal">
-                                <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
-                            </div>
+                        <!-- Share Button -->
+                        <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#shareModal">
+                            <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
                         </div>
-                        
-                        <div class="feed-footer">
-                            <p><b><?php echo htmlspecialchars($post['caption']); ?></b></p>
-                            <small class="text-muted"><?php echo date('F j, Y, g:i a', strtotime($post['created_at'])); ?></small>
-                        </div>                        
-
                     </div>
                 </div>
+            </div>
+
             <?php endwhile; ?>
         </div>
 

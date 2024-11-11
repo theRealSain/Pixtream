@@ -386,6 +386,9 @@ if (mysqli_num_rows($like_check_result) > 0) {
         </div>
     </div>
 
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="library-files/js/main.js"></script>
+
     <script>
     if ( window.history.replaceState )
     {
@@ -393,8 +396,6 @@ if (mysqli_num_rows($like_check_result) > 0) {
     }
     </script>
 
-    <!-- JS files -->
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+    
 </body>
 </html>

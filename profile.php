@@ -321,53 +321,60 @@ $location = $bioInfo['location'];
                                         while ($row = mysqli_fetch_assoc($postsResult)) {
                                             $posts[] = $row;
                                         }
-                                        foreach ($posts as $post)
-                                        {                                            
-                                            $post_id = $post['id'];
-                                            $mediaPath = $post['post_path'];
-                                            $caption = $post['caption'];
-                                            $createdAt = new DateTime($post['created_at']);
-                                            $formattedDate = $createdAt->format('F j, Y g:i A');
-                                            $category = $post['category'];
-
-                                            // Get the like count for each post
-                                            $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
-                                            $likeCountResult = mysqli_query($conn, $likeCountSql);
-                                            $likeCountRow = mysqli_fetch_assoc($likeCountResult);
-                                            $likeCount = $likeCountRow['like_count'];
-
-                                            // Determine if the media is a video or image
-                                            $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
-                                            $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
-                                        ?>
-
-                                        <a href="post_info.php?user_id=<?php echo $id; ?>&post_id=<?php echo $post_id; ?>">
-                                            <div class="media-item">
-                                                <?php if ($isVideo): ?>
-                                                    <div class="video-thumbnail" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
-                                                        <video muted>
-                                                            <source src="<?php echo htmlspecialchars($mediaPath); ?>" type="video/mp4">
-                                                            Your browser does not support the video tag.
-                                                        </video>
-                                                        <div class="video-icon-overlay">
-                                                            <i class="fas fa-play-circle"></i>
-                                                        </div>
-                                                    </div>
-                                                <?php else: ?>
-                                                    <img src="<?php echo htmlspecialchars($mediaPath); ?>" alt="Pixtream Post" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
-                                                <?php endif; ?>
-
-                                                <!-- Like Count Overlay -->
-                                                <div class="like-count-overlay">
-                                                    <i class="fa-solid fa-thumbs-up"></i>&nbsp;<?php echo $likeCount; ?>
-                                                </div>
-
-                                            </div>
-                                        </a>
-
-                                        <?php
+                                        if (empty($posts)) 
+                                        {
+                                            echo "<p class='fs-5 mt-4'><b>No posts to show!</b></p>";
                                         }
-                                        ?>
+                                        else 
+                                        {
+                                            foreach ($posts as $post)
+                                            {                                            
+                                                $post_id = $post['id'];
+                                                $mediaPath = $post['post_path'];
+                                                $caption = $post['caption'];
+                                                $createdAt = new DateTime($post['created_at']);
+                                                $formattedDate = $createdAt->format('F j, Y g:i A');
+                                                $category = $post['category'];
+
+                                                // Get the like count for each post
+                                                $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
+                                                $likeCountResult = mysqli_query($conn, $likeCountSql);
+                                                $likeCountRow = mysqli_fetch_assoc($likeCountResult);
+                                                $likeCount = $likeCountRow['like_count'];
+
+                                                // Determine if the media is a video or image
+                                                $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+                                                $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
+                                            ?>
+
+                                            <a href="post_info.php?user_id=<?php echo $id; ?>&post_id=<?php echo $post_id; ?>">
+                                                <div class="media-item">
+                                                    <?php if ($isVideo): ?>
+                                                        <div class="video-thumbnail" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                                            <video muted>
+                                                                <source src="<?php echo htmlspecialchars($mediaPath); ?>" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                            <div class="video-icon-overlay">
+                                                                <i class="fas fa-play-circle"></i>
+                                                            </div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo htmlspecialchars($mediaPath); ?>" alt="Pixtream Post" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
+                                                    <?php endif; ?>
+
+                                                    <!-- Like Count Overlay -->
+                                                    <div class="like-count-overlay">
+                                                        <i class="fa-solid fa-thumbs-up"></i>&nbsp;<?php echo $likeCount; ?>
+                                                    </div>
+
+                                                </div>
+                                            </a>
+
+                                            <?php
+                                            }
+                                        }
+                                            ?>
                                             
                                     </div>
                                 </div>

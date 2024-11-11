@@ -391,23 +391,31 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                     // Fetch the user's posts
                                     $postsSql = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY created_at DESC;";
                                     $postsResult = mysqli_query($conn, $postsSql);
-                                    while ($post = mysqli_fetch_assoc($postsResult)) {
-                                        $post_id = $post['id'];
-                                        $mediaPath = $post['post_path'];
-                                        $caption = $post['caption'];
-                                        $createdAt = new DateTime($post['created_at']);
-                                        $formattedDate = $createdAt->format('F j, Y g:i A');
-                                        $category = $post['category'];
 
-                                        // Get the like count for each post
-                                        $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
-                                        $likeCountResult = mysqli_query($conn, $likeCountSql);
-                                        $likeCountRow = mysqli_fetch_assoc($likeCountResult);
-                                        $likeCount = $likeCountRow['like_count'];
+                                    // Check if there are any posts
+                                    if (mysqli_num_rows($postsResult) === 0) {
+                                        echo "<p class='fs-5 mt-4'><b>No posts to show!</b></p>";
+                                    } 
+                                    else 
+                                    {
+                                        while ($post = mysqli_fetch_assoc($postsResult)) 
+                                        {
+                                            $post_id = $post['id'];
+                                            $mediaPath = $post['post_path'];
+                                            $caption = $post['caption'];
+                                            $createdAt = new DateTime($post['created_at']);
+                                            $formattedDate = $createdAt->format('F j, Y g:i A');
+                                            $category = $post['category'];
 
-                                        // Determine if the media is a video or image
-                                        $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
-                                        $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
+                                            // Get the like count for each post
+                                            $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
+                                            $likeCountResult = mysqli_query($conn, $likeCountSql);
+                                            $likeCountRow = mysqli_fetch_assoc($likeCountResult);
+                                            $likeCount = $likeCountRow['like_count'];
+
+                                            // Determine if the media is a video or image
+                                            $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+                                            $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
                                     ?>
 
                                         <a href="post_info.php?user_id=<?php echo $user_id; ?>&post_id=<?php echo $post_id; ?>">
@@ -434,9 +442,10 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                             </div>
                                         </a>
 
-                                    <?php 
+                                <?php 
                                     }
-                                    ?>
+                                }
+                                ?>
 
                                     </div>
                                 </div>               
