@@ -4,6 +4,9 @@ session_start();
 
 error_reporting(0);
 
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 if(!isset($_SESSION['username']))
 {
   header('location:authen.php');
@@ -39,9 +42,10 @@ $isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);  // Adjust the patter
 
 $post_created_at = $post_info['created_at'];
 $caption = $post_info['caption'];
+$category = $post_info['category'];
 
-// Handling comment submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handling comment 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {    
     $commentText = $_POST['commentText'];
 
     if (!empty($commentText)) {
@@ -127,10 +131,14 @@ if (mysqli_num_rows($like_check_result) > 0) {
     <!-- Post Container -->
     <div class="post-container">
         <div class="post-header d-flex align-items-center">
-            <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="50" class="me-2" style="border-radius: 50%;"/>
+            <a href="user_profile.php?username=<?php echo $user_name; ?>">
+                <img src="profile_picture/<?php echo htmlspecialchars($profilePhoto); ?>" alt="Profile Picture" width="50" class="me-2 dp"/>
+            </a>
             <div class="post-head">
-                <span><?php echo htmlspecialchars($name); ?></span><br>
-                <span class="small"><?php echo date("M d Y", strtotime($post_created_at)); ?></span>
+                <a href="user_profile.php?username=<?php echo $user_name; ?>">
+                    <span><?php echo htmlspecialchars($name); ?></span><br>
+                </a>
+                <span class="small" style="margin-left: -30px; font-weight: lighter;"><?php echo date("M d Y", strtotime($post_created_at)); ?></span>
             </div>
             
             <!-- Bookmark Button -->
@@ -141,40 +149,8 @@ if (mysqli_num_rows($like_check_result) > 0) {
                 $stmt->bind_param("ii", $log_id, $post_id);
                 $stmt->execute();
                 $isSaved = $stmt->get_result()->num_rows > 0;
-            ?>
-
-            <div class="dropdown post-menu">
-                <i id="bookmarkIcon-<?php echo $post_id; ?>" 
-                class="<?php echo $isSaved ? 'fa-solid fa-bookmark' : 'fa-regular'; ?> fa-bookmark"
-                style="font-size: 1.3rem; cursor: pointer;" 
-                onclick="toggleSavePost(<?php echo $post_id; ?>)"></i>
-            </div>
-        </div>
-
-        <script>
-            // Function to toggle the save status
-            function toggleSavePost(postId) {
-                const bookmarkIcon = document.getElementById(`bookmarkIcon-${postId}`);
-
-                // Send AJAX request to save/unsave post
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "post_save.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        // Update icon style based on server response
-                        if (xhr.responseText.trim() === "saved") {
-                            bookmarkIcon.classList.remove('fa-regular');
-                            bookmarkIcon.classList.add('fa-solid');
-                        } else if (xhr.responseText.trim() === "unsaved") {
-                            bookmarkIcon.classList.remove('fa-solid');
-                            bookmarkIcon.classList.add('fa-regular');
-                        }
-                    }
-                };
-                xhr.send("post_id=" + postId);
-            }
-        </script>
+            ?>            
+        </div>        
 
         
         <!-- Post Area -->
@@ -191,7 +167,39 @@ if (mysqli_num_rows($like_check_result) > 0) {
             </div>
             <div class="post-details">                
                 <p><strong><?php echo htmlspecialchars($caption); ?></strong></p>
-                <p><strong><span class="badge mybadge2"></span></strong></p>
+                <p><strong><span class="badge mybadge2"><?php echo htmlspecialchars($category); ?></span></strong></p>
+
+                <div class="dropdown post-menu">
+                    <i id="bookmarkIcon-<?php echo $post_id; ?>" 
+                    class="<?php echo $isSaved ? 'fa-solid fa-bookmark' : 'fa-regular'; ?> fa-bookmark"
+                    style="font-size: 1.3rem; cursor: pointer;" 
+                    onclick="toggleSavePost(<?php echo $post_id; ?>)"></i>
+                </div>
+
+                <script>
+                    // Function to toggle the save status
+                    function toggleSavePost(postId) {
+                        const bookmarkIcon = document.getElementById(`bookmarkIcon-${postId}`);
+
+                        // Send AJAX request to save/unsave post
+                        const xhr = new XMLHttpRequest();
+                        xhr.open("POST", "post_save.php", true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                // Update icon style based on server response
+                                if (xhr.responseText.trim() === "saved") {
+                                    bookmarkIcon.classList.remove('fa-regular');
+                                    bookmarkIcon.classList.add('fa-solid');
+                                } else if (xhr.responseText.trim() === "unsaved") {
+                                    bookmarkIcon.classList.remove('fa-solid');
+                                    bookmarkIcon.classList.add('fa-regular');
+                                }
+                            }
+                        };
+                        xhr.send("post_id=" + postId);
+                    }
+                </script>
 
                 <!-- Like, Comment, Share Section -->
                 <div class="row like-share-comment mt-3 g-2">
@@ -213,8 +221,148 @@ if (mysqli_num_rows($like_check_result) > 0) {
                         <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
                     </div>
                 </div>
+            </div>            
+        </div>
+
+        <!-- Comment Modal (Secondary Modal) -->
+        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="max-height: 90vh;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Comment Form -->
+                        <form id="commentForm" method="POST" name="comment_form">
+                            <div class="form-group mb-3">
+                                <div class="input-group">
+                                    <textarea class="form-control" name="commentText" id="commentText" placeholder="Comment as <?php echo $log_name; ?>" rows="1" required></textarea>                                
+                                    <button type="submit" class="btn mybtn"><i class="fa-solid fa-caret-right"></i></button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <?php
+                            $comment_sql = "SELECT * FROM comments WHERE post_id = '$post_id'";
+                            $comment_result = mysqli_query($conn, $comment_sql);
+                            $comment_info = mysqlI_fetch_all($comment_result);
+                        ?>
+                        
+                        <!-- Display Comments Here -->
+                        <div class="comments-section mt-4" style="max-height: 600px; overflow-y: auto;">
+                        <h5 class="mb-3"><b>Comments</b></h5>
+                            <?php 
+                            if ($comment_result && mysqli_num_rows($comment_result) > 0) {
+                                foreach ($comment_info as $comment)
+                                {
+                                    $cmt_user_id = $comment[1];
+
+                                    $name_sql = "SELECT * FROM users WHERE id = '$cmt_user_id';";
+                                    $name_result = mysqli_query($conn, $name_sql);
+                                    $name_info = mysqli_fetch_assoc($name_result);
+
+                                    $cmt_name = $name_info['name'];
+                                    $cmt_username = $name_info['username'];
+                                    $cmt_dp = $name_info['profile_picture'];
+                            ?>
+
+                                    <div class="comment mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="profile_picture/<?php echo htmlspecialchars($cmt_dp); ?>" alt="User Profile" width="40" class="me-2" style="border-radius: 50%;">
+                                            <div>
+                                                <strong><?php echo htmlspecialchars($cmt_username); ?></strong> &nbsp;<span class="mt-2"><?php echo htmlspecialchars($comment[3]); ?></span> <br>
+                                                <span class="small"><?php echo date("M d Y", strtotime($comment[4])); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            <?php
+                                }
+                            }
+                            else{
+                                echo "<h6 class='text-center'><b>No Comments yet!</b></h6>
+                                <p class='text-center'><small>Be first to comment!</small></p>";
+                            }
+                            ?>
+
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
+
+        <?php
+            $f_sql = "SELECT * FROM follows WHERE follower_id = '$log_id';";
+            $f_result = mysqli_query($conn, $f_sql);
+            $f_info = mysqli_fetch_all($f_result);
+        ?>
+
+        <!-- Share Modal -->
+        <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="max-height: 90vh;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="shareModalLabel">Share Post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="shareForm" method="POST" action="post_share.php">
+                            <input type="hidden" name="post_id" value="<?php echo $post_id; ?>"> <!-- Pass the post ID -->
+                            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>"> <!-- Pass the user ID -->
+                            <p>Select a user to share with:</p>
+                            <div class="list-group" style="max-height: 600px; overflow-y: auto;">
+
+                                <?php
+                                foreach($f_info as $following)
+                                {
+                                    $u_id = $following[2];
+                                
+                                    $u_sql = "SELECT * FROM users WHERE id = '$u_id';";
+                                    $u_result = mysqli_query($conn, $u_sql);
+                                    $u_info = mysqli_fetch_all($u_result);
+                                    
+                                    foreach($u_info as $followingList)
+                                    {
+                                        echo "<label class='d-flex align-items-center share-list'>";
+                                        echo "<input type='radio' class='form-check-input' name='to_user_id' value='" . $followingList[0] . "' required style='margin-right: 15px'>";
+                                        echo "<img src='profile_picture/" . htmlspecialchars($followingList[6]) . "' alt='' width='35' style='border-radius: 50%;'>";
+                                        echo "<div class='ms-2'>";
+                                        echo "<b>" . htmlspecialchars($followingList[1]) . "</b><br>"; // Display the name
+                                        echo "<span class='text-muted'>" . htmlspecialchars($followingList[2]) . "</span>"; // Display the username below
+                                        echo "</div>";
+                                        echo "</label>";
+                                    }
+                                }
+                                ?>
+
+                                <script>
+                                    // JavaScript to toggle the 'selected' class on the parent label when a radio button is selected
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Get all radio buttons with the name 'to_user_id'
+                                        const radios = document.querySelectorAll("input[name='to_user_id']");
+
+                                        radios.forEach((radio) => {
+                                            radio.addEventListener('change', function () {
+                                                // Remove 'selected' class from all labels
+                                                document.querySelectorAll('.share-list').forEach(label => label.classList.remove('selected'));
+                                                // Add 'selected' class to the parent label of the checked radio
+                                                if (radio.checked) {
+                                                    radio.closest('.share-list').classList.add('selected');
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
+                                
+                            </div>
+                            <button type="submit" class="btn mybtn mt-3" style="width: 100%;">Share</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <span class="confirm-alert">                    
 
             <?php
@@ -229,6 +377,18 @@ if (mysqli_num_rows($like_check_result) > 0) {
                 echo $_SESSION['cmt-fail'];
             }
             unset($_SESSION['cmt-fail']);
+            
+            if($_SESSION['share-success'])
+            {
+                echo $_SESSION['share-success'];
+            }
+            unset($_SESSION['share-success']);
+
+            if($_SESSION['share-fail'])
+            {
+                echo $_SESSION['share-fail'];
+            }
+            unset($_SESSION['share-fail']);
             ?>
 
         </span>
@@ -278,116 +438,7 @@ if (mysqli_num_rows($like_check_result) > 0) {
 
 
 
-    <!-- Comment Modal (Secondary Modal) -->
-    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="max-height: 90vh;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Comment Form -->
-                    <form id="commentForm" method="POST" name="comment_form">
-                        <div class="form-group mb-3">
-                            <div class="input-group">
-                                <textarea class="form-control" name="commentText" id="commentText" placeholder="Comment as <?php echo $log_name; ?>" rows="1" required></textarea>                                
-                                <button type="submit" class="btn mybtn"><i class="fa-solid fa-caret-right"></i></button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <?php
-                        $comment_sql = "SELECT * FROM comments WHERE post_id = '$post_id'";
-                        $comment_result = mysqli_query($conn, $comment_sql);
-                        $comment_info = mysqlI_fetch_all($comment_result);                        
-                        
-                    ?>
-                    
-                    <!-- Display Comments Here -->
-                    <div class="comments-section mt-4">
-                    <h5 class="mb-3"><b>Comments</b></h5>
-                        <?php 
-                        if ($comment_result && mysqli_num_rows($comment_result) > 0) {
-                            foreach ($comment_info as $comment)
-                            {
-                                $cmt_user_id = $comment[1];
-
-                                $name_sql = "SELECT * FROM users WHERE id = '$cmt_user_id';";
-                                $name_result = mysqli_query($conn, $name_sql);
-                                $name_info = mysqli_fetch_assoc($name_result);
-
-                                $cmt_name = $name_info['name'];
-                                $cmt_username = $name_info['username'];
-                                $cmt_dp = $name_info['profile_picture'];
-                        ?>
-
-                                <div class="comment mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <img src="profile_picture/<?php echo htmlspecialchars($cmt_dp); ?>" alt="User Profile" width="40" class="me-2" style="border-radius: 50%;">
-                                        <div>
-                                            <strong><?php echo htmlspecialchars($cmt_username); ?></strong> &nbsp;<span class="mt-2"><?php echo htmlspecialchars($comment[3]); ?></span> <br>
-                                            <span class="small"><?php echo date("M d Y", strtotime($comment[4])); ?></span>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-
-                        <?php
-                            }
-                        }
-                        else{
-                            echo "<h6 class='text-center'><b>No Comments yet!</b></h6>
-                            <p class='text-center'><small>Be first to comment!</small></p>";
-                        }
-                        ?>
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Share Modal -->
-    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="shareModalLabel">Share Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="shareForm">
-                        <input type="hidden" name="post_id" value="<?php echo $post_id; ?>"> <!-- Pass the post ID -->
-                        <div class="mb-3">
-                            <label for="userSelect" class="form-label">Select a user to share with:</label>
-                            <select class="form-select" id="userSelect" name="to_user_id" required>
-                                <?php
-                                // Fetch the list of users the logged-in user follows
-                                $follower_id = $_SESSION['user_id']; // Assuming the user ID is stored in the session
-                                $query = "SELECT users.id, users.username FROM follows
-                                        JOIN users ON follows.followed_id = users.id
-                                        WHERE follows.follower_id = ?";
-                                $stmt = $pdo->prepare($query);
-                                $stmt->execute([$follower_id]);
-                                $followers = $stmt->fetchAll();
-                                
-                                foreach ($followers as $follower) {
-                                    echo "<option value='" . $follower['id'] . "'>" . htmlspecialchars($follower['username']) . "</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Share</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="library-files/js/main.js"></script>
+    
 
     <script>
     if ( window.history.replaceState )
@@ -396,6 +447,7 @@ if (mysqli_num_rows($like_check_result) > 0) {
     }
     </script>
 
-    
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

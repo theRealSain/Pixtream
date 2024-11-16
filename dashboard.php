@@ -14,14 +14,6 @@ if (isset($_SESSION['upload_message'])) {
     unset($_SESSION['upload_message']); // Clear message after displaying
 }
 
-
-$post_sql = "SELECT * FROM posts WHERE id = '$post_id';";
-$post_result = mysqli_query($conn, $post_sql);
-$post_info = mysqli_fetch_assoc($post_result);
-
-$post_path = $post_info['post_path'];
-$isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);  // Adjust the pattern for any other video formats
-
 // Fetch user info
 $sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
@@ -36,7 +28,7 @@ $user_id = $info['id'];
 
 // Fetch posts from followed users
 $post_query = "
-    SELECT posts.id, posts.user_id, posts.post_path, posts.caption, posts.category, posts.created_at, users.username, users.profile_picture
+    SELECT posts.id, posts.user_id, posts.post_path, posts.caption, posts.category, posts.created_at, users.name, users.username, users.profile_picture
     FROM posts
     JOIN follows ON follows.followed_id = posts.user_id
     JOIN users ON users.id = posts.user_id
@@ -110,94 +102,147 @@ $post_result = mysqli_query($conn, $post_query);
 
         <!-- News Feed Section -->
         <div id="newsFeed" class="mt-5">
-            <?php while ($post = mysqli_fetch_assoc($post_result)): 
+            <?php while ($post = mysqli_fetch_assoc($post_result)): ?>
 
-                $user_username = $post['username'];
-                $user_sql = "SELECT * FROM users WHERE username = '$user_username';";
-                $user_result = mysqli_query($conn, $user_sql);
-                $user_info = mysqli_fetch_assoc($user_result);
-
-                $user_name = $user_info['name'];
-
-                $post_id = $post['id'];
-                $post_sql = "SELECT * FROM posts WHERE id = '$post_id';";
-                $post_result = mysqli_query($conn, $post_sql);
-                $post_info = mysqli_fetch_assoc($post_result);
-
-                $post_category = $post_info['category'];
-            ?>
-
-            <div class="post-header d-flex align-items-center">
-                <img src="profile_picture/<?php echo htmlspecialchars($post['profile_picture']); ?>" alt="Profile Picture" width="50" class="me-2" style="border-radius: 50%;"/>
-                <div class="post-head">
-                    <span><?php echo htmlspecialchars($user_name); ?></span><br>
-                    <span class="small"><?php echo date("M d Y", strtotime($post['created_at'])); ?></span>
-                </div>
-                
-                <!-- Bookmark Button -->
                 <?php
-                    // // Check if the post is already saved for this user
-                    // $query = "SELECT * FROM saved_posts WHERE user_id = ? AND post_id = ?";
-                    // $stmt = $conn->prepare($query);
-                    // $stmt->bind_param("ii", $log_id, $post_id);
-                    // $stmt->execute();
-                    // $isSaved = $stmt->get_result()->num_rows > 0;
+                    $post_user_id = $post['user_id'];
+                    $feed_post_id = $post['id'];
+                    $post_modal_id = "commentModal-" . $feed_post_id; // Unique modal ID
+                    $post_path = $post['post_path'];
+                    $isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);  // Check if post is a video
                 ?>
-
-                <div class="dropdown post-menu">
-                    <i id="bookmarkIcon-<?php echo $post_id; ?>" 
-                    class="
-                    <?php // echo $isSaved ? 'fa-solid fa-bookmark' : 'fa-regular'; ?>
-                     fa-bookmark"
-                    style="font-size: 1.3rem; cursor: pointer;" 
-                    onclick="toggleSavePost(<?php //echo $post_id; ?>)"></i>
-                </div>
-            </div>
-
-            <!-- Post Area -->
-            <div class="post">
-                <div class="post-info">
-                    <?php if ($isVideo): ?>
-                        <video controls width="300" class="img-fluid">
-                            <source src="<?php echo htmlspecialchars($post_path); ?>" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    <?php else: ?>
-                        <img src="<?php echo htmlspecialchars($post['post_path']); ?>" alt="Pixtream Post" class="img-fluid">
-                    <?php endif; ?>
-                </div>
-
-                <div class="post-details">                
-                    <p><strong><?php echo htmlspecialchars($post['caption']); ?></strong></p>
-                    <p><strong><span class="badge mybadge2"><?php echo htmlspecialchars($post_category); ?></span></strong></p>
-
-                    <!-- Like, Comment, Share Section -->
-                    <div class="row like-share-comment mt-3 g-2">
-                        <!-- Like Button -->
-                        <div class="col-sm-4 text-center like-button <?php //echo ($user_has_liked ? 'post-liked' : 'post-inter'); ?>" 
-                            data-liked="<?php //echo ($user_has_liked ? 'true' : 'false'); ?>">
-                            <b id="like-text">
-                                <?php //echo ($user_has_liked ? "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Liked" : "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Like"); ?>
-                            </b>                        
-                        </div>
-
-                        <!-- Comment Button -->
-                        <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#commentModal">
-                            <i class="fa-solid fa-comment"></i>&nbsp;<b>Comment</b>
-                        </div>
-
-                        <!-- Share Button -->
-                        <div class="col-sm-4 text-center post-inter" data-bs-toggle="modal" data-bs-target="#shareModal">
-                            <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
-                        </div>
+                
+                <div class="post-header d-flex align-items-center" style="border-radius: 8px 8px 0px 0px;">
+                    <a href="user_profile.php?username=<?php echo $post['username']; ?>">
+                        <img src="profile_picture/<?php echo htmlspecialchars($post['profile_picture']); ?>" alt="Profile Picture" width="50" class="me-2" style="border-radius: 50%;"/>
+                    </a>
+                    <div class="post-head">
+                        <a href="user_profile.php?username=<?php echo $post['username']; ?>">
+                            <span><?php echo htmlspecialchars($post['name']); ?></span><br>
+                        </a>
+                        <span class="small"><?php echo date("M d Y", strtotime($post['created_at'])); ?></span>
                     </div>
                 </div>
-            </div>
+
+                <!-- Post Area -->
+                <div class="post feed-post">
+                    <div class="post-info">
+                        <?php if ($isVideo): ?>
+                            <video controls width="300" class="img-fluid">
+                                <source src="<?php echo htmlspecialchars($post_path); ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        <?php else: ?>
+                            <img src="<?php echo htmlspecialchars($post['post_path']); ?>" alt="Pixtream Post" class="img-fluid">
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="post-details">
+                        <p><strong><?php echo htmlspecialchars($post['caption']); ?></strong></p>
+                        <p><strong><span class="badge mybadge2"><?php echo htmlspecialchars($post['category']); ?></span></strong></p>
+
+                        <?php
+                        // Check if the user has liked this post
+                        $user_has_liked = false;
+                        $like_check_query = "SELECT 1 FROM likes WHERE user_id = '$user_id' AND post_id = '$feed_post_id' LIMIT 1";
+                        $like_check_result = mysqli_query($conn, $like_check_query);
+                        if (mysqli_num_rows($like_check_result) > 0) {
+                            $user_has_liked = true;
+                        }
+
+                        // Fetch the like count
+                        $like_count_query = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id = '$feed_post_id'";
+                        $like_count_result = mysqli_query($conn, $like_count_query);
+                        $like_count = mysqli_fetch_assoc($like_count_result)['like_count'];
+                        ?>
+
+                        <!-- Like, Comment, and Share Section -->
+                        <div class="row like-share-comment align-items-center mt-3 text-center">
+                            <!-- Like Section -->
+                            <div class="col like-button <?php echo ($user_has_liked ? 'post-liked' : 'post-inter'); ?>"
+                                data-liked="<?php echo ($user_has_liked ? 'true' : 'false'); ?>"
+                                data-post-id="<?php echo $feed_post_id; ?>">
+                                <b id="like-text-<?php echo $feed_post_id; ?>">
+                                    <?php echo ($user_has_liked ? "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Liked" : "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Like"); ?>
+                                </b>
+                            </div>
+
+                            <!-- Comment Section (Entire div is now clickable) -->
+                            <div class="col post-inter">
+                                <a href="post_info.php?user_id=<?php echo $post_user_id; ?>&post_id=<?php echo $feed_post_id; ?>" class="text-decoration-none d-flex justify-content-center align-items-center h-100">
+                                    <i class="fa-solid fa-comment"></i>&nbsp;<b>Comment</b>
+                                </a>
+                            </div>
+
+                            <!-- Share Section (Entire div is now clickable) -->
+                            <div class="col post-inter">
+                                <a href="post_info.php?user_id=<?php echo $post_user_id; ?>&post_id=<?php echo $feed_post_id; ?>" class="text-decoration-none d-flex justify-content-center align-items-center h-100">
+                                    <i class="fa-solid fa-share"></i>&nbsp;<b>Share</b>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
 
             <?php endwhile; ?>
-        </div>
+            
+            <!-- 'You're all caught up' message -->
+            <div class="text-center feed-end mt-4 mb-5">
+                <i class="fa-regular fa-circle-check"></i>
+                <p class="fs-5"><b>You're all caught up!</b></p>
+            </div>
 
+        </div>
     </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-button").forEach(likeButton => {
+            const postId = likeButton.getAttribute("data-post-id");
+            const likeText = document.getElementById(`like-text-${postId}`);
+            const likeCount = document.getElementById(`like-count-${postId}`);
+
+            function updateLikeButton(isLiked, count) {
+                likeButton.setAttribute("data-liked", isLiked);
+                likeButton.classList.toggle("post-liked", isLiked);
+                likeText.innerHTML = isLiked
+                    ? "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Liked"
+                    : "<i class='fa-solid fa-thumbs-up'></i>&nbsp;Like";
+                likeCount.textContent = count;
+            }
+
+            likeButton.addEventListener("click", function () {
+                const currentLiked = likeButton.getAttribute("data-liked") === "true";
+                const newLikedStatus = !currentLiked;
+
+                fetch("post_like.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        user_id: <?php echo json_encode($user_id); ?>,
+                        liked: newLikedStatus
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateLikeButton(newLikedStatus, data.like_count);
+                        } else {
+                            console.error("Failed to update like:", data.message);
+                        }
+                    })
+                    .catch(error => console.error("Fetch error:", error));
+            });
+        });
+    });
+</script>
+
+
 
 
     <!-- New Post Modal -->

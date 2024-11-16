@@ -11,6 +11,7 @@ $username = $_SESSION['username'];
 $sql = "SELECT * FROM users WHERE username='$username'";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
+$id = $info['id'];
 $name = $info['name'];
 $profilePhoto = $info['profile_picture'] ?? 'default.png';
 
@@ -32,6 +33,8 @@ function fetchRecentUsers($conn, $username) {
 }
 
 $recentUsers = fetchRecentUsers($conn, $username);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -136,6 +139,7 @@ $recentUsers = fetchRecentUsers($conn, $username);
         <!-- Recent Chats Section -->
         <div class="recent-chats">
             <h5 class="mt-4 mb-5"><b>Recent Chats</b></h5>
+            <button class="btn mybtn btn-sm shared-posts-btn" data-bs-toggle="modal" data-bs-target="#sharedPostsModal">Shared Posts</button>
             <div id="recentChatsContainer">
 
                 <?php if (empty($recentUsers)): ?>
@@ -157,7 +161,137 @@ $recentUsers = fetchRecentUsers($conn, $username);
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-        </div>        
+        </div>
+
+        <?php
+            
+        ?>
+
+        <!-- Modal for Shared Posts -->
+        <div class="modal fade" id="sharedPostsModal" tabindex="-1" aria-labelledby="sharedPostsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content" style="width: 100%;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sharedPostsModalLabel">Shared Posts</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="max-height: 800px; overflow-y: auto;">
+                        <?php
+                        // Fetch shared posts for the logged-in user
+                        $shared_sql = "SELECT * FROM shares WHERE to_user_id = '$id';";
+                        $shared_result = mysqli_query($conn, $shared_sql);
+                        $shared_info = mysqli_fetch_all($shared_result);
+
+                        if (empty($shared_info)) {
+                            echo "<p class='text-center'><b>No shared posts!</b></p>";
+                        }
+                        else
+                        {
+                            foreach($shared_info as $shared) {
+                                $fr_u_id = $shared[1];
+                                $to_u_id = $shared[2];
+                                $p_id = $shared[3];
+                                $shared_on = $shared[4];
+
+                                // Fetch the user who shared the post
+                                $u_sql = "SELECT * FROM users WHERE id = '$fr_u_id';";
+                                $u_result = mysqli_query($conn, $u_sql);
+                                $u_info = mysqli_fetch_all($u_result);
+
+                                foreach($u_info as $fr_users) {                                    
+                                    // Fetch the shared post details
+                                    $p_sql = "SELECT * FROM posts WHERE id = '$p_id';";
+                                    $p_result = mysqli_query($conn, $p_sql);
+                                    $p_info = mysqli_fetch_all($p_result);
+
+                                    foreach($p_info as $posts) {
+                                        $pu_id = $posts[1];
+                                        $post_path = $posts[2];                                    
+
+                                        // Fetch the original user who posted
+                                        $pu_sql = "SELECT * FROM users WHERE id = '$pu_id';";
+                                        $pu_result = mysqli_query($conn, $pu_sql);
+                                        $pu_info = mysqli_fetch_all($pu_result);
+
+                                        foreach($pu_info as $post_user) {
+                                            ?>
+                                            
+                                            
+                                            <p style="margin-left: 10px;">
+                                                <a href="user_profile.php?username=<?php echo $fr_users[2]; ?>" class='text-decoration-none'>
+                                                    <b><?php echo $fr_users[1]; ?></b>
+                                                </a>
+
+                                                Shared you a post by
+                                                <a href="user_profile.php?username=<?php echo $post_user[2]; ?>" class='text-decoration-none'>
+                                                    <b><?php echo $post_user[1]; ?></b> 
+                                                </a>
+                                                on <?php echo date("F d, Y", strtotime($shared_on)); ?>
+                                            </p>
+
+                                            <a href="post_info.php?user_id=<?php echo $post_user[0]; ?>&post_id=<?php echo $p_id; ?>">
+                                                <div class="shared-post d-flex" style="overflow-y: auto; max-height: 300px;">
+                                                    <!-- Post Preview on the Left Side -->
+                                                    <div class="post-preview">
+
+                                                        <?php
+                                                        $isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);
+                                                        if ($isVideo) {
+                                                            ?>
+
+                                                            <video controls style="width: 300px !important; margin-right: 30px !important; border-radius: 8px !important;">
+                                                                <source src="<?php echo htmlspecialchars($post_path); ?>" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+
+                                                            <?php
+                                                        } 
+                                                        else {
+                                                            ?>
+
+                                                            <img src="<?php echo htmlspecialchars($post_path); ?>" alt="Pixtream Post" class="img-fluid" style="width: 300px !important; margin-right: 30px !important; border-radius: 8px !important;">
+
+                                                            <?php
+                                                        }
+                                                        ?>
+
+                                                    </div>
+
+                                                    <!-- Post Information on the Right Side -->
+                                                    <div class="post-info">
+                                                        <div class="post-header d-flex align-items-center" style="background-color: #00000000;">
+                                                            <img src="profile_picture/<?php echo $post_user[6]; ?>" alt="" class="dp shared-dp">
+                                                            <div class="post-head">
+                                                                <span><?php echo $post_user[1]; ?></span><br>
+                                                                <span class="small text-muted" style="margin-left: -30px;"><?php echo $post_user[2]; ?></span>
+                                                            </div>            
+                                                        </div> 
+                                                        <div class="mb-2">
+                                                            <div class="mt-2">
+                                                                <span>
+                                                                    <?php echo $posts[3]; ?>
+                                                                </span><br>
+                                                                <span class="badge mybadge"><?php echo $posts[4]; ?></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            
+                                            <hr>
+
+                                            <?php
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 

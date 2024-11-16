@@ -309,6 +309,16 @@ $location = $bioInfo['location'];
                         <div class="col-sm-12 mb-3">
                             <div class="card h-100">
                                 <div class="card-body">
+
+                                    <div class="dropdown position-absolute top-0 end-0 p-2">
+                                        <button class="btn btn-light custom-dropdown-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis custom-ellipsis"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#savedPostsModal">Saved Posts</a></li>
+                                        </ul>
+                                    </div>
+
                                     <h3 class="d-flex align-items-center mb-3">Your Posts - <?php echo $name; ?></h3>
                                     <!-- Photo Grid -->
                                     <div class="media-grid">
@@ -386,6 +396,111 @@ $location = $bioInfo['location'];
             </div>
         </div>
     </div>
+
+    <!-- Modal for Saved Posts -->
+<div class="modal fade" id="savedPostsModal" tabindex="-1" aria-labelledby="savedPostsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="width: 100%;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="savedPostsModalLabel">Saved Posts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 800px; overflow-y: auto;">
+                <?php
+                // Fetch saved posts for the logged-in user
+                $saved_sql = "SELECT * FROM saved_posts WHERE user_id = '$id';";
+                $saved_result = mysqli_query($conn, $saved_sql);
+                $saved_info = mysqli_fetch_all($saved_result);
+
+                if (empty($saved_info)) {
+                    echo "<p class='text-center'><b>No saved posts!</b></p>";
+                }
+                else
+                {
+                    foreach($saved_info as $saved) {
+                        $p_id = $saved[2]; // Saved post ID
+                        $saved_on = $saved[3]; // Date when saved
+
+                        // Fetch the shared post details
+                        $p_sql = "SELECT * FROM posts WHERE id = '$p_id';";
+                        $p_result = mysqli_query($conn, $p_sql);
+                        $p_info = mysqli_fetch_all($p_result);
+
+                        foreach($p_info as $posts) {
+                            $pu_id = $posts[1]; // Post's user ID
+                            $post_path = $posts[2]; // Post media path
+
+                            // Fetch the original user who posted
+                            $pu_sql = "SELECT * FROM users WHERE id = '$pu_id';";
+                            $pu_result = mysqli_query($conn, $pu_sql);
+                            $pu_info = mysqli_fetch_all($pu_result);
+
+                            foreach($pu_info as $post_user) {
+                                ?>
+                                
+                                <p style="margin-left: 10px;">
+                                    Saved
+                                    <a href="user_profile.php?username=<?php echo $post_user[2]; ?>" class='text-decoration-none'>
+                                        <b><?php echo $post_user[1]; ?></b>
+                                    </a>'s post on <?php echo date("F d, Y", strtotime($saved_on)); ?>
+                                </p>
+
+                                <a href="post_info.php?user_id=<?php echo $post_user[0]; ?>&post_id=<?php echo $p_id; ?>">
+                                    <div class="shared-post d-flex" style="overflow-y: auto; max-height: 300px;">
+                                        <!-- Post Preview on the Left Side -->
+                                        <div class="post-preview">
+                                            <?php
+                                            $isVideo = preg_match('/\.(mp4|webm|ogg)$/i', $post_path);
+                                            if ($isVideo) {
+                                                ?>
+                                                <video controls style="width: 300px !important; margin-right: 30px !important; border-radius: 8px !important;">
+                                                    <source src="<?php echo htmlspecialchars($post_path); ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <img src="<?php echo htmlspecialchars($post_path); ?>" alt="Pixtream Post" class="img-fluid" style="width: 300px !important; margin-right: 30px !important; border-radius: 8px !important;">
+                                                <?php
+                                            }
+                                            ?>
+                                        </div>
+
+                                        <!-- Post Information on the Right Side -->
+                                        <div class="post-info">
+                                            <div class="post-header d-flex align-items-center" style="background-color: #00000000;">
+                                                <img src="profile_picture/<?php echo $post_user[6]; ?>" alt="" class="dp shared-dp">
+                                                <div class="post-head">
+                                                    <span><?php echo $post_user[1]; ?></span><br>
+                                                    <span class="small text-muted" style="margin-left: -30px;"><?php echo $post_user[2]; ?></span>
+                                                </div>
+                                            </div> 
+                                            <div class="mb-2">
+                                                <div class="mt-2">
+                                                    <span>
+                                                        <?php echo $posts[3]; ?>
+                                                    </span><br>
+                                                    <span class="badge mybadge"><?php echo $posts[4]; ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                
+                                <hr>
+
+                                <?php
+                            }
+                        }
+                    }
+                }
+                ?>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
     
