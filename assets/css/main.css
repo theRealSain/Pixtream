@@ -9,7 +9,7 @@ body{
     padding: 0;
     font-family: var(--bs-body-font-family);
     font-weight: var(--bs-body-font-weight);
-    background: linear-gradient(to bottom, #5451ee7e, #691b9aa1);
+    background: linear-gradient(0deg, #000000c7, #dfdfdf, #00000029);
     background-attachment: fixed;
 }
 
@@ -53,8 +53,6 @@ nav{
     padding: 30px 0px 0px 0px;
     position: fixed;
     top: 0;
-    background: linear-gradient(to bottom, #8886ff, #a89fed);
-    /* background-color: #380b53; */
     z-index: 2;
 }
 .nav-main{
@@ -64,7 +62,7 @@ nav{
     z-index: 5;
 }
 .nav-extra{
-    display: none;
+    display: none;    
 }
 nav ul{
     float: right;
@@ -87,7 +85,7 @@ nav ul li:hover{
     display: none;
   }
 .nav-btn{
-    background: linear-gradient(to bottom, #5451ee, #6a1b9a);
+    background: linear-gradient(to bottom, #525252, #070707);
     border: none;
     border-radius: 8px;
     color: white;
@@ -95,12 +93,11 @@ nav ul li:hover{
     font-weight: bold;
     padding: 5px 25px;
     cursor: pointer;
-    box-shadow: 0px 3px 5px #000000;
+    box-shadow: 0px 3px 5px #000000a4;
     margin-top: -15px;
 }
 .nav-btn:hover{
-    background: linear-gradient(to bottom, #5451ee, #380b53);
-    transition: 0.3s ease-in;
+    background: linear-gradient(to bottom, #666666, #000000);
 }
 .nav-btn:active{
     box-shadow: none;
@@ -128,8 +125,8 @@ section.one{
     align-items: center;
     flex-direction: column;
     margin-top: 135px;
-    padding: 10rem 0rem 11rem 0rem;
-    color: #01003a;
+    padding: 10rem 0rem 9rem 0rem;
+    color: #000000;
 }
 
 .one-grid{
@@ -154,7 +151,7 @@ section.one{
     margin-top: -30px;
 }
 .one-card button{
-    background: linear-gradient(to bottom, #5451ee, #6a1b9a);
+    background: linear-gradient(to bottom, #5f5f5f, #000000);
     color: white;
     font-weight: bold;
     text-transform: uppercase;
@@ -166,7 +163,7 @@ section.one{
     cursor: pointer;
 }
 .one-card button:hover{
-    background: linear-gradient(to bottom, #5451ee, #380b53);
+    background: linear-gradient(to bottom, #5f5f5f, #161616);
     transition: 0.3s ease-in;
 }
 
