@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2024 at 06:18 AM
+-- Generation Time: Nov 17, 2024 at 09:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -84,16 +84,6 @@ CREATE TABLE `comments` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `comments`
---
-
-INSERT INTO `comments` (`id`, `user_id`, `post_id`, `comment`, `created_at`) VALUES
-(64, 1, 44, '❤️❤️', '2024-11-13 05:48:57'),
-(92, 1, 51, 'ssss', '2024-11-16 03:59:37'),
-(108, 1, 51, 'yyyy', '2024-11-16 04:04:58'),
-(109, 2, 52, '❤️❤️', '2024-11-16 04:59:18');
-
 -- --------------------------------------------------------
 
 --
@@ -106,14 +96,6 @@ CREATE TABLE `complaints` (
   `complaint_text` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `complaints`
---
-
-INSERT INTO `complaints` (`id`, `user_id`, `complaint_text`, `created_at`) VALUES
-(1, 1, 'Spam or Scams', '2024-11-03 12:26:04'),
-(2, 1, 'Data Protection Request', '2024-11-03 12:26:30');
 
 -- --------------------------------------------------------
 
@@ -128,18 +110,6 @@ CREATE TABLE `follows` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `follows`
---
-
-INSERT INTO `follows` (`id`, `follower_id`, `followed_id`, `created_at`) VALUES
-(1, 2, 1, '2024-11-03 12:31:37'),
-(5, 4, 3, '2024-11-13 06:45:15'),
-(7, 1, 2, '2024-11-16 04:57:47'),
-(8, 1, 4, '2024-11-16 04:57:52'),
-(9, 2, 4, '2024-11-16 04:59:05'),
-(10, 1, 3, '2024-11-16 05:08:50');
-
 -- --------------------------------------------------------
 
 --
@@ -152,20 +122,6 @@ CREATE TABLE `likes` (
   `post_id` bigint(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `likes`
---
-
-INSERT INTO `likes` (`id`, `user_id`, `post_id`, `created_at`) VALUES
-(108, 1, 44, '2024-11-16 04:46:56'),
-(114, 1, 45, '2024-11-16 04:51:55'),
-(119, 1, 51, '2024-11-16 04:58:48'),
-(120, 2, 52, '2024-11-16 04:59:11'),
-(121, 1, 52, '2024-11-16 04:59:41'),
-(122, 1, 49, '2024-11-16 04:59:47'),
-(123, 1, 50, '2024-11-16 05:03:11'),
-(124, 1, 53, '2024-11-16 05:08:54');
 
 -- --------------------------------------------------------
 
@@ -180,24 +136,6 @@ CREATE TABLE `messages` (
   `message` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `created_at`) VALUES
-(4, 1, 2, 'daa', '2024-11-09 04:53:00'),
-(6, 2, 1, 'haa', '2024-11-09 05:10:49'),
-(7, 1, 3, 'Hii man', '2024-11-09 05:12:03'),
-(8, 3, 1, 'Hello da...', '2024-11-09 05:30:12'),
-(9, 1, 2, 'Hii', '2024-11-09 05:30:40'),
-(10, 1, 3, 'Enthokkeyund vishesham...😌', '2024-11-09 05:31:03'),
-(11, 3, 1, 'Sughayitt irikkunu...😊', '2024-11-09 05:31:54'),
-(28, 1, 4, 'Hello abi...😂', '2024-11-09 07:12:07'),
-(29, 4, 3, 'Daa', '2024-11-09 07:12:37'),
-(30, 4, 1, 'aada', '2024-11-09 07:12:44'),
-(31, 4, 1, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.', '2024-11-09 07:16:57'),
-(32, 1, 4, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat aspernatur vitae praesentium totam eveniet provident ullam at ratione esse accusantium. Sapiente repellendus asperiores nihil modi est repellat quia possimus incidunt.', '2024-11-09 07:17:16');
 
 -- --------------------------------------------------------
 
@@ -271,14 +209,12 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `user_id`, `post_path`, `caption`, `category`, `created_at`) VALUES
-(44, 2, 'post_uploads/post_67342b8b77a54.jpg', 'Bro❤️', 'photos', '2024-11-13 04:31:07'),
-(45, 2, 'post_uploads/post_6734462b02e12.mp4', 'sdgsdfg', 'videos', '2024-11-13 06:24:43'),
-(49, 1, 'post_uploads/post_67349525317aa.jpg', 'Nature💚', '', '2024-11-13 12:01:41'),
-(50, 3, 'post_uploads/post_6734954596ae5.jpg', 'green😍', 'photos', '2024-11-13 12:02:13'),
-(51, 4, 'post_uploads/post_6734956cd6e45.jpg', 'Sun🌞', 'Photography', '2024-11-13 12:02:52'),
-(52, 1, 'post_uploads/post_67382678774ca.jpg', 'Me😍', '', '2024-11-16 04:58:32'),
-(53, 3, 'post_uploads/post_673828cfd0633.png', '❤️‍🔥', 'photos', '2024-11-16 05:08:31'),
-(54, 1, 'post_uploads/post_67382921d7516.jpg', '😍', 'articles', '2024-11-16 05:09:53');
+(57, 6, 'post_uploads/post_6739a5b09d7cb.mp4', 'Travel❤️', 'videos', '2024-11-17 08:13:36'),
+(58, 6, 'post_uploads/post_6739a5c3f365f.jpg', 'Blue💙', 'Photography', '2024-11-17 08:13:55'),
+(59, 7, 'post_uploads/post_6739a71439ee4.mp4', 'Waterfall💙', 'videos', '2024-11-17 08:19:32'),
+(60, 7, 'post_uploads/post_6739a724c1624.jpg', 'History❤️‍🔥', 'Others', '2024-11-17 08:19:48'),
+(63, 8, 'post_uploads/post_6739a9004707a.mp4', 'Green💚💚', 'Travel & Adventure', '2024-11-17 08:27:44'),
+(64, 8, 'post_uploads/post_6739a92215e22.jpg', 'Me😌', 'photos', '2024-11-17 08:28:18');
 
 -- --------------------------------------------------------
 
@@ -307,19 +243,6 @@ CREATE TABLE `saved_posts` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `saved_posts`
---
-
-INSERT INTO `saved_posts` (`id`, `user_id`, `post_id`, `created_at`) VALUES
-(27, 1, 51, '2024-11-13 13:07:13'),
-(33, 1, 52, '2024-11-16 05:05:54'),
-(39, 1, 45, '2024-11-16 05:07:05'),
-(40, 1, 44, '2024-11-16 05:07:08'),
-(41, 1, 53, '2024-11-16 05:09:05'),
-(42, 1, 49, '2024-11-16 05:09:22'),
-(43, 1, 54, '2024-11-16 05:09:59');
-
 -- --------------------------------------------------------
 
 --
@@ -333,17 +256,6 @@ CREATE TABLE `shares` (
   `post_id` bigint(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `shares`
---
-
-INSERT INTO `shares` (`id`, `from_user_id`, `to_user_id`, `post_id`, `created_at`) VALUES
-(3, 1, 3, 44, '2024-11-13 06:01:13'),
-(5, 4, 3, 45, '2024-11-13 06:45:27'),
-(6, 1, 3, 44, '2024-11-13 09:07:11'),
-(7, 1, 3, 44, '2024-11-13 09:07:16'),
-(8, 2, 1, 50, '2024-11-16 05:02:53');
 
 -- --------------------------------------------------------
 
@@ -368,10 +280,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `bio`, `profile_picture`, `location`, `created_at`) VALUES
-(1, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', 'Hello ALL😍', 'sain.jpg', 'Thrissur', '2024-10-31 07:38:11'),
-(2, 'Abin Saburaj', 'abin', 'abin@example.com', 'aaaa', 'Hello', 'abin.jpg', 'Thrissur', '2024-11-03 12:30:45'),
-(3, 'Jain Roy P', 'jain_panengadan', 'jain@example.com', 'jjjj', 'Hey😍', 'jain_panengadan.png', 'Thrissur', '2024-11-09 03:27:55'),
-(4, 'Abijith P', 'abijith', 'abi@example.com', 'aaaa', 'Hey all💕', 'abijith.png', 'Palakkad', '2024-11-09 05:38:14');
+(5, 'John Doe', 'john_doe', 'john@example.com', 'jjjj', '\"Digital artist and storyteller. Sharing my passion for creativity.\"', 'john_doe.jpg', 'Pune', '2024-11-17 08:08:44'),
+(6, 'Jane Smith', 'jane_smith', 'jane@example.com', 'jjjj', '\"Traveler, foodie, and amateur photographer. Let\'s connect!\"', 'jane_smith.jpg', 'Shimla', '2024-11-17 08:12:16'),
+(7, 'Noah Harris', 'noah_harris', 'noah@example.com', 'nnnn', '\"History buff. Sharing untold stories from the past.\"', 'noah_harris.jpg', 'Arcot', '2024-11-17 08:17:27'),
+(8, 'Jack Jones', 'jack', 'jack@example.com', 'jjjj', '\"CEO of bad jokes and worse memes. Brace yourself.\"', 'jack.jpg', 'Hyderabad', '2024-11-17 08:20:18');
 
 -- --------------------------------------------------------
 
@@ -403,45 +315,55 @@ CREATE TABLE `user_selections` (
 --
 
 INSERT INTO `user_selections` (`id`, `user_id`, `option_id`) VALUES
-(1, 1, 21),
-(2, 1, 22),
-(3, 1, 15),
-(4, 1, 18),
-(5, 1, 20),
-(6, 1, 13),
-(7, 1, 12),
-(8, 1, 14),
-(9, 1, 24),
-(10, 1, 2),
-(11, 1, 1),
-(12, 1, 27),
-(13, 2, 16),
-(14, 2, 20),
-(15, 2, 14),
-(16, 2, 33),
-(17, 2, 26),
-(18, 2, 24),
-(19, 2, 2),
-(20, 2, 28),
-(21, 3, 16),
-(22, 3, 15),
-(23, 3, 19),
-(24, 3, 18),
-(25, 3, 13),
-(26, 3, 12),
-(27, 3, 1),
-(28, 3, 29),
-(29, 3, 8),
-(30, 4, 16),
-(31, 4, 31),
-(32, 4, 20),
-(33, 4, 24),
-(34, 4, 2),
-(35, 4, 9),
-(36, 4, 27),
-(37, 4, 29),
-(38, 4, 5),
-(39, 4, 6);
+(40, 5, 21),
+(41, 5, 16),
+(42, 5, 32),
+(43, 5, 20),
+(44, 5, 24),
+(45, 5, 2),
+(46, 5, 3),
+(47, 5, 10),
+(48, 5, 27),
+(49, 5, 8),
+(50, 6, 17),
+(51, 6, 16),
+(52, 6, 31),
+(53, 6, 30),
+(54, 6, 13),
+(55, 6, 12),
+(56, 6, 1),
+(57, 6, 4),
+(58, 6, 9),
+(59, 6, 29),
+(60, 6, 28),
+(61, 6, 5),
+(62, 6, 7),
+(63, 7, 17),
+(64, 7, 16),
+(65, 7, 34),
+(66, 7, 26),
+(67, 7, 2),
+(68, 7, 11),
+(69, 7, 10),
+(70, 7, 9),
+(71, 7, 27),
+(72, 7, 28),
+(73, 7, 5),
+(74, 7, 6),
+(75, 7, 7),
+(76, 8, 16),
+(77, 8, 19),
+(78, 8, 18),
+(79, 8, 20),
+(80, 8, 12),
+(81, 8, 14),
+(82, 8, 33),
+(83, 8, 34),
+(84, 8, 2),
+(85, 8, 3),
+(86, 8, 29),
+(87, 8, 6),
+(88, 8, 7);
 
 --
 -- Indexes for dumped tables
@@ -584,7 +506,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
 
 --
 -- AUTO_INCREMENT for table `complaints`
@@ -602,7 +524,7 @@ ALTER TABLE `follows`
 -- AUTO_INCREMENT for table `likes`
 --
 ALTER TABLE `likes`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -620,7 +542,7 @@ ALTER TABLE `options`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -638,13 +560,13 @@ ALTER TABLE `saved_posts`
 -- AUTO_INCREMENT for table `shares`
 --
 ALTER TABLE `shares`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user_blocks`
@@ -656,7 +578,7 @@ ALTER TABLE `user_blocks`
 -- AUTO_INCREMENT for table `user_selections`
 --
 ALTER TABLE `user_selections`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- Constraints for dumped tables
@@ -741,7 +663,7 @@ ALTER TABLE `user_blocks`
 -- Constraints for table `user_selections`
 --
 ALTER TABLE `user_selections`
-  ADD CONSTRAINT `user_selections_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `user_selections_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `user_selections_ibfk_2` FOREIGN KEY (`option_id`) REFERENCES `options` (`id`);
 COMMIT;
 
