@@ -78,47 +78,175 @@ $currentUserId = $currentUserIdRow['id'];
         </div>
     </nav>
     <!-- Navbar -->
-
+     
+    <!-- Search Box -->
     <div class="container mt-4">
-        <h2>People</h2>
-        <ul class="list-group">
-        <?php
-        if (mysqli_num_rows($result) > 0) {
-            // Inside your while loop where you fetch each user
-            while ($row = mysqli_fetch_assoc($result)) {
-                $profilePhoto = $row['profile_picture'] ?? 'default.png'; // Default photo if none is set
-            
-                // Check if the current user is following this user
-                $isFollowing = in_array($row['id'], $following); // Use user ID for follow check
-                $buttonClass = $isFollowing ? 'mybtn-outline' : 'mybtn'; // Change class based on following status
-                $buttonText = $isFollowing ? 'Following' : 'Follow'; // Change text based on following status
-                $action = $isFollowing ? 'unfollow' : 'follow'; // Define action based on following status
-            
-                echo "<li class='list-group-item user-card'>";
-                echo "<a href='user_profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
-                echo "<img src='profile_picture/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
-                echo "<div class='card-body'>";
-                echo "<div>";
-                echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
-                echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
-                echo "</div></a>";
-                echo "<form action='follow_unfollow.php' method='POST' style='display:inline;'>"; // Added form for follow/unfollow
-                echo "<input type='hidden' name='username' value='" . htmlspecialchars($row['username']) . "'>";
-                echo "<input type='hidden' name='action' value='$action'>"; // Action to perform
-                echo "<button type='submit' class='btn $buttonClass'>$buttonText</button>"; // Button to submit form
-                echo "</form>";
-                echo "</div>";
-                echo "</li>";
+        <div class="input-group input-group-lg">
+            <input type="text" id="searchUser" class="form-control" name="search" placeholder="Search for people..." value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>">
+            <button class="btn mybtn-outline" type="button" id="clearSearch">Clear</button> <!-- Added the clear button -->
+        </div>
+    </div>
+
+    <div class="position-relative">
+        <div id="searchResults" class="dropdown-menu chat-dropdown" style="display: none;">
+            <!-- Dynamic search results will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function () {
+        // Handle user input in the search bar
+        $('#searchUser').on('input', function () {
+            let searchQuery = $(this).val();
+
+            // Only show results if the search query has at least one character
+            if (searchQuery.length > 0) {
+                $.ajax({
+                    url: 'people_search.php',  // The PHP file that handles the search query
+                    method: 'GET',
+                    data: { query: searchQuery },
+                    success: function(response) {
+                        $('#searchResults').show();  // Show the search results dropdown
+                        $('#searchResults').html(response);  // Display the search results
+                    }
+                });
+            } else {
+                $('#searchResults').hide();  // Hide results if no query is entered
             }
-        } else {
-            echo "<li class='list-group-item'>No users found.</li>";
-        }
-        ?>
+        });
+
+        // Clear the search input and hide results when "Clear" button is clicked
+        $('#clearSearch').on('click', function () {
+            $('#searchUser').val('');  // Clear the search input
+            $('#searchResults').hide();  // Hide the results dropdown
+        });
+
+        // Prevent form submission if "Search" button is clicked
+        $('form').on('submit', function (e) {
+            e.preventDefault(); // Prevent form from submitting
+        });
+    });
+    </script>
+
+
+
+    <div class="container mt-4 suggest-box">
+        <h2>Suggested For You</h2>
+        <ul class="list-group">
+            
+            <?php
+                $sameInterestsQuery = "
+                SELECT u.id, u.name, u.username, u.profile_picture, COUNT(us.option_id) AS shared_interests
+                FROM users u
+                JOIN user_selections us ON u.id = us.user_id
+                WHERE us.option_id IN (
+                    SELECT option_id FROM user_selections WHERE user_id = $currentUserId
+                ) AND u.id != $currentUserId
+                GROUP BY u.id
+                HAVING shared_interests >= 3
+                ";
+                $sameInterests = mysqli_query($conn, $sameInterestsQuery);
+
+                while ($row = mysqli_fetch_assoc($sameInterests))
+                {
+                    $profilePhoto = $row['profile_picture'] ?? 'default.png'; // Default photo if none is set
+            
+                    // Check if the current user is following this user
+                    $isFollowing = in_array($row['id'], $following); // Use user ID for follow check
+                    $buttonClass = $isFollowing ? 'mybtn-outline' : 'mybtn'; // Change class based on following status
+                    $buttonText = $isFollowing ? 'Following' : 'Follow'; // Change text based on following status
+                    $action = $isFollowing ? 'unfollow' : 'follow'; // Define action based on following status
+
+                    echo "<li class='list-group-item user-card'>";
+                    echo "<a href='user_profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
+                    echo "<img src='profile_picture/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
+                    echo "<div class='card-body'>";
+                    echo "<div>";
+                    echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
+                    echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
+                    echo "</div></a>";
+                    echo "<form action='follow_unfollow.php' method='POST' style='display:inline;'>"; // Added form for follow/unfollow
+                    echo "<input type='hidden' name='username' value='" . htmlspecialchars($row['username']) . "'>";
+                    echo "<input type='hidden' name='action' value='$action'>"; // Action to perform
+                    echo "<button type='submit' class='btn $buttonClass'>$buttonText</button>"; // Button to submit form
+                    echo "</form>";
+                    echo "</div>";
+                    echo "</li>";
+                }
+            ?>
+        </ul>
+    </div>
+    
+    
+    <div class="container mt-4 suggest-box">
+        <h2>People Near You</h2>
+        <ul class="list-group">
+            
+            <?php
+                $peopleNearYouQuery = "
+                SELECT id, name, username, profile_picture
+                FROM users
+                WHERE location = '{$info['location']}' AND id != $currentUserId
+                ";
+                $peopleNearYou = mysqli_query($conn, $peopleNearYouQuery);
+
+                while ($row = mysqli_fetch_assoc($peopleNearYou))
+                {
+                    $profilePhoto = $row['profile_picture'] ?? 'default.png'; // Default photo if none is set
+            
+                    // Check if the current user is following this user
+                    $isFollowing = in_array($row['id'], $following); // Use user ID for follow check
+                    $buttonClass = $isFollowing ? 'mybtn-outline' : 'mybtn'; // Change class based on following status
+                    $buttonText = $isFollowing ? 'Following' : 'Follow'; // Change text based on following status
+                    $action = $isFollowing ? 'unfollow' : 'follow'; // Define action based on following status
+
+                    echo "<li class='list-group-item user-card'>";
+                    echo "<a href='user_profile.php?username=" . urlencode($row['username']) . "' class='text-decoration-none'>";
+                    echo "<img src='profile_picture/" . htmlspecialchars($profilePhoto) . "' alt='Profile Photo' class='profile-photo'>";
+                    echo "<div class='card-body'>";
+                    echo "<div>";
+                    echo "<h5 class='mb-1'>" . htmlspecialchars($row['name']) . "</h5>"; // User name link to user_profile.php
+                    echo "<p class='mb-1'>" . htmlspecialchars($row['username']) . "</p>";
+                    echo "</div></a>";
+                    echo "<form action='follow_unfollow.php' method='POST' style='display:inline;'>"; // Added form for follow/unfollow
+                    echo "<input type='hidden' name='username' value='" . htmlspecialchars($row['username']) . "'>";
+                    echo "<input type='hidden' name='action' value='$action'>"; // Action to perform
+                    echo "<button type='submit' class='btn $buttonClass'>$buttonText</button>"; // Button to submit form
+                    echo "</form>";
+                    echo "</div>";
+                    echo "</li>";
+                }
+            ?>
         </ul>
     </div>
 
     <!-- JS files -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="library-files/js/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Function to fetch and display user suggestions dynamically
+        $(document).ready(function () {
+            $('#searchBox').on('input', function () {
+                let searchQuery = $(this).val();
+
+                // Only show suggestions if the search query has at least one character
+                if (searchQuery.length > 0) {
+                    $.ajax({
+                        url: 'search_suggestions.php',  // Create a separate PHP file to handle search
+                        method: 'GET',
+                        data: { query: searchQuery },
+                        success: function(response) {
+                            $('#suggestionBox').show();
+                            $('#suggestionList').html(response);  // Display the search results
+                        }
+                    });
+                } else {
+                    $('#suggestionBox').hide();  // Hide suggestions if no search query
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>

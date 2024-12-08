@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 08, 2024 at 05:51 AM
+-- Generation Time: Dec 08, 2024 at 10:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -360,7 +360,8 @@ INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `bio`, `prof
 (347, 'Elijah Allen', 'elijah_allen', 'elijah.allen@example.com', 'dddd', 'Musician and creative artist', 'default.png', 'Chicago, USA', '2024-12-07 06:51:38'),
 (348, 'Isabella Torres', 'isabella_torres', 'isabella.torres@example.com', 'dddd', 'Fashion designer and stylist', 'default.png', 'Austin, USA', '2024-12-07 06:51:38'),
 (349, 'James Baker', 'james_baker', 'james.baker@example.com', 'dddd', 'Tech innovator and software developer', 'default.png', 'London, UK', '2024-12-07 06:51:38'),
-(350, 'Sophia Clark', 'sophia_clark', 'sophia.clark@example.com', 'dddd', 'Wellness coach and yoga enthusiast', 'default.png', 'Berlin, Germany', '2024-12-07 06:51:38');
+(350, 'Sophia Clark', 'sophia_clark', 'sophia.clark@example.com', 'dddd', 'Wellness coach and yoga enthusiast', 'default.png', 'Berlin, Germany', '2024-12-07 06:51:38'),
+(351, 'Sain Saburaj', 'sain', 'sain@example.com', 'ssss', 'Artist, Singer, Developer', 'default.png', 'New York, USA', '2024-12-08 06:31:07');
 
 -- --------------------------------------------------------
 
@@ -856,7 +857,13 @@ INSERT INTO `user_selections` (`id`, `user_id`, `option_id`) VALUES
 (550, 350, 16),
 (551, 350, 32),
 (552, 350, 31),
-(553, 350, 8);
+(553, 350, 8),
+(554, 351, 22),
+(555, 351, 15),
+(556, 351, 18),
+(557, 351, 14),
+(558, 351, 1),
+(559, 351, 27);
 
 --
 -- Indexes for dumped tables
@@ -1011,7 +1018,7 @@ ALTER TABLE `complaints`
 -- AUTO_INCREMENT for table `follows`
 --
 ALTER TABLE `follows`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `likes`
@@ -1059,7 +1066,7 @@ ALTER TABLE `shares`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=351;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=352;
 
 --
 -- AUTO_INCREMENT for table `user_blocks`
@@ -1071,7 +1078,7 @@ ALTER TABLE `user_blocks`
 -- AUTO_INCREMENT for table `user_selections`
 --
 ALTER TABLE `user_selections`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=554;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=560;
 
 --
 -- Constraints for dumped tables
