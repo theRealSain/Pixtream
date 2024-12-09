@@ -165,27 +165,23 @@ $location = $bioInfo['location'];
                             </div>
 
                             <?php
-                                if (isset($_POST['delete_account'])) {
-                                    
-                                    // Delete user from the 'users' table
-                                    $del_sql = "DELETE FROM users WHERE id = '$id'";
-                                    $del_result = mysqli_query($conn, $$del_sql);
-                                    
-                                    if
+                            if (isset($_POST['delete_account'])) {
+                                // Delete user from the 'users' table
+                                $del_sql = "DELETE FROM users WHERE id = '$id'";
+                                $del_result = mysqli_query($conn, $del_sql); // Use $del_sql directly
 
-                                    $stmt = $conn->prepare($sql);
-                                    $stmt->bind_param("i", $id);
-                                    $stmt->execute();
-
-                                    // Close the database connection
-                                    $conn->close();
-                                
-                                    // Destroy the session and redirect to index.html
+                                if ($del_result) {
+                                    // Successfully deleted, destroy session and redirect to index
                                     session_destroy();
                                     header("Location: index.html");
                                     exit();
+                                } else {
+                                    // If deletion fails, show an error message (optional)
+                                    echo "Error deleting account: " . mysqli_error($conn);
                                 }
+                            }
                             ?>
+
 
 
                             <div class="d-flex flex-column align-items-center text-center">
