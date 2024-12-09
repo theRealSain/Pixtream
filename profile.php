@@ -2,6 +2,8 @@
 include 'dbconfig.php';
 session_start();
 
+error_reporting(0);
+
 if(!isset($_SESSION['username']))
 {
   header('location:authen.php');
@@ -136,9 +138,55 @@ $location = $bioInfo['location'];
                                     <li><a class="dropdown-item" href="#" onclick="document.getElementById('profile_photo').click();">Change Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="remove-profile-photo.php">Remove Profile Photo</a></li>
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#complaintModal">Submit Complaints</a></li>
-                                    <li><a class="dropdown-item text-danger" href="">De-activate Account</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</a></li>
                                 </ul>
                             </div>
+
+                            <!-- Delete Account Confirmation Modal -->
+                            <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn mybtn-outline" data-bs-dismiss="modal">Cancel</button>
+                                            <!-- Form to delete account -->
+                                            <form action="" method="POST">
+                                                <button type="submit" name="delete_account" class="btn mybtn" style="background-color: red !important;">Delete Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php
+                                if (isset($_POST['delete_account'])) {
+                                    
+                                    // Delete user from the 'users' table
+                                    $del_sql = "DELETE FROM users WHERE id = '$id'";
+                                    $del_result = mysqli_query($conn, $$del_sql);
+                                    
+                                    if
+
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->bind_param("i", $id);
+                                    $stmt->execute();
+
+                                    // Close the database connection
+                                    $conn->close();
+                                
+                                    // Destroy the session and redirect to index.html
+                                    session_destroy();
+                                    header("Location: index.html");
+                                    exit();
+                                }
+                            ?>
+
 
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
