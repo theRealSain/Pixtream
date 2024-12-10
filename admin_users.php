@@ -83,6 +83,7 @@ if (!$result) {
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Username</th>
                                 <th>Email</th>
                                 <th>Location</th>
                                 <th>Joined Date</th>
@@ -98,14 +99,16 @@ if (!$result) {
                                     ? $row['profile_picture'] 
                                     : 'profile_picture/default.png'; // Ensure this path is correct
 
-                                echo "<tr>";                                
+                                echo "<tr>";                                 
                                 echo "<td><img src='profile_picture/$profile_picture' alt='User DP' class='user-img'> {$row['name']}</td>";
+                                echo "<td>{$row['username']}</td>";
                                 echo "<td>{$row['email']}</td>";
                                 echo "<td>{$row['location']}</td>";
                                 echo "<td>" . date('F Y', strtotime($row['created_at'])) . "</td>";
+                                
+                                // Corrected anchor tag with username in the href
                                 echo "<td>
-                                        <button class='btn mybtn-outline btn-sm'>View</button>
-                                        <button class='btn mybtn btn-sm'>Delete</button>
+                                        <a href='admin_user_view.php?username={$row['username']}' class='btn mybtn-outline btn-sm'>View</a>
                                     </td>";
                                 echo "</tr>";
                             }
@@ -113,6 +116,7 @@ if (!$result) {
                             echo "<tr><td colspan='6' class='text-center'>No users found</td></tr>";
                         }
                         ?>
+
                         </tbody>
                     </table>
                 </div>

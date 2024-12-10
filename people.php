@@ -43,6 +43,45 @@ $currentUserId = $currentUserIdRow['id'];
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/me.css">
     <link rel="icon" type="image/x-icon" href="assets/img/LOGO_tab.svg" />
+
+    <script>
+        function searchUser() {
+            const query = document.getElementById('searchUser').value.trim();
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (query.length > 0) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'people_search.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        resultsContainer.innerHTML = xhr.responseText;
+                        resultsContainer.style.display = 'block';
+                    } else {
+                        resultsContainer.innerHTML = '<div class="text-muted p-2">Loading...</div>';
+                    }
+                };
+
+                xhr.send('query=' + encodeURIComponent(query));
+            } else {
+                resultsContainer.innerHTML = '';
+                resultsContainer.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.position-relative')) {
+                document.getElementById('searchResults').style.display = 'none';
+            }
+        });
+
+        document.getElementById('clearSearch').addEventListener('click', function () {
+            document.getElementById('searchUser').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+        });
+    </script>
+
 </head>
 <body>
     <!-- Navbar -->
@@ -80,53 +119,21 @@ $currentUserId = $currentUserIdRow['id'];
     <!-- Navbar -->
      
     <!-- Search Box -->
-    <div class="container mt-4">
+    <div class="container mt-4 search-container">
         <div class="input-group input-group-lg">
-            <input type="text" id="searchUser" class="form-control" name="search" placeholder="Search for people..." value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>">
-            <button class="btn mybtn-outline" type="button" id="clearSearch">Clear</button> <!-- Added the clear button -->
+            <input type="text" id="searchUser" class="form-control" placeholder="Search for people..." onkeyup="searchUser()">
+            <button class="btn mybtn-outline" type="button" id="clearSearch">Clear</button>
+        </div>
+        
+        <div class="position-relative mt-3">
+            <div id="searchResults" class="dropdown-menu chat-dropdown people-dd" style="display: none;">
+                <!-- Dynamic search results will be loaded here -->
+            </div>
         </div>
     </div>
 
-    <div class="position-relative">
-        <div id="searchResults" class="dropdown-menu chat-dropdown" style="display: none;">
-            <!-- Dynamic search results will be loaded here -->
-        </div>
-    </div>
+    
 
-    <script>
-    $(document).ready(function () {
-        // Handle user input in the search bar
-        $('#searchUser').on('input', function () {
-            let searchQuery = $(this).val();
-
-            // Only show results if the search query has at least one character
-            if (searchQuery.length > 0) {
-                $.ajax({
-                    url: 'people_search.php',  // The PHP file that handles the search query
-                    method: 'GET',
-                    data: { query: searchQuery },
-                    success: function(response) {
-                        $('#searchResults').show();  // Show the search results dropdown
-                        $('#searchResults').html(response);  // Display the search results
-                    }
-                });
-            } else {
-                $('#searchResults').hide();  // Hide results if no query is entered
-            }
-        });
-
-        // Clear the search input and hide results when "Clear" button is clicked
-        $('#clearSearch').on('click', function () {
-            $('#searchUser').val('');  // Clear the search input
-            $('#searchResults').hide();  // Hide the results dropdown
-        });
-
-        // Prevent form submission if "Search" button is clicked
-        $('form').on('submit', function (e) {
-            e.preventDefault(); // Prevent form from submitting
-        });
-    });
-    </script>
 
 
 

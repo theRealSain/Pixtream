@@ -1,33 +1,34 @@
 <?php
-// Include database connection
 include 'dbconfig.php';
+session_start();
 
-if (isset($_GET['query']) && !empty($_GET['query'])) {
-    $searchQuery = mysqli_real_escape_string($conn, $_GET['query']); // Sanitize user input
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['query'])) {
+    $query = htmlspecialchars($_POST['query'], ENT_QUOTES, 'UTF-8');
+    $username = $_SESSION['username'];
 
-    // Query to search for users based on the search query
-    $sql = "SELECT id, name, username, profile_picture 
-            FROM users 
-            WHERE name LIKE '%$searchQuery%' OR username LIKE '%$searchQuery%' 
-            LIMIT 5";  // Limiting to 5 results to avoid overload
-    $result = mysqli_query($conn, $sql);
+    // Exclude the logged-in user from the search
+    $stmt = $conn->prepare("SELECT id, username, profile_picture, name FROM users WHERE (username LIKE ? OR name LIKE ?) AND username != ? LIMIT 10");
+    $searchTerm = $query . '%'; // Match names that start with the query
+    $stmt->bind_param("sss", $searchTerm, $searchTerm, $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    // Check if any results were found
-    if (mysqli_num_rows($result) > 0) {
-        // Display each result
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo '<a class="dropdown-item" href="profile.php?id=' . $row['id'] . '">';
-            echo '<img src="' . $row['profile_picture'] . '" alt="' . $row['name'] . '" class="rounded-circle" width="30" height="30"> ';
-            echo $row['name'] . ' (' . $row['username'] . ')';
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $profilePicture = !empty($row['profile_picture']) ? htmlspecialchars($row['profile_picture']) : 'assets/img/default.png';
+            echo '<a href="user_profile.php?username=' . htmlspecialchars($row['username']) . '" class="dropdown-item people-dd-i">';
+            echo '<img src="profile_picture/' . $profilePicture . '" alt="' . htmlspecialchars($row['username']) . '">';
+            echo '<div class="user-info">';
+            echo '<strong>' . htmlspecialchars($row['name']) . '</strong>';  // Display name in bold
+            echo '<br><span class="username" style="font-weight: 500">' . htmlspecialchars($row['username']) . '</span>';  // Display username in light text
+            echo '</div>';
             echo '</a>';
         }
     } else {
-        // If no results, display a message
-        echo '<a class="dropdown-item disabled">No users found</a>';
+        echo '<div class="dropdown-item text-muted">No users found</div>';
     }
-} else {
-    echo '<a class="dropdown-item disabled">Please enter a search query</a>';
-}
 
-mysqli_close($conn); // Close the database connection
+    $stmt->close();
+    $conn->close();
+}
 ?>

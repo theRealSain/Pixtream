@@ -185,14 +185,34 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                     </div>
                                 </div>
 
+                                <?php
+                                // Check if the logged-in user is blocked by the profile user
+                                $logged_in_user_id = $_SESSION['user_id']; // Assuming logged-in user's ID is stored in the session
+                                $isBlockedByProfileUser = false;
+
+                                $sqlCheckBlock = "SELECT * FROM user_blocks WHERE blocked_by = ? AND blocked_user = ?";
+                                $stmtCheckBlock = $conn->prepare($sqlCheckBlock);
+                                $stmtCheckBlock->bind_param('ii', $user_id, $logged_in_user_id); // $user_id is the profile owner's ID
+                                $stmtCheckBlock->execute();
+                                $resultCheckBlock = $stmtCheckBlock->get_result();
+                                if ($resultCheckBlock->num_rows > 0) {
+                                    $isBlockedByProfileUser = true;
+                                }
+                                $stmtCheckBlock->close();
+                                ?>
+
+
                                 <!-- Follow/Unfollow or Unblock Button Section -->
                                 <div class="mt-3 w-100 d-flex">
                                     <!-- Unblock Button if blocked -->
                                     <?php if ($isBlocked): ?>
-                                        <form action="unblock_user.php" method="POST" class="w-100">
+                                        <form action="" method="POST" class="w-100">
                                             <input type="hidden" name="unblock_user_id" value="<?php echo htmlspecialchars($user_id); ?>">
                                             <button type="submit" class="btn mybtn w-100">Unblock</button>
                                         </form>
+                                    <?php elseif ($isBlockedByProfileUser): ?>
+                                        <!-- Hidden Profile Section -->                                        
+                                        <button type="submit" class="btn mybtn-outline w-100">This profile is hidden!</button>
                                     <?php else: ?>
                                         <!-- Follow/Unfollow Button -->
                                         <form action="follow_unfollow.php" method="POST" class="w-50 me-1">
@@ -231,10 +251,30 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
 
+
+                        
+
                         <?php
+
+                        // Unblock User Code
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            $unblock_user_id = intval($_POST['unblock_user_id']);
+
+                            $sql = "DELETE FROM user_blocks WHERE blocked_by = '$log_id' AND blocked_user = '$unblock_user_id'";
+
+                            $sql_result = mysqli_query($conn, $sql);
+
+                            if ($sql_result) {
+                                echo "User unblocked successfully.";
+                            } else {
+                                echo "Failed to unblock user.";
+                            }
+                        }
+
                         // Display session messages
                         if (isset($_SESSION['report_success'])) {
                             echo '<div class="alert alert-success">' . $_SESSION['report_success'] . '</div>';
@@ -384,39 +424,44 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                             <div class="card h-100">
                                 <div class="card-body">
                                     <h3 class="d-flex align-items-center mb-3">Posts - <?php echo $name; ?></h3>
-                                    <!-- Media Grid -->                                    
+
+                                    <?php if ($isBlockedByProfileUser): ?>
+                                        <p class="text-muted text-center">No posts to show! This profile is hidden!</p>
+                                    
+                                    <?php else: ?>
+                                    <!-- Media Grid -->
                                     <div class="media-grid">
 
-                                    <?php
-                                    // Fetch the user's posts
-                                    $postsSql = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY created_at DESC;";
-                                    $postsResult = mysqli_query($conn, $postsSql);
+                                        <?php
+                                        // Fetch the user's posts
+                                        $postsSql = "SELECT * FROM posts WHERE user_id='$user_id' ORDER BY created_at DESC;";
+                                        $postsResult = mysqli_query($conn, $postsSql);
 
-                                    // Check if there are any posts
-                                    if (mysqli_num_rows($postsResult) === 0) {
-                                        echo "<p class='fs-5 mt-4'><b>No posts to show!</b></p>";
-                                    } 
-                                    else 
-                                    {
-                                        while ($post = mysqli_fetch_assoc($postsResult)) 
+                                        // Check if there are any posts
+                                        if (mysqli_num_rows($postsResult) === 0) {
+                                            echo "<p class='fs-5 mt-4'><b>No posts to show!</b></p>";
+                                        } 
+                                        else 
                                         {
-                                            $post_id = $post['id'];
-                                            $mediaPath = $post['post_path'];
-                                            $caption = $post['caption'];
-                                            $createdAt = new DateTime($post['created_at']);
-                                            $formattedDate = $createdAt->format('F j, Y g:i A');
-                                            $category = $post['category'];
+                                            while ($post = mysqli_fetch_assoc($postsResult)) 
+                                            {
+                                                $post_id = $post['id'];
+                                                $mediaPath = $post['post_path'];
+                                                $caption = $post['caption'];
+                                                $createdAt = new DateTime($post['created_at']);
+                                                $formattedDate = $createdAt->format('F j, Y g:i A');
+                                                $category = $post['category'];
 
-                                            // Get the like count for each post
-                                            $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
-                                            $likeCountResult = mysqli_query($conn, $likeCountSql);
-                                            $likeCountRow = mysqli_fetch_assoc($likeCountResult);
-                                            $likeCount = $likeCountRow['like_count'];
+                                                // Get the like count for each post
+                                                $likeCountSql = "SELECT COUNT(*) AS like_count FROM likes WHERE post_id='$post_id';";
+                                                $likeCountResult = mysqli_query($conn, $likeCountSql);
+                                                $likeCountRow = mysqli_fetch_assoc($likeCountResult);
+                                                $likeCount = $likeCountRow['like_count'];
 
-                                            // Determine if the media is a video or image
-                                            $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
-                                            $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
-                                    ?>
+                                                // Determine if the media is a video or image
+                                                $fileExtension = strtolower(pathinfo($mediaPath, PATHINFO_EXTENSION));
+                                                $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
+                                        ?>
 
                                         <a href="post_info.php?user_id=<?php echo $user_id; ?>&post_id=<?php echo $post_id; ?>">
                                             <div class="media-item">
@@ -442,12 +487,13 @@ $isBlocked = mysqli_num_rows($isBlockedResult) > 0;
                                             </div>
                                         </a>
 
-                                <?php 
-                                    }
-                                }
-                                ?>
+                                        <?php 
+                                            }
+                                        }
+                                        ?>
 
                                     </div>
+                                    <?php endif; ?>
                                 </div>               
                             </div>
                         </div>

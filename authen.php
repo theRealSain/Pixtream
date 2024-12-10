@@ -53,6 +53,7 @@
                         <div class="form-group">
                          <p class="form-toggle text-center">Don't have an account?</p>
                          <p class="form-toggle text-center" onclick="toggleForms()"><u><a href="#">Sign Up</a></u></p>
+                         <p class="text-center"><small><a href="index.html">Back to Home</a></p></small>
                         </div>
                     </form>             
     			</div>
@@ -98,6 +99,7 @@
                           <div class="form-group">
                              <p class="form-toggle text-center">Already have an account?</p>
                              <p class="form-toggle text-center" onclick="toggleForms()"><u><a href="#">Sign In</a></u></p>
+                             <p class="text-center"><small><a href="index.html">Back to Home</a></p></small>
                           </div>
                        </div>
                         </div>

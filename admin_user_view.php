@@ -9,10 +9,10 @@ if (!isset($_SESSION['id'])) {
 }
 
 
-$user_id = $_GET['user_id'];
+$username = $_GET['username'];
 
 // Fetch user information
-$sql = "SELECT * FROM users WHERE id='$user_id';";
+$sql = "SELECT * FROM users WHERE username='$username';";
 $result = mysqli_query($conn, $sql);
 $info = mysqli_fetch_assoc($result);
 
@@ -54,6 +54,19 @@ $postResult = mysqli_query($conn, $postSql);
 $postInfo = mysqli_fetch_array($postResult);
 $postCount = $postInfo[0];
 
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_account'])) {
+    // Delete the user account from the 'users' table
+    $deleteUserSql = "DELETE FROM users WHERE id='$id'";
+
+    if (mysqli_query($conn, $deleteUserSql)) {
+        header('Location: admin_users.php'); // Redirect to admin_users.php
+        exit();
+    } else {
+        echo "Error deleting account: " . mysqli_error($conn);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +97,7 @@ $postCount = $postInfo[0];
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active-now" href="#">
+                    <a class="nav-link active-now" href="admin_users.php">
                         <b>Manage Users</b>
                     </a>
                 </li>
@@ -120,9 +133,31 @@ $postCount = $postInfo[0];
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#accountInfoModal">About Account</a></li>
-                                    <li><a class="dropdown-item text-danger" href="">De-activate Account</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</a></li>
                                 </ul>
                             </div>
+
+                            <!-- Delete Account Confirmation Modal -->
+                            <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this account as Administrator? This action is permanent and cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn mybtn-outline" data-bs-dismiss="modal">Cancel</button>
+                                            <form method="POST" action="" style="display:inline;">
+                                                <button type="submit" name="delete_account" class="btn mybtn" style="background-color: red !important;">Delete Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             <div class="d-flex flex-column align-items-center text-center">
                                 <div class="profile-img-container">
@@ -228,7 +263,7 @@ $postCount = $postInfo[0];
                                             $isVideo = in_array($fileExtension, ['mp4', 'mov', 'avi', 'wmv']);
                                         ?>
 
-                                        <a href="post_info.php?user_id=<?php echo $id; ?>&post_id=<?php echo $post_id; ?>">
+                                        <a href="admin_post_info.php?user_id=<?php echo $id; ?>&post_id=<?php echo $post_id; ?>">
                                             <div class="media-item">
                                                 <?php if ($isVideo): ?>
                                                     <div class="video-thumbnail" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
@@ -243,6 +278,14 @@ $postCount = $postInfo[0];
                                                 <?php else: ?>
                                                     <img src="<?php echo htmlspecialchars($mediaPath); ?>" alt="Pixtream Post" data-bs-toggle="modal" data-bs-target="#postModal" data-media-path="<?php echo htmlspecialchars($mediaPath); ?>" data-caption="<?php echo htmlspecialchars($caption); ?>" data-created-at="<?php echo htmlspecialchars($formattedDate); ?>" data-category="<?php echo htmlspecialchars($category); ?>" data-username="<?php echo htmlspecialchars($username); ?>">
                                                 <?php endif; ?>
+                                                
+                                                <!-- Trash Icon for Deleting Post -->
+                                                <form method="POST" action="" class="delete-post-form">
+                                                    <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
+                                                    <button type="submit" name="delete_post" class="trash-icon">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
 
                                                 <!-- Like Count Overlay -->
                                                 <div class="like-count-overlay">
@@ -263,11 +306,57 @@ $postCount = $postInfo[0];
                     </div>
                 </div>
 
+                <?php
+                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post'])) {
+                    // Validate and sanitize post_id from the form input
+                    $postId = intval($_POST['post_id']); 
+                
+                    // Deleting the comment
+                    $deletePostQuery = "DELETE FROM posts WHERE id = '$post_id';";
+                    $pst_result = mysqli_query($conn, $deletePostQuery);
+                
+                    if ($pst_result) {
+                        echo "<span class='confirm-alert'>Post deleted successfully.</span>";                
+                    }
+                }
+                ?>
+
             </div>
         </div>
     </div>
 
     <!-- JS files -->
+
+    <script>
+    $(document).on('click', '.delete-post-btn', function () {
+        const button = $(this);
+        const postId = button.closest('.delete-post-form').data('post-id');
+
+        if (confirm('Are you sure you want to delete this post?')) {
+            $.ajax({
+                url: '', // Same PHP file
+                type: 'POST',
+                data: {
+                    delete_post: true,
+                    post_id: postId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        // Remove the post from the grid
+                        $('#post-' + postId).remove();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    });
+    </script>
 
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {
@@ -294,6 +383,6 @@ $postCount = $postInfo[0];
             mainContent.classList.add('full-width');
             tableContainer.style.width = '100%'; // Set table container width when sidebar is hidden
         });
-    </script> 
+    </script>
 </body>
 </html>
